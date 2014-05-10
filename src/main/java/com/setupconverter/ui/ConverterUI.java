@@ -15,7 +15,7 @@
 
 package com.setupconverter.ui;
 
-import com.setupconverter.logic.ConverterProcessing;
+import com.setupconverter.logic.ConverterLogic;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
@@ -42,7 +42,7 @@ import java.io.IOException;
 //@ SuppressWarnings( "serial" )
 public class ConverterUI extends JFrame implements ActionListener, IComponents {
 
-    private ConverterProcessing m_process;
+    private ConverterLogic m_process;
 
     private final JPanel radioPanel;
     private final JPanel buttonPanel;
@@ -235,12 +235,11 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
                     this.setStatus( Color.BLACK, "Load Complete", m_loadedFile.getName() );
 
                     try {
-                        m_process = new ConverterProcessing( m_loadedFile, this );
+                        m_process = new ConverterLogic( m_loadedFile, this );
                     }
                     catch( IOException e ) {
                         this.setStatus( Color.RED, "IOException while loading file", e.getMessage() );
                         m_fileIsLoaded = false;
-                        e.printStackTrace();
                     }
                 }
 
@@ -254,7 +253,6 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
                     }
                     catch( IOException e ) {
                         this.setStatus( Color.RED, "IOException while calculating checksum", e.getMessage() );
-                        e.printStackTrace();
                     }
 
                     buildStr = new StringBuilder( "Checksum = " + m_process.getChecksum() );
@@ -268,7 +266,6 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
                     }
                     catch( IOException | ArrayIndexOutOfBoundsException | NumberFormatException e ) {
                         this.setStatus( Color.RED, "Exception while converting file", e.getMessage() );
-                        e.printStackTrace();
                     }
 
                     m_fileIsConverted = true;
@@ -294,7 +291,6 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
                     }
                     catch( IOException e ) {
                         this.setStatus( Color.RED, "Exception while saving file", e.getMessage() );
-                        e.printStackTrace();
                     }
 
                     if( m_fileIsConverted ) {
@@ -378,7 +374,7 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
             userFile = fileChooser.getSelectedFile();
             if( !userFile.getName().toLowerCase().endsWith( ".ini" ) ) {
                 StringBuilder sb = new StringBuilder();
-                sb.append( userFile.getPath() + ".ini" );
+                sb.append( userFile.getPath() ).append( ".ini" );
                 file = new File( sb.toString() );
             }
             else {

@@ -12,14 +12,14 @@ import java.util.Map;
  *
  */
 public final class Bench {
-    private final Map< String, Integer > m_machineParams = new LinkedHashMap< String, Integer >();
-    private final Map< String, Integer > m_analogInParams = new LinkedHashMap< String, Integer >();
-    private final Map< String, Integer > m_speedParams = new LinkedHashMap< String, Integer >();
-    private final Map< String, Integer > m_outputParams = new LinkedHashMap< String, Integer >();
-    private final Map< String, Integer > m_inputParams = new LinkedHashMap< String, Integer >();
-    private final Map< String, Integer > m_axesParams = new LinkedHashMap< String, Integer >();
-    private final Map< String, Integer > m_thcParams = new LinkedHashMap< String, Integer >();
-    private final Map< String, Integer > m_bevelParams = new LinkedHashMap< String, Integer >();
+    private final Map< String, Integer > m_machineParams = new LinkedHashMap<>();
+    private final Map< String, Integer > m_analogInParams = new LinkedHashMap<>();
+    private final Map< String, Integer > m_speedParams = new LinkedHashMap<>();
+    private final Map< String, Integer > m_outputParams = new LinkedHashMap<>();
+    private final Map< String, Integer > m_inputParams = new LinkedHashMap<>();
+    private final Map< String, Integer > m_axesParams = new LinkedHashMap<>();
+    private final Map< String, Integer > m_thcParams = new LinkedHashMap<>();
+    private final Map< String, Integer > m_bevelParams = new LinkedHashMap<>();
 
 
     /**
