@@ -29,12 +29,12 @@ import java.util.Map.Entry;
  */
 public class ConverterLogic implements IProcess {
 
-    private static int TOTAL_AXIS_BLOCKS = 3;
+    private static final int TOTAL_AXIS_BLOCKS = 3;
 
-    private final ArrayList< String > m_paramList = new ArrayList< String >();
+    private final ArrayList< String > m_paramList = new ArrayList<>();
 
-    private final Map< String, Integer > m_IOParamMap = new LinkedHashMap< String, Integer >();
-    private final Map< String, Integer > m_LinkParamMap = new LinkedHashMap< String, Integer >();
+    private final Map< String, Integer > m_IOParamMap = new LinkedHashMap<>();
+    private final Map< String, Integer > m_LinkParamMap = new LinkedHashMap<>();
 
     private DiagnosticBrds m_containers;
     //private Bench_Container m_containers;
@@ -49,6 +49,7 @@ public class ConverterLogic implements IProcess {
 
     /**
      * @param file
+     * @param ui
      * @throws IOException
      */
     public ConverterLogic( File file, IComponents ui ) throws IOException {//
