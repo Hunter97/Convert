@@ -15,7 +15,7 @@
 
 package com.setupconverter.ui;
 
-import com.setupconverter.logic.ConverterLogic;
+import com.setupconverter.logic.ConvertLogic;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
@@ -42,22 +42,24 @@ import java.io.IOException;
 //@ SuppressWarnings( "serial" )
 public class ConverterUI extends JFrame implements ActionListener, IComponents {
 
-    private ConverterLogic m_process;
+    private CoConvertLogic_process;
 
-    private final JPanel radioPanel;
-    private final JPanel buttonPanel;
+    private final JPanel m_mainPanel;
+    private final JPanel m_buttonPanel;
+    private JPanel m_radioPanel;
+    private JPanel m_statusPanel;
 
     private final JButton m_loadButton;
     private final JButton m_runButton;
     private final JButton m_saveButton;
     private final JButton m_closeButton;
 
-    private ButtonGroup m_radioGroup;
+    //private ButtonGroup m_radioGroup;
     private JRadioButton m_chksumRadioBtn;
     private JRadioButton m_convertRadioBtn;
 
     private final JTextField m_statusTextField;
-    private final GridBagConstraints m_gbConstraints;
+    //private final GridBagConstraints m_gbConstraints;
 
     private File m_currentDir = null;
     private File m_loadedFile = null;
@@ -81,50 +83,58 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
 
         super( "Convert_INI" );
         JFrame.setDefaultLookAndFeelDecorated( true );
-        this.setResizable( false );
+        this.setResizable( true );
 
         // Add/Configure JPanels
-        radioPanel = new JPanel();
-        radioPanel.setLayout( new FlowLayout( FlowLayout.CENTER, 20, 40 ) );
-        radioPanel.setPreferredSize( new Dimension( 290, 80 ) );
-        radioPanel.setBorder( BorderFactory.createCompoundBorder( BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder() ) );
+        m_mainPanel = new JPanel();
+        //radioPanel = new JPanel( new GridBagLayout());
+        //radioPanel.setLayout( new FlowLayout( FlowLayout.CENTER, 20, 40 ) );
+        //radioPanel.setPreferredSize( new Dimension( 290, 80 ) );
+        m_mainPanel.setBackground(Color.yellow);
+        m_mainPanel.setBorder( BorderFactory.createCompoundBorder( BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder() ) );
 
-        buttonPanel = new JPanel( new GridBagLayout() );
-        m_gbConstraints = new GridBagConstraints();
-        buttonPanel.setPreferredSize( new Dimension( 90, 0) );
-        buttonPanel.setBorder( BorderFactory.createCompoundBorder( BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder() ) );
+        m_buttonPanel = new JPanel( new GridBagLayout());
+        //m_gbConstraints = new GridBagConstraints();
+        //buttonPanel.setPreferredSize( new Dimension( 90, 0) );
+        m_buttonPanel.setBorder( BorderFactory.createCompoundBorder( BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder() ) );
 
 
         // Add/Configure UI components to the their associated JPanel
-        setRadioButtons( radioPanel );
+        createRadioGroup();
+        
 
         m_loadButton = new JButton( UI.LOAD.getName() );
-        buttonPanel.add( m_loadButton, setConstraints( 0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.BASELINE_LEADING, GridBagConstraints.HORIZONTAL,
-                new Insets( 5, 3, 3, 3 ), m_gbConstraints ) );
         m_loadButton.setToolTipText( "Load user setup file" );
+        m_buttonPanel.add( m_loadButton, setConstraints( 0, 0, 0, 0, 0.5, 0.5, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets( 5, 3, 3, 3 )));
 
         m_runButton = new JButton( UI.RUN.getName() );
-        buttonPanel.add( m_runButton, setConstraints( 0, 1, 1, 1, 0.5, 0.5, GridBagConstraints.BASELINE_TRAILING, GridBagConstraints.HORIZONTAL,
-                new Insets(  5, 3, 1, 3 ), m_gbConstraints ) );
         m_runButton.setToolTipText( "Run converter or calculate checksum" );
         m_runButton.setEnabled( false );
+        m_buttonPanel.add( m_runButton, setConstraints( 0, 1, 0, 0, 0, 0, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets(  38, 3, 3, 3 )));
 
         m_saveButton = new JButton( UI.SAVE.getName() );
-        buttonPanel.add( m_saveButton, setConstraints( 0, 2, 1, 1, 0.5, 0.5, GridBagConstraints.BASELINE_TRAILING, GridBagConstraints.HORIZONTAL,
-                new Insets( 1, 3, 10, 3 ), m_gbConstraints ) );
         m_saveButton.setToolTipText( "Save converted setup file" );
         m_saveButton.setEnabled( false );
+        m_buttonPanel.add( m_saveButton, setConstraints( 0, 2, 0, 0, 0, 0, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets( 70, 3, 3, 3 )));
 
         m_closeButton = new JButton( UI.CLOSE.getName() );
-        buttonPanel.add( m_closeButton, setConstraints( 0, 4, 1, 1, 0.5, 0.5, GridBagConstraints.LAST_LINE_END, GridBagConstraints.HORIZONTAL,
-                new Insets( 5, 3, 3, 3 ), m_gbConstraints ) );
         m_closeButton.setToolTipText( "Close utility" );
+        m_buttonPanel.add( m_closeButton, setConstraints( 0, 4, 0, 0, 0, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, new Insets( 5, 3, 3, 3 )));
 
         m_statusTextField = new JTextField( 22 );
         m_statusTextField.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder( EtchedBorder.RAISED, Color.LIGHT_GRAY,
                 Color.GRAY ), "Status", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.CENTER ) );
         m_statusTextField.setEditable( false );
         m_statusTextField.setAlignmentY( LEFT_ALIGNMENT );
+        m_statusPanel = new JPanel( new GridBagLayout());
+        m_statusPanel.setPreferredSize(new Dimension(200, 20));
+        //m_statusPanel.add( m_statusTextField, setConstraints( 0, 0, 0, 0, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 1, 1, 1, 1 )));
+        m_statusPanel.add( m_statusTextField );
+        m_statusPanel.setBackground(Color.red);
+
+        m_mainPanel.add( m_radioPanel, setConstraints( 0, 0, 0, 0, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(  50, 3, 3, 3 )));
+        m_radioPanel.setBackground(Color.yellow);
+        m_mainPanel.add( m_statusPanel, setConstraints( 0, 1, 0, 0, 0, 0, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets( 100, 1, 1, 1 )) );
 
 
         // Add listeners to each JPanel
@@ -135,9 +145,9 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
 
 
         // Add Panels with layouts to the JFrame
-        getContentPane().add( buttonPanel, BorderLayout.WEST );
-        getContentPane().add( radioPanel, BorderLayout.LINE_END );
-        radioPanel.add( m_statusTextField );
+        getContentPane().add( m_buttonPanel, BorderLayout.WEST );
+        getContentPane().add( m_mainPanel, BorderLayout.CENTER );
+        
     }
 
 
@@ -146,30 +156,32 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
      * 
      * @param xPos          - Components column location in pane
      * @param yPos          - Components row location in pane
-     * @param colTotal      - Number of columns in pane
-     * @param rowTotal      - Number of rows in pane
+     * @param width         - Spans across columns
+     * @param height        - Spans across rows
      * @param weight_X      - Re-distribute component in X direction
      * @param weight_Y      - Re-distribute component in Y direction
-     * @param panel_loc     - Anchor component at location in grid
-     * @param fill_cells    - Causes component to fill display area in horizontal or vertical direction
+     * @param anchor        - Anchor component at location in grid
+     * @param fill          - Causes component to fill display area in horizontal or vertical direction
      * @param pad_cells     - Pad remainder of grid location with white space
      * @param gbc_prop      - GridBagConstraints object
      * @return              - GridBagConstraints object with constraints set
      */
-    private GridBagConstraints setConstraints( int xPos, int yPos, int colTotal, int rowTotal, double weight_X, double weight_Y, int panel_loc,
-            int fill_cells, Insets pad_cells, GridBagConstraints gbc_prop   ) {
+    private GridBagConstraints setConstraints( int xPos, int yPos, int width, int height, double weight_X, double weight_Y, int anchor,
+            int fill, Insets pad_cells ) {
+        
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        gbc_prop.gridx = xPos;
-        gbc_prop.gridy = yPos;
-        gbc_prop.gridwidth = colTotal;
-        gbc_prop.gridheight = rowTotal;
-        gbc_prop.weightx = weight_X;
-        gbc_prop.weighty = weight_Y;
-        gbc_prop.anchor = panel_loc;
-        gbc_prop.fill = fill_cells;
-        gbc_prop.insets = pad_cells;
+        gbc.gridx = xPos;
+        gbc.gridy = yPos;
+        gbc.gridwidth = width;
+        gbc.gridheight = height;
+        gbc.weightx = weight_X;
+        gbc.weighty = weight_Y;
+        gbc.anchor = anchor;
+        gbc.fill = fill;
+        gbc.insets = pad_cells;
 
-        return gbc_prop;
+        return gbc;
     }
 
 
@@ -178,9 +190,9 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
      * JRadioButton's.  Add's the Checksum and Convert JRadioButtons' to the
      * argument JPanel.
      * 
-     * @param panel         - JPanel for Checksum & Convert JRadioButton's
+     * @param panel - JPanel for Checksum & Convert JRadioButton's
      */
-    private void setRadioButtons( JPanel panel ) {
+    private void createRadioGroup() {
 
         m_chksumRadioBtn = new JRadioButton( UI.CHECKSUM.getName() );
         m_chksumRadioBtn.setMnemonic(KeyEvent.VK_B);
@@ -193,15 +205,21 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
         m_convertRadioBtn.setActionCommand( UI.CONVERT.getName() );
         m_convertRadioBtn.setToolTipText( "Converts settings & recalulates checksum"  );
 
-        m_radioGroup = new ButtonGroup();
-        m_radioGroup.add( m_chksumRadioBtn );
-        m_radioGroup.add( m_convertRadioBtn );
+        ButtonGroup radioGroup = new ButtonGroup();
+        radioGroup.add( m_chksumRadioBtn );
+        radioGroup.add( m_convertRadioBtn );
+        
+        m_radioPanel = new JPanel( new GridBagLayout());
+        m_radioPanel.setPreferredSize(new Dimension( 100, 20 ));
+        m_radioPanel.add( m_chksumRadioBtn );
+        m_radioPanel.add(  m_convertRadioBtn );
+        //panel.add( groupPanel, setConstraints( 0, 1, 0, 0, 0.5, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(  38, 3, 3, 3 )));
 
         m_chksumRadioBtn.addActionListener(this);
         m_convertRadioBtn.addActionListener(this);
 
-        panel.add( m_chksumRadioBtn );
-        panel.add(  m_convertRadioBtn );
+        //panel.add( m_chksumRadioBtn );
+        //panel.add(  m_convertRadioBtn );
     }
 
 
@@ -235,7 +253,7 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
                     this.setStatus( Color.BLACK, "Load Complete", m_loadedFile.getName() );
 
                     try {
-                        m_process = new ConverterLogic( m_loadedFile, this );
+                        m_process = new ConvConvertLogicloadedFile, this );
                     }
                     catch( IOException e ) {
                         this.setStatus( Color.RED, "IOException while loading file", e.getMessage() );
@@ -344,7 +362,8 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
     }
 
 
-    /* (non-Javadoc)
+    /**
+     * (non-Javadoc)
      * @see convert_ini_files.IConverterComponents#File getFile( int dialogType, String ext )
      */
     @ Override
@@ -410,8 +429,9 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
     public static void main( String[] args ) {
         ConverterUI gridLayout = new ConverterUI();
         gridLayout.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        gridLayout.setSize( 400, 200 );
+        gridLayout.setSize( 400, 300 );
         gridLayout.setLocationRelativeTo( gridLayout );
         gridLayout.setVisible(true);
+        //gridLayout.pack();
     }
 }

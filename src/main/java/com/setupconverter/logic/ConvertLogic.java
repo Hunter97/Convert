@@ -27,7 +27,7 @@ import java.util.Map.Entry;
  * @author prwallace
  *
  */
-public class ConverterLogic implements IProcess {
+public class ConvertLogic implements IProcess {
 
     private static final int TOTAL_AXIS_BLOCKS = 3;
 
@@ -52,7 +52,7 @@ public class ConverterLogic implements IProcess {
      * @param ui
      * @throws IOException
      */
-    public ConverterLogic( File file, IComponents ui ) throws IOException {//
+    public ConvertLogic( File file, IComponents ui ) throws IOException {//
         m_configFile = file;
         loadParams( m_configFile );
         m_ui_components = ui;
