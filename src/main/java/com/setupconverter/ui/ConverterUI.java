@@ -1,13 +1,20 @@
 /**
- *  Convert_ini_UI
+ *  ConverterUI
+ *  Paul Wallace
+ *  May 2014
  * 
- *  UI for INI_Processing Class
+ *  ConverterUI provides the user interface for the application SetupConverter.
  * 
- *  The Class provides a users interface that:
- *      *   Opens a Load or Save dialog filtered for ini files and returns a File object
- *      *   Instantiates a INI_Processing object to convert the file or calculate the files checksum
- *      *   Allows user to select the type of INI_Processing to perform, Checksum or Convert.
- *      *   Closes the utility and disposes of UI components.
+ *  Main attributes:
+ *      *   Allows user to loads a setup file from the Windows file system.
+ *      *   Allows user to re-calculate checksum of loaded setup file.
+ *      *   Allows user to convert the gains and I/O of a setup file which then 
+ *          can then be used to operate a specific test stand or cutting machine.
+ *          The original I/O is relocated to I/O 49 and higher, so not to loose
+ *          integrity of file.  Gain and Speed settings are modified from original
+ *          file.
+ *      *   Allows user to save the converted file when the selected processes
+ *          is complete.
  * 
  *  Implements:  ActionListener & IConverterComponents
  *  Extends: JFrame
@@ -16,20 +23,13 @@
 package com.setupconverter.ui;
 
 import com.setupconverter.logic.ConvertLogic;
-//import javax.swing.*;
+import com.setupconverter.ui.IComponents.SYSTEM;
+import static com.setupconverter.ui.IComponents.UI.*;
+
 import javax.swing.Box;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
-import static java.awt.Component.LEFT_ALIGNMENT;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.IOException;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -38,20 +38,32 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
+import static java.awt.Component.LEFT_ALIGNMENT;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import java.io.File;
+import java.io.IOException;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+
+
 /**
- * Convert_ini_UI is a UI that provides an interface for the a user to convert
- * a configuration file or to calculate the files checksum.  The UI provides 2
- * radio buttons, Checksum and Convert, to select the desired operation. File
- * manipulation occurs through the use of the Load, Run, and Save buttons.  A
- * A Close button is also provided that will properly dispose of the UI.  The
- * Load button instantiates an INI_Processing object, which contains methods to
- * convert the loaded configuration file and/or recalculate the file checksum.
- * A JFileChooser object is used to load and save the configuration file.
+ * ConverterUI is a UI that provides an interface for the a user to convert
+ * a configuration file or to calculate the files checksum.
  * 
  * @author prwallace
  */
-//@ SuppressWarnings( "serial" )
-public class ConverterUI extends JFrame implements ActionListener, IComponents {
+public class ConverterUI extends JFrame {
 
     private ConvertLogic m_process;
 
@@ -66,9 +78,11 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
     private final JButton m_saveButton;
     private final JButton m_closeButton;
 
-    private JRadioButton m_chksumRadioBtn;
+    private JRadioButton m_cksumRadioBtn;
     private JRadioButton m_convertRadioBtn;
     private final JTextField m_statusTextField;
+    private JComboBox m_comboBox;
+    private JLabel m_comboBoxLabel;
 
     private final Toolkit toolKit = Toolkit.getDefaultToolkit();
     private final Dimension screenSize = toolKit.getScreenSize();
@@ -78,100 +92,178 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
     private File m_savedFile = null;
 
     private final static String INI = "ini";
+    private final String[] m_systems;
+    private String m_selection;
+    private int m_index;
 
     public boolean m_fileIsLoaded;
     public boolean m_fileIsSaved;
     public boolean m_fileIsConverted;
 
+    public OperateConverter m_operate;
+
 
     /**
-     * Default constructor.  Instantiates and adds JPanel's to the JFrame for
-     * the JButton's, JTextField, and JRadioButton's.  Instantiates the Load,
-     * Run, Save, and Close JButton's and a GridBagConstraints object to set
-     * constraints for each JButtons in its associated JPanel.  Adds Action-
-     * Listener's for the UI components.
+     * Default constructor for class ConverterUI.  
+     * Adds JPanel's and all UI components to the JFrame. 
+     * Instantiates an OperateConverter object to interact with client and listen
+     * for component changes.  Draws and closes UI and its components.
      */
     public ConverterUI() {
         super( "Convert_INI" );
+        m_systems = new String[] { SYSTEM.BENCH.getName(), SYSTEM.HYPATH.getName() };
+        m_operate = new OperateConverter();
+        m_index = m_systems.length + 1;
+
+        // Frame settings
         JFrame.setDefaultLookAndFeelDecorated( true );
-        setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         setPreferredSize( new Dimension( 400, 300 ));
-        setLocation( screenSize.width / 2, screenSize.height / 4);
+        setLocation( screenSize.width / 3, screenSize.height / 4);
         pack();
 
-        // Add/Configure JPanels
+
+        // Disposes and Closes UI
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                dispose();
+                System.exit(0);
+            }
+        });
+
+
+        // Add button panel and button components
         m_mainPanel = new JPanel( new GridBagLayout());
         m_mainPanel.setBorder( BorderFactory.createCompoundBorder( BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder() ) );
 
         m_buttonPanel = new JPanel( new GridBagLayout());
         m_buttonPanel.setBorder( BorderFactory.createCompoundBorder( BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder() ) );
 
-        // Add/Configure UI components to the their associated JPanel
-        m_loadButton = new JButton( UI.LOAD.getName() );
+        m_loadButton = new JButton( LOAD.getName() );
         m_loadButton.setToolTipText( "Load user setup file" );
-        m_buttonPanel.add( m_loadButton, setConstraints( 0, 0, 0, 0, 0.5, 0.5, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets( 5, 3, 3, 3 )));
+        m_buttonPanel.add( m_loadButton, addConstraints( 0, 0, 0, 0, 0.5, 0.5, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets( 5, 3, 3, 3 )));
 
-        m_runButton = new JButton( UI.RUN.getName() );
+        m_runButton = new JButton( RUN.getName() );
         m_runButton.setToolTipText( "Run converter or calculate checksum" );
         m_runButton.setEnabled( false );
-        m_buttonPanel.add( m_runButton, setConstraints( 0, 1, 0, 0, 0, 0, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets(  38, 3, 3, 3 )));
+        m_buttonPanel.add( m_runButton, addConstraints( 0, 1, 0, 0, 0, 0, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets(  38, 3, 3, 3 )));
 
-        m_saveButton = new JButton( UI.SAVE.getName() );
+        m_saveButton = new JButton( SAVE.getName() );
         m_saveButton.setToolTipText( "Save converted setup file" );
         m_saveButton.setEnabled( false );
-        m_buttonPanel.add( m_saveButton, setConstraints( 0, 2, 0, 0, 0, 0, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets( 70, 3, 3, 3 )));
+        m_buttonPanel.add( m_saveButton, addConstraints( 0, 2, 0, 0, 0, 0, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets( 70, 3, 3, 3 )));
 
-        m_closeButton = new JButton( UI.CLOSE.getName() );
+        m_closeButton = new JButton( CLOSE.getName() );
         m_closeButton.setToolTipText( "Close utility" );
-        m_buttonPanel.add( m_closeButton, setConstraints( 0, 4, 0, 0, 0, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, new Insets( 5, 3, 3, 3 )));
+        m_buttonPanel.add( m_closeButton, addConstraints( 0, 4, 0, 0, 0, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, new Insets( 5, 3, 3, 3 )));
 
+
+        // Add radio panel and radio group
         m_radioPanel = new JPanel( new GridBagLayout());
-        m_mainPanel.add( m_radioPanel, setConstraints( 0, 0, 1, 1, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(  5, 3, 3, 3 )));
-        
-        m_selectionPanel = new JPanel( new GridBagLayout());
-        m_selectionPanel.setPreferredSize(new Dimension( 275, 120 ));
-        m_mainPanel.add( m_selectionPanel, setConstraints( 0, 3, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets( 1, 1, 1, 1 )));
-
-        m_statusPanel = new JPanel( new GridBagLayout());
-        m_mainPanel.add( m_statusPanel, setConstraints( 0, 3, 1, 1, 0, 1, GridBagConstraints.SOUTH, GridBagConstraints.NONE, new Insets( 1, 1, 1, 1 )));
-
+        m_mainPanel.add( m_radioPanel, addConstraints( 0, 0, 1, 1, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(  5, 3, 3, 3 )));
         createRadioGroup();
 
+
+        // Add selection panel and pull down list
+        m_selectionPanel = new JPanel( new GridBagLayout());
+        m_selectionPanel.setPreferredSize(new Dimension( 275, 120 ));
+        m_mainPanel.add( m_selectionPanel, addConstraints( 0, 3, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets( 1, 1, 1, 1 )));
+        createComboBox();
+        
+
+
+        // Add status panel and status text field
+        m_statusPanel = new JPanel( new GridBagLayout());
+        m_mainPanel.add( m_statusPanel, addConstraints( 0, 3, 1, 1, 0, 1, GridBagConstraints.SOUTH, GridBagConstraints.NONE, new Insets( 1, 1, 1, 1 )));
+
         m_statusTextField = new JTextField( 22 );
-        m_statusTextField.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder( EtchedBorder.RAISED, Color.LIGHT_GRAY,
-                                                                Color.GRAY ), "Status", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.CENTER ) );
+        m_statusTextField.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), "Status", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.CENTER ) );
         m_statusTextField.setEditable( false );
         m_statusTextField.setAlignmentY( LEFT_ALIGNMENT );
-        m_statusPanel.add( m_statusTextField, setConstraints( 0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets( 1, 1, 1, 1 )));
+        m_statusPanel.add( m_statusTextField, addConstraints( 0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets( 1, 1, 1, 1 )));
+
 
         // Add listeners to each JPanel
-        m_loadButton.addActionListener( this );
-        m_runButton.addActionListener( this );
-        m_saveButton.addActionListener( this );
-        m_closeButton.addActionListener( this );
+        m_loadButton.addActionListener( m_operate );
+        m_runButton.addActionListener( m_operate );
+        m_saveButton.addActionListener( m_operate );
+        m_closeButton.addActionListener( m_operate );
+
 
         // Add Panels with layouts to the JFrame
         getContentPane().add( m_buttonPanel, BorderLayout.WEST );
         getContentPane().add( m_mainPanel, BorderLayout.CENTER );
+        
+        /*m_radioPanel.setBackground(Color.red);
+        m_selectionPanel.setBackground(Color.yellow);
+        m_statusPanel.setBackground(Color.blue);*/
     }
 
 
     /**
-     * Sets/returns the GridBagConstraints of a component within a JPanel.
+     * Creates the checksum and convert radio buttons and adds them to a the
+     * m_radioPanel JPanel.  Adds an action listener to both radio buttons.
+     */
+    private void createRadioGroup() {
+        m_cksumRadioBtn = new JRadioButton( CHECKSUM.getName() );
+        m_cksumRadioBtn.setActionCommand( CHECKSUM.getName() );
+        m_cksumRadioBtn.setToolTipText( "Calculate checksum" );
+        m_cksumRadioBtn.setSelected(true);
+
+        m_convertRadioBtn = new JRadioButton( CONVERT.getName() );
+        m_convertRadioBtn.setActionCommand( CONVERT.getName() );
+        m_convertRadioBtn.setToolTipText( "Converts settings & recalulates checksum"  );
+
+        ButtonGroup radioGroup = new ButtonGroup();
+        radioGroup.add( m_cksumRadioBtn );
+        radioGroup.add( m_convertRadioBtn );
+
+        Box radioBox = Box.createHorizontalBox();
+        radioBox.add( m_cksumRadioBtn );
+        radioBox.add( m_convertRadioBtn );
+        m_radioPanel.add( radioBox, addConstraints( 0, 0, 1, 1, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(  3, 3, 3, 3 )));
+
+        m_cksumRadioBtn.addActionListener( m_operate );
+        m_convertRadioBtn.addActionListener( m_operate );
+    }
+
+
+    private void createComboBox() {
+        m_comboBoxLabel = new JLabel( "Convertion Type:" );
+        m_selectionPanel.add( m_comboBoxLabel, addConstraints( 0, 0, 1, 1, 0, 0.5, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets( 1, 1, 1, 25 )));
+        m_comboBox = new JComboBox( m_systems );
+        m_comboBox.setSelectedIndex( m_systems.length -1 );
+        //m_systemList.setEnabled( false );
+        m_comboBox.setToolTipText("Select conversion type");
+        m_selectionPanel.add( m_comboBox, addConstraints( 0, 1, 1, 1, 0, 0.5, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets( 1, 1, 80, 1 )));
+
+        m_comboBox.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent evt ) {
+                m_index = m_comboBox.getSelectedIndex();
+                m_selection = (String)m_comboBox.getSelectedItem();
+            }
+        });
+    }
+
+
+    /**
+     * Creates a GridBagConstraint object and adds constraints based on argument
+     * values and returns the object.
      * 
-     * @param xPos          - Components column location in pane
-     * @param yPos          - Components row location in pane
+     * @param xPos          - Components row location in pane
+     * @param yPos          - Components column location in pane
      * @param width         - Spans across columns
      * @param height        - Spans across rows
      * @param weight_X      - Re-distribute component in X direction
      * @param weight_Y      - Re-distribute component in Y direction
      * @param anchor        - Anchor component at location in grid
-     * @param fill          - Causes component to fill display area in horizontal or vertical direction
-     * @param pad_cells     - Pad remainder of grid location with white space
+     * @param fill          - fill display area in horizontal or vertical direction
+     * @param pad_cells     - Pad component inside cell from Top, Right, Bottom, and Left
      * @param gbc_prop      - GridBagConstraints object
      * @return              - GridBagConstraints object with constraints set
      */
-    private GridBagConstraints setConstraints( int xPos, int yPos, int width, int height, double weight_X, double weight_Y, int anchor,
+    private GridBagConstraints addConstraints( int xPos, int yPos, int width, int height, double weight_X, double weight_Y, int anchor,
             int fill, Insets pad_cells ) {
         
         GridBagConstraints gbc = new GridBagConstraints();
@@ -191,244 +283,225 @@ public class ConverterUI extends JFrame implements ActionListener, IComponents {
 
 
     /**
-     * Instantiate's and sets the properties for the Checksum and Convert
-     * JRadioButton's.  Add's the Checksum and Convert JRadioButtons' to the
-     * argument JPanel.
-     * 
-     * @param panel - JPanel for Checksum & Convert JRadioButton's
+     * class OperateConverter is an inner class for class ConverterUI.   The
+     * class provides an action listener method for the UI components.  The class
+     * implements the interface IComponents, which allows the client to load an
+     * ini file to convert and provides a method for displaying status messages.
      */
-    private void createRadioGroup() {
+    public class OperateConverter implements ActionListener, IComponents {
 
-        m_chksumRadioBtn = new JRadioButton( UI.CHECKSUM.getName() );
-        m_chksumRadioBtn.setActionCommand( UI.CHECKSUM.getName() );
-        m_chksumRadioBtn.setToolTipText( "Calculate checksum" );
-        m_chksumRadioBtn.setSelected(true);
+        /**
+         * Override action listener method for the UI components of class ConverterUI.java
+         * 
+         * @param evt   - Action event of the UI components
+         */
+        @ Override
+        public void actionPerformed( ActionEvent evt ) {
+            UI selection = UI.getType( evt.getActionCommand() );
+            StringBuilder buildString = null;
 
-        m_convertRadioBtn = new JRadioButton( UI.CONVERT.getName() );
-        m_convertRadioBtn.setActionCommand( UI.CONVERT.getName() );
-        m_convertRadioBtn.setToolTipText( "Converts settings & recalulates checksum"  );
+            switch ( selection ) {
 
-        ButtonGroup radioGroup = new ButtonGroup();
-        radioGroup.add( m_chksumRadioBtn );
-        radioGroup.add( m_convertRadioBtn );
+                case LOAD :
+                    m_loadedFile = this.getFile( JFileChooser.OPEN_DIALOG, INI );
 
-        Box radioBox = Box.createHorizontalBox();
-        radioBox.add(m_chksumRadioBtn);
-        radioBox.add( m_convertRadioBtn );
-        m_radioPanel.add( radioBox, setConstraints( 0, 0, 1, 1, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(  3, 3, 3, 3 )));
-
-        m_chksumRadioBtn.addActionListener(this);
-        m_convertRadioBtn.addActionListener(this);
-    }
-
-
-    /**
-     * An Overridden method that returns the action event of the UI components.
-     * A switch statement is used to determine the action event.  The method
-     * instantiates a INI_Processing object and calls its methods to calculate
-     * the checksum and/or convert the file.  Gets/Sets a File object to load
-     * or Save a configuration file.  Disposes and exits utility.
-     * 
-     * @param evt   - Action event of the UI components
-     */
-    @ Override
-    public void actionPerformed( ActionEvent evt ) {
-
-        UI selection = UI.getType( evt.getActionCommand() );
-        StringBuilder buildStr = null;
-
-        switch ( selection ) {
-
-            case LOAD :
-                m_loadedFile = this.getFile( JFileChooser.OPEN_DIALOG, INI );
-
-                if( m_loadedFile == null || !m_loadedFile.isFile() ) {
-                    this.setStatus( Color.RED, "Load cancelled or file not valid", null );
-                }
-                else {
-                    m_fileIsLoaded = true;
-                    m_runButton.setEnabled( m_fileIsLoaded );
-                    this.setStatus( Color.BLACK, "Load Complete", m_loadedFile.getName() );
-
-                    try {
-                        m_process = new ConvertLogic( m_loadedFile, this );
-                    }
-                    catch( IOException e ) {
-                        this.setStatus( Color.RED, "IOException while loading file", e.getMessage() );
-                        m_fileIsLoaded = false;
-                    }
-                }
-
-                break;
-
-
-            case RUN :
-                if( m_chksumRadioBtn.isSelected() && m_fileIsLoaded ) {
-                    try {
-                        m_process.setChecksum();
-                    }
-                    catch( IOException e ) {
-                        this.setStatus( Color.RED, "IOException while calculating checksum", e.getMessage() );
-                    }
-
-                    buildStr = new StringBuilder( "Checksum = " + m_process.getChecksum() );
-                    this.setStatus( Color.BLACK, buildStr.toString(), m_loadedFile.getName() );
-                }
-
-                if( m_convertRadioBtn.isSelected() && m_convertRadioBtn.isEnabled() && m_fileIsLoaded ) {
-                    try {
-                        m_process.convertFile();
-                        m_process.setChecksum();
-                    }
-                    catch( IOException | ArrayIndexOutOfBoundsException | NumberFormatException e ) {
-                        this.setStatus( Color.RED, "Exception while converting file", e.getMessage() );
-                    }
-
-                    m_fileIsConverted = true;
-                    buildStr = new StringBuilder( "New checksum = " + m_process.getChecksum() );
-                    this.setStatus( Color.BLACK, "File converted, ready to save", buildStr.toString() );// Should be using a StringBuilder here?
-                }
-
-                m_saveButton.setEnabled( m_fileIsLoaded );
-                break;
-
-
-            case SAVE :
-                m_savedFile = this.getFile( JFileChooser.SAVE_DIALOG, INI );
-
-                if( m_savedFile == null ) {
-                    this.setStatus( Color.RED, "Save cancelled or file not valid", null );
-                }
-                else {
-                    m_savedFile.setWritable( true );
-
-                    try {
-                        m_process.writeParam( m_savedFile );
-                    }
-                    catch( IOException e ) {
-                        this.setStatus( Color.RED, "Exception while saving file", e.getMessage() );
-                    }
-
-                    if( m_fileIsConverted ) {
-                        m_runButton.setEnabled( false );
-                        m_fileIsLoaded = false;
-                        m_fileIsConverted = false;
-                        buildStr = new StringBuilder( "File savedd as " + m_savedFile.getName() );
-                        this.setStatus( Color.BLACK, "File saved, process complete, load new file", buildStr.toString() );
+                    if( m_loadedFile == null || !m_loadedFile.isFile() ) {
+                        this.setStatus( Color.RED, "Load cancelled or file not valid", null );
                     }
                     else {
-                        buildStr = new StringBuilder( "File saved as " + m_savedFile.getName() );
-                        this.setStatus( Color.BLACK, "Save Complete", buildStr.toString() );
+                        m_fileIsLoaded = true;
+                        m_runButton.setEnabled( m_fileIsLoaded );
+                        this.setStatus( Color.BLACK, "Load Complete", m_loadedFile.getName() );
+
+                        try {
+                            m_process = new ConvertLogic( m_loadedFile, this );
+                        }
+                        catch( IOException e ) {
+                            this.setStatus( Color.RED, "IOException while loading file", e.getMessage() );
+                            m_fileIsLoaded = false;
+                        }
                     }
 
-                    m_fileIsSaved = true;
-                    m_saveButton.setEnabled( false );
-                }
-
-                break;
+                    break;
 
 
-            case CHECKSUM :
-                if( m_fileIsLoaded ) {
-                    buildStr = new StringBuilder( "Checksum = " + m_process.getChecksum() );
-                    this.setStatus( Color.BLACK, buildStr.toString(), m_loadedFile.getName() );
+                case RUN :
+                    if( m_cksumRadioBtn.isSelected() && m_fileIsLoaded ) {
+                        try {
+                            m_process.setChecksum();
+                        }
+                        catch( IOException e ) {
+                            this.setStatus( Color.RED, "IOException while calculating checksum", e.getMessage() );
+                        }
+
+                        buildString = new StringBuilder( "Checksum = " ).append( m_process.getChecksum() );
+                        this.setStatus( Color.BLACK, buildString.toString(), m_loadedFile.getName() );
+                    }
+
+                    if( m_convertRadioBtn.isSelected() && m_convertRadioBtn.isEnabled() && m_fileIsLoaded ) {
+                        try {
+                            m_process.convertFile();
+                            m_process.setChecksum();
+                        }
+                        catch( IOException | ArrayIndexOutOfBoundsException | NumberFormatException e ) {
+                            this.setStatus( Color.RED, "Exception while converting file", e.getMessage() );
+                        }
+
+                        m_fileIsConverted = true;
+                        buildString = new StringBuilder( "New checksum = " ).append( m_process.getChecksum() );
+                        this.setStatus( Color.BLACK, "File converted, ready to save", buildString.toString() );// Should be using a StringBuilder here?
+                    }
+
+                    m_saveButton.setEnabled( m_fileIsLoaded );
+                    break;
+
+
+                case SAVE :
+                    m_savedFile = this.getFile( JFileChooser.SAVE_DIALOG, INI );
+
+                    if( m_savedFile == null ) {
+                        this.setStatus( Color.RED, "Save cancelled or file not valid", null );
+                    }
+                    else {
+                        m_savedFile.setWritable( true );
+
+                        try {
+                            m_process.writeParam( m_savedFile );
+                        }
+                        catch( IOException e ) {
+                            this.setStatus( Color.RED, "Exception while saving file", e.getMessage() );
+                        }
+
+                        if( m_fileIsConverted ) {
+                            m_runButton.setEnabled( false );
+                            m_fileIsLoaded = false;
+                            m_fileIsConverted = false;
+                            buildString = new StringBuilder( "File saved as " ).append( m_savedFile.getName() );
+                            this.setStatus( Color.BLACK, "File saved, process complete, load new file", buildString.toString() );
+                        }
+                        else {
+                            buildString = new StringBuilder( "File saved as " ).append( m_savedFile.getName() );
+                            this.setStatus( Color.BLACK, "Save Complete", buildString.toString() );
+                        }
+
+                        m_fileIsSaved = true;
+                        m_saveButton.setEnabled( false );
+                    }
+
+                    break;
+
+
+                case CHECKSUM :
+                    if( m_fileIsLoaded ) {
+                        buildString = new StringBuilder( "Checksum = " ).append( m_process.getChecksum() );
+                        this.setStatus( Color.BLACK, buildString.toString(), m_loadedFile.getName() );
+                    }
+                    else {
+                        this.setStatus( Color.BLACK, "Checksum = 0", "No file loaded" );
+                    }
+
+                    break;
+
+
+                case CONVERT :
+                    if( m_fileIsLoaded ) {
+                        this.setStatus( Color.BLACK, "Select Run to convert file", m_loadedFile.getName() );
+                    }
+                    else {
+                        this.setStatus( Color.BLACK, "Convert selected, no file loaded to convert", null );
+                    }
+
+                    break;
+
+
+                case CLOSE :
+
+                default:
+                    dispose();
+                    System.exit( 0 );
+                    break;
+            }
+        }
+
+
+        /**
+         * (non-Javadoc)
+         * @see convert_ini_files.IConverterComponents#File getFile( int dialogType, String ext )
+         */
+        @ Override
+        public File getFile( int dialogType, String ext ) {
+            JFileChooser fileChooser = new JFileChooser();
+            File file = null;
+            int fileReturned = JFileChooser.ERROR_OPTION;
+
+            fileChooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
+            fileChooser.setFileFilter( new FileNameExtensionFilter( ext.toUpperCase() + " Files", ext.toLowerCase() ));
+            fileChooser.setAcceptAllFileFilterUsed( false );
+
+            if( m_currentDir != null ) {
+                fileChooser.setCurrentDirectory( m_currentDir );
+            }
+
+            if( dialogType == JFileChooser.OPEN_DIALOG ) {
+                fileReturned = fileChooser.showOpenDialog( ConverterUI.this );
+            }
+            else if( dialogType == JFileChooser.SAVE_DIALOG ) {
+                fileReturned = fileChooser.showSaveDialog( ConverterUI.this );
+            }
+
+            if ( fileReturned == JFileChooser.APPROVE_OPTION ) {
+                File userFile;
+                userFile = fileChooser.getSelectedFile();
+                if( !userFile.getName().toLowerCase().endsWith( ".ini" ) ) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append( userFile.getPath() ).append( ".ini" );
+                    file = new File( sb.toString() );
                 }
                 else {
-                    this.setStatus( Color.BLACK, "Checksum = 0", "No file loaded" );
+                    file = userFile;
                 }
+                m_currentDir = fileChooser.getCurrentDirectory();
+            }
 
-                break;
+            return file;
+        }
+
+        /**
+         * Gets/Returns combo box selected index
+         * @return  - index selection from combo box
+         */
+        public int getSelectedIndex() {
+            return m_index;
+        }
 
 
-            case CONVERT :
-                if( m_fileIsLoaded ) {
-                    this.setStatus( Color.BLACK, "Select Run to convert file", m_loadedFile.getName() );
-                }
-                else {
-                    this.setStatus( Color.BLACK, "Convert selected, no file loaded to convert", null );
-                }
-
-                break;
+        public String getSelectedSystem() {
+            return m_selection;
+        }
 
 
-            case CLOSE :
+        /* (non-Javadoc)
+         * @see convert_ini_files.IConverterComponents#setStatus(java.awt.Color, java.lang.String, java.lang.String)
+         */
+        @ Override
+        public void setStatus( Color color, String message, String tip ) {
+            m_statusTextField.setForeground( color );
+            m_statusTextField.setText( message );
 
-            default:
-                this.dispose();
-                break;
+            if( tip != null ) {
+                m_statusTextField.setToolTipText( tip );
+            }
         }
     }
 
 
     /**
-     * (non-Javadoc)
-     * @see convert_ini_files.IConverterComponents#File getFile( int dialogType, String ext )
-     */
-    @ Override
-    public File getFile( int dialogType, String ext ) {
-
-        JFileChooser fileChooser = new JFileChooser();
-        File file = null;
-        int fileReturned = JFileChooser.ERROR_OPTION;
-
-        fileChooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
-        fileChooser.setFileFilter( new FileNameExtensionFilter( ext.toUpperCase() + " Files", ext.toLowerCase() ));
-        fileChooser.setAcceptAllFileFilterUsed( false );
-
-        if( m_currentDir != null ) {
-            fileChooser.setCurrentDirectory( m_currentDir );
-        }
-
-        if( dialogType == JFileChooser.OPEN_DIALOG ) {
-            fileReturned = fileChooser.showOpenDialog( ConverterUI.this );
-        }
-        else if( dialogType == JFileChooser.SAVE_DIALOG ) {
-            fileReturned = fileChooser.showSaveDialog( ConverterUI.this );
-        }
-
-        if ( fileReturned == JFileChooser.APPROVE_OPTION ) {
-            File userFile;
-            userFile = fileChooser.getSelectedFile();
-            if( !userFile.getName().toLowerCase().endsWith( ".ini" ) ) {
-                StringBuilder sb = new StringBuilder();
-                sb.append( userFile.getPath() ).append( ".ini" );
-                file = new File( sb.toString() );
-            }
-            else {
-                file = userFile;
-            }
-            m_currentDir = fileChooser.getCurrentDirectory();
-        }
-
-        return file;
-    }
-
-
-    /* (non-Javadoc)
-     * @see convert_ini_files.IConverterComponents#setStatus(java.awt.Color, java.lang.String, java.lang.String)
-     */
-    @ Override
-    public void setStatus( Color color, String message, String tip ) {
-
-        m_statusTextField.setForeground( color );
-        m_statusTextField.setText( message );
-
-        if( tip != null ) {
-            m_statusTextField.setToolTipText( tip );
-        }
-    }
-
-
-    /**
-     * main class, instantiates the UI object and set UI attributes.
-     * 
+     * main class, instantiates the UI object.
      * @param args - no command line arguments used
      */
     public static void main( String[] args ) {
-        ConverterUI gridLayout = new ConverterUI();
-        //gridLayout.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        //gridLayout.setPreferredSize( new Dimension( 400, 300 ));
-        gridLayout.setVisible(true);
-        //gridLayout.pack();
+        new ConverterUI().setVisible( true );
+        //ConverterUI convert = new ConverterUI();
+        //convert.setVisible( true );
     }
 }

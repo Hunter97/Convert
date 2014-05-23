@@ -8,7 +8,7 @@ package com.setupconverter.logic;
  * @author prwallace
  *
  */
-public enum Input {
+public enum INPUT {
     DRIVE_DISABLED( 10 ), X_NEG_OT( 11 ), X_POS_OT( 12 ), Y_NEG_OT( 13 ), Y_POS_OT( 14 ), TILT_POS_OT( 35 ), TILT_NEG_OT( 36 ), THC_AUTO_1( 46 ),
     NCS_1( 47 ), THC_AUTO_2( 51 ), NCS_2( 52 ), THC_AUTO_3( 57 ), NCS_3( 57 ), THC_AUTO_4( 61 ), NCS_4( 62 ),FUME_SELECT( 83 ), TORCH_COLLISION( 100 ),
     TEST_LIFTER( 102 ), TILT2_POS_OT( 103 ), TILT2_NEG_OT( 104 ), ROT_2_HOME( 105 ), CUT_SENSE_1( 106 ), CUT_SENSE_2( 107 ), CUT_SENSE_3( 108 ),
@@ -23,7 +23,7 @@ public enum Input {
 
     private final int value;
 
-    private Input( int value ) {
+    private INPUT( int value ) {
         this.value = value;
     }
 

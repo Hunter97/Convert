@@ -31,27 +31,45 @@ public interface IComponents {
 
         LOAD( "Load" ), RUN( "Run" ), SAVE( "Save" ), CLOSE( "Close" ), CHECKSUM( "Checksum" ), CONVERT( "Convert" ), DEFAULT( "Default" );
 
-        private final String btnName;
+        private final String m_btnName;
 
         private UI( String name ) {
-            this.btnName = name;
+            m_btnName = name;
         }
 
         public String getName() {
-            return btnName;
+            return m_btnName;
         }
 
         public static UI getType( String name ) {
             UI temp = DEFAULT;
 
             for( UI s : UI.values() ) {
-                if( s.btnName.equals( name ) ){
+                if( s.m_btnName.equals( name ) ){
                     temp = s;
                     break;
                 }
             }
 
             return temp;
+        }
+    }
+
+    /**
+     * Enumeration constants representing the available drive system types that a
+     * setup file can be converted to operate.
+     */
+    public enum SYSTEM {
+        BENCH( "6 Axis Yaskawa" ), HYPATH( "Hypath" );
+
+        private final String m_system;
+
+        private SYSTEM( String system ) {
+            m_system = system;
+        }
+
+        public String getName() {
+            return m_system;
         }
     }
 

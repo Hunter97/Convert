@@ -3,7 +3,9 @@
  */
 package com.setupconverter.logic;
 
+import com.setupconverter.ui.ConverterUI.OperateConverter;
 import com.setupconverter.ui.IComponents;
+import com.setupconverter.ui.IComponents.SYSTEM;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -36,9 +38,10 @@ public class ConvertLogic implements IProcess {
     private final Map< String, Integer > m_IOParamMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_LinkParamMap = new LinkedHashMap<>();
 
-    private DiagnosticBrds m_containers;
-    //private Bench_Container m_containers;
-    private final IComponents m_ui_components;
+    private Object m_containers;
+    //private Bench m_containers;
+    //private final IComponents m_ui_components;
+    public OperateConverter m_ui;
 
     private File m_configFile = null;
     private int m_checksum = 0;
@@ -52,10 +55,11 @@ public class ConvertLogic implements IProcess {
      * @param ui
      * @throws IOException
      */
-    public ConvertLogic( File file, IComponents ui ) throws IOException {//
+    //public ConvertLogic( File file, IComponents ui ) throws IOException {//
+    public ConvertLogic( File file, OperateConverter ui ) throws IOException {//
         m_configFile = file;
         loadParams( m_configFile );
-        m_ui_components = ui;
+        m_ui = ui;
     }
 
 
@@ -112,13 +116,13 @@ public class ConvertLogic implements IProcess {
                 if( !param.equals( emptyLine )) {
                     StringBuilder sb = new StringBuilder( param.length() );
                     String[] key = param.split( "[=\\s\\.]+" );
-                    sb.append( key[0] + "=" );
+                    sb.append( key[0] ).append( "=" );
 
                     try {
                         map.put( sb.toString(), Integer.parseInt( key[ 1 ] ));
                     }
                     catch( NumberFormatException e ) {
-                        m_ui_components.setStatus( Color.RED,"Exception converting " + sb.toString(), "Key = " + key[ 1 ] + " , set value to 0" );
+                        m_ui.setStatus( Color.RED,"Exception converting " + sb.toString(), "Key = " + key[ 1 ] + " , set value to 0" );
                         map.put( sb.toString(), 0 );
                     }
                 }
@@ -236,8 +240,14 @@ public class ConvertLogic implements IProcess {
     @ Override
     public void convertFile() throws IOException {
 
-        m_containers = new DiagnosticBrds();
-        //m_containers = new Bench_Container();
+        String system = m_ui.getSelectedSystem();
+        
+        if( system.equals( SYSTEM.BENCH.getName() )) {
+            m_containers = new Bench();
+        }
+        else if( system.equals( SYSTEM.HYPATH.getName() )) {
+            m_containers = new DiagnosticBrds();
+        }
 
         replaceParams( "[Machine]\r\n", m_containers.getMachineParams() );
 
