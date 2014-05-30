@@ -4,7 +4,6 @@
 package com.setupconverter.logic;
 
 import com.setupconverter.ui.ConverterUI.OperateConverter;
-import com.setupconverter.ui.IComponents;
 import com.setupconverter.ui.IComponents.SYSTEM;
 import java.awt.Color;
 import java.io.BufferedReader;
@@ -38,8 +37,8 @@ public class ConvertLogic implements IProcess {
     private final Map< String, Integer > m_IOParamMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_LinkParamMap = new LinkedHashMap<>();
 
-    private Object m_containers;
-    //private Bench m_containers;
+    //private Object m_containers;
+   private Bench m_containers;
     //private final IComponents m_ui_components;
     public OperateConverter m_ui;
 
@@ -242,12 +241,12 @@ public class ConvertLogic implements IProcess {
 
         String system = m_ui.getSelectedSystem();
         
-        if( system.equals( SYSTEM.BENCH.getName() )) {
+        //if( system.equals( SYSTEM.BENCH.getName() )) {
             m_containers = new Bench();
-        }
+        /*}
         else if( system.equals( SYSTEM.HYPATH.getName() )) {
             m_containers = new DiagnosticBrds();
-        }
+        }*/
 
         replaceParams( "[Machine]\r\n", m_containers.getMachineParams() );
 
