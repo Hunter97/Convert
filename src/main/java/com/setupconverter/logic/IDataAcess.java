@@ -24,6 +24,8 @@
 
 package com.setupconverter.logic;
 
+import java.util.Map;
+
 
 /**
  * Interface ICNCTypes
@@ -84,34 +86,34 @@ package com.setupconverter.logic;
      * Contains default speed settings for all drive types
      */
     public enum SPEED {
-       MAX_EN( "MaxSpeed(english)=", 1000 ), MAX_M( "MaxSpeed(metric)=", 25400 ), SPEED1_EN( "GainSpeed1(english)=", 100 ), SPEED1_M( "GainSpeed1(metric)=", 2540 ), 
-       SPEED2_EN( "GainSpeed2(english)=", 300 ), SPEED2_M( "GainSpeed2(metric)=", 7620 ), SPEED3_EN( "GainSpeed3(english)=", 500 ), SPEED3_M( "GainSpeed3(metric)=", 12700 ), 
-       SPEED4_EN( "GainSpeed4(english)=", 1000 ), SPEED4_M( "GainSpeed4(metric)=", 25400 ), SPEED5_EN( "GainSpeed5(english)=", 1000 ), SPEED5_M( "GainSpeed5(metric)=", 25400 ),
-       ACCEL1( "AccelRate=", 20 ), ACCEL2( "AccelRate2=", 40 ), ACCEL3( "AccelRate3=", 50 ), ACCEL4( "AccelRate4=", 60 ), ACCEL5( "AccelRate5=", 60 );
+        MAX_EN( "MaxSpeed(english)=", 1000 ), MAX_M( "MaxSpeed(metric)=", 25400 ), SPEED1_EN( "GainSpeed1(english)=", 100 ), SPEED1_M( "GainSpeed1(metric)=", 2540 ), 
+        SPEED2_EN( "GainSpeed2(english)=", 300 ), SPEED2_M( "GainSpeed2(metric)=", 7620 ), SPEED3_EN( "GainSpeed3(english)=", 500 ), SPEED3_M( "GainSpeed3(metric)=", 12700 ), 
+        SPEED4_EN( "GainSpeed4(english)=", 1000 ), SPEED4_M( "GainSpeed4(metric)=", 25400 ), SPEED5_EN( "GainSpeed5(english)=", 1000 ), SPEED5_M( "GainSpeed5(metric)=", 25400 ),
+        ACCEL1( "AccelRate=", 20 ), ACCEL2( "AccelRate2=", 40 ), ACCEL3( "AccelRate3=", 50 ), ACCEL4( "AccelRate4=", 60 ), ACCEL5( "AccelRate5=", 60 );
 
-       private final int m_value;
-       private final String m_name;
+        private final int m_value;
+        private final String m_name;
 
-       private SPEED( String name, int value ) {
-           this.m_value = value;
-           this.m_name = name;
-       }
+        private SPEED( String name, int value ) {
+            this.m_value = value;
+            this.m_name = name;
+        }
 
         /**
          * Get/return the integer value of the enum type
          * @return  value of enum type
          */
         public int getValue() {
-           return m_value;
-       }
+            return m_value;
+        }
 
         /**
          * Get/return the String value of the enum type
          * @return  String of enum type
          */
         public String getName() {
-           return m_name;
-       }
+            return m_name;
+        }
     }
 
 
@@ -123,7 +125,7 @@ package com.setupconverter.logic;
         PGAIN( "PGain=", 2000 ), IGAIN( "IGain=", 0 ), DGAIN( "DGain=", 0 ), FGAIN( "FGain=", 0 ), VGAIN( "VGain=", 0 ), PGAIN_2( "PGain2=", 2000 ), IGAIN_2( "IGain2=", 0 ),
         DGAIN_2( "DGain2=", 0 ), FGAIN_2( "FGain2=", 0 ), VGAIN_2( "VGain2=", 0 ), PGAIN_3( "PGain3=", 2000 ), IGAIN_3( "IGain3=", 0 ), DGAIN_3( "DGain3=", 0 ),FGAIN_3( "FGain3=", 0 ),
         VGAIN_3( "VGain3=", 0 ), PGAIN_4( "PGain4=", 2000 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 0 ), FGAIN_4( "FGain4=", 0 ), VGAIN_4( "VGain4=", 0 ), PGAIN_5( "PGain5=", 2000 ),
-        IGAIN_5( "IGain5=", 0 ), DGAIN_5( "DGain5=", 0 ), FGAIN_5( "FGain5=", 0 ), VGAIN_5( "VGain5=", 0 ), SERVO_ERROR( "ServoErrTolerance(english)=", 1 ), SERVO_ERROR_M( "ServoErrTolerance(metric)=", 25 ),
+        IGAIN_5( "IGain5=", 0 ), DGAIN_5( "DGain5=", 0 ), FGAIN_5( "FGain5=", 0 ), VGAIN_5( "VGain5=", 0 ), SERVO_ERROR_EN( "ServoErrTolerance(english)=", 1 ), SERVO_ERROR_M( "ServoErrTolerance(metric)=", 25 ),
         ENCODER_CNTS_EN( "EncoderCounts(english)=", 1000 ), ENCODER_CNTS_M( "EncoderCounts(metric)=", 39 ), DRIVE_TYPE( "DriveType=", 0 ), DAC( "DACPolarity=", 0 ), ENCODER_POL( "EncoderPolarity=", 0 ),
         ENCODER_MODE( "EncoderMode=", 2 ), HW_OT( "UseHWOvertravelSwitches=", 1 ), HOME_SW( "UseHomeSwitch=", 1 ), HOME_OT( "HomeToOvertravel=", 1 );
 
@@ -135,47 +137,9 @@ package com.setupconverter.logic;
          * @param param default value for parameters in the axes screen
          */
         private HYPATH( String name, int value ) {
-           this.m_value = value;
-           this.m_name = name;
-       }
-
-        /**
-         * Get/return the integer value of the enum type
-         * @return  value of enum
-         */
-        public int getValue() {
-            return m_value;
+            this.m_value = value;
+            this.m_name = name;
         }
- 
-        /**
-         * Get/return the String value of the enum type
-         * @return  String of enum
-         */
-        public String getName() {
-            return m_name;
-        }
-    }
-
-
-    public enum ANALOG {
-        PGAIN( "PGain=", 20 ), IGAIN( "IGain=", 0 ), DGAIN( "DGain=", 20 ), FGAIN( "FGain=", 100 ), VGAIN( "VGain=", 0 ), PGAIN_2( "PGain2=", 20 ), IGAIN_2( "IGain2=", 0 ),
-        DGAIN_2( "DGain2=", 20 ), FGAIN_2( "FGain2=", 100 ), VGAIN_2( "VGain2=", 0 ), PGAIN_3( "PGain3=", 20 ), IGAIN_3( "IGain3=", 0 ), DGAIN_3( "DGain3=", 20 ),FGAIN_3( "FGain3=", 100 ),
-        VGAIN_3( "VGain3=", 0 ), PGAIN_4( "PGain4=", 20 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 20 ), FGAIN_4( "FGain4=", 100 ), VGAIN_4( "VGain4=", 0 ), PGAIN_5( "PGain5=", 20 ),
-        IGAIN_5( "IGain5=", 0 ), DGAIN_5( "DGain5=", 20 ), FGAIN_5( "FGain5=", 100 ), VGAIN_5( "VGain5=", 0 ), SERVO_ERROR( "ServoErrTolerance(english)=", 1 ), SERVO_ERROR_M( "ServoErrTolerance(metric)=", 25 ),
-        ENCODER_CNTS_EN( "EncoderCounts(english)=", 8192 ), ENCODER_CNTS_M( "EncoderCounts(metric)=", 323 ), DRIVE_TYPE( "DriveType=", 0 ), DAC( "DACPolarity=", 0 ), ENCODER_POL( "EncoderPolarity=", 1 ),
-        ENCODER_MODE( "EncoderMode=", 2 ), HW_OT( "UseHWOvertravelSwitches=", 1 ), HOME_SW( "UseHomeSwitch=", 1 ), HOME_OT( "HomeToOvertravel=", 1 );
-
-        private final int m_value;
-        private final String m_name;
-
-        /**
-         * Constructor for enum HYPATH
-         * @param param default value for parameters in the axes screen
-         */
-        private ANALOG( String name, int value ) {
-           this.m_value = value;
-           this.m_name = name;
-       }
 
         /**
          * Get/return the integer value of the enum type
@@ -196,10 +160,116 @@ package com.setupconverter.logic;
 
 
     /**
+     *
+     */
+    public enum PICO_PATH {
+        PGAIN( "PGain=", 20 ), IGAIN( "IGain=", 0 ), DGAIN( "DGain=", 20 ), FGAIN( "FGain=", 100 ), VGAIN( "VGain=", 0 ), PGAIN_2( "PGain2=", 20 ), IGAIN_2( "IGain2=", 0 ),
+        DGAIN_2( "DGain2=", 20 ), FGAIN_2( "FGain2=", 100 ), VGAIN_2( "VGain2=", 0 ), PGAIN_3( "PGain3=", 20 ), IGAIN_3( "IGain3=", 0 ), DGAIN_3( "DGain3=", 20 ),FGAIN_3( "FGain3=", 100 ),
+        VGAIN_3( "VGain3=", 0 ), PGAIN_4( "PGain4=", 20 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 20 ), FGAIN_4( "FGain4=", 100 ), VGAIN_4( "VGain4=", 0 ), PGAIN_5( "PGain5=", 20 ),
+        IGAIN_5( "IGain5=", 0 ), DGAIN_5( "DGain5=", 20 ), FGAIN_5( "FGain5=", 100 ), VGAIN_5( "VGain5=", 0 ), SERVO_ERROR_EN( "ServoErrTolerance(english)=", 1 ), SERVO_ERROR_M( "ServoErrTolerance(metric)=", 25 ),
+        ENCODER_CNTS_EN( "EncoderCounts(english)=", 8192 ), ENCODER_CNTS_M( "EncoderCounts(metric)=", 323 ), DRIVE_TYPE( "DriveType=", 0 ), DAC( "DACPolarity=", 0 ), ENCODER_POL( "EncoderPolarity=", 1 ),
+        ENCODER_MODE( "EncoderMode=", 2 ), HW_OT( "UseHWOvertravelSwitches=", 1 ), HOME_SW( "UseHomeSwitch=", 1 ), HOME_OT( "HomeToOvertravel=", 1 );
+
+        private final int m_value;
+        private final String m_name;
+
+        /**
+         * Constructor for enum HYPATH
+         * @param param default value for parameters in the axes screen
+         */
+        private PICO_PATH( String name, int value ) {
+            this.m_value = value;
+            this.m_name = name;
+        }
+
+        /**
+         * Get/return the integer value of the enum type
+         * @return  value of enum
+         */
+        public int getValue() {
+            return m_value;
+        }
+ 
+        /**
+         * Get/return the String value of the enum type
+         * @return  String of enum
+         */
+        public String getName() {
+            return m_name;
+        }
+    }
+
+
+    /**
+     * Default settings for a CNC containing one or more SensorTHC's
+     */
+    public enum THC {
+        SLIDE_EN( "SlideLength(english)=", 10 ), SLIDE_M( "SlideLength(metric)=", 254 ), HARD_STOP( "UseHardStop=", 0 ), HOMING( "UseHomeSwitch=", 1 ), ANALOG1( "THCAnalog1=", 0 ), ANALOG2( "THCAnalog2=", 2 ),
+        SPEEDPOT1_INSTALLED( "SpeedPotInstalled=", 1 ), SPEEDPOT1_ANALOG1( "SpeedPotAnalog1=", 1 ), SPEEDPOT1_ANALOG2( "SpeedPotAnalog2=", 1 );
+
+        private final int m_value;
+        private final String m_name;
+
+        private THC( String name, int value ) {
+            this.m_value = value;
+            this.m_name = name;
+        }
+
+        /**
+         * Get/return the integer value of the enum type
+         * @return  value of enum type
+         */
+        public int getValue() {
+            return m_value;
+        }
+
+        /**
+         * Get/return the String value of the enum type
+         * @return  String of enum type
+         */
+        public String getName() {
+            return m_name;
+        }
+    }
+
+
+    /**
+     * Default settings for a CNC containing one or more Bevel axis
+     */
+    public enum BEVEL {
+        SERVO_ERROR( "ServoErrTolerance(degrees)=", 90 ), ENCODER_CNTS( "EncoderCounts(revs)=", 6000 ), AUTO_HOME( "AutoHome=", 1 );
+
+        private final int m_value;
+        private final String m_name;
+
+        private BEVEL( String name, int value ) {
+            this.m_value = value;
+            this.m_name = name;
+        }
+
+        /**
+         * Get/return the integer value of the enum type
+         * @return  value of enum type
+         */
+        public int getValue() {
+            return m_value;
+        }
+
+        /**
+         * Get/return the String value of the enum type
+         * @return  String of enum type
+         */
+        public String getName() {
+            return m_name;
+        }
+    }
+
+
+    /**
      *  Default Inputs assignments required to operate a CNC with the Hypath diagnostic kit.
      */
     public enum SWBOX_INPUT {
-        INPUT1( INPUT_NUM.NCS_1 ), INPUT2( INPUT_NUM.X_NEG_OT ), INPUT3( INPUT_NUM.Y_NEG_OT ), INPUT4( INPUT_NUM.NCS_2 ), INPUT9( INPUT_NUM.DRIVE_DISABLED ), 
+        NCS( INPUT_NUM.NCS_1 ), INPUT2( INPUT_NUM.X_NEG_OT ), INPUT3( INPUT_NUM.Y_NEG_OT ), INPUT4( INPUT_NUM.NCS_2 ), DRIVE_DISABLED( INPUT_NUM.DRIVE_DISABLED ), 
         INPUT40( INPUT_NUM.CUT_SENSE_1 ), INPUT41( INPUT_NUM.CUT_SENSE_2 ), INPUT42( INPUT_NUM.CUT_SENSE_3 ), INPUT43( INPUT_NUM.CUT_SENSE_4 );
         
         private final INPUT_NUM m_inputs;
@@ -227,18 +297,14 @@ package com.setupconverter.logic;
      * Adds the default speed settings from the enum SPEED into a EnumMap.
      */
     public void addSpeedDefaults();
-
-
-    /**
-     * Adds the default analog settings from the enum ANALOG into a EnumMap.
-     */
-    public void addAnalogDefaults();
-
+    
 
     /**
-     * Adds the default machine settings from the enum MACHINE into a EnumMap.
+     * Adds the default SensorTHC parameters from the enum THC into 3 separate Map
+     * containers. One for the THC Axes parameters, one for the Speed parameters,
+     * and one for the Machine parameters.
      */
-    public void addMachineDefaults();
+    public void addTHCDefaults();
 
 
     /**
@@ -254,12 +320,6 @@ package com.setupconverter.logic;
 
 
     /**
-     * Adds the default THC settings from the enum THC_AXES into an EnumMap.
-     */
-    public void addTHCDefaults();
-
-
-    /**
      * Adds the default Bevel Axes settings from the enum BEV_AXES into an EnumMap.
      */
     public void addBevelAxesDefaults();
@@ -268,6 +328,41 @@ package com.setupconverter.logic;
     /**
      * Adds the default Axis settings for Axis 1, 2, and 6 from the enum AXES into an EnumMap.
      */
-    public void addAxesDefaults();
+    public void addAxesDefaults( String type );
+
+
+    /**
+     * Get/return the specific SensorTHC parameters for the THC Axes screen
+     * @return - The SensorTHC THC Axes parameter map
+     */
+    public Map< String, Integer > getTHCAxisParams();
+
+
+    /**
+     * Get/return the specific SensorTHC parameters within the Machine screen
+     * @return  - The SensorTHC Machine parameter Map
+     */
+    public Map< String, Integer > getTHCMachineParams();
+
+
+    /**
+     * Get/return the specific SensorTHC analog parameters within the Speed screen
+     * @return  -   The SensorTHC Analog parameter Map
+     */
+    public Map< String, Integer > getTHCAnalogParams();
+
+
+    /**
+     * Get/return the specific Axes parameters within the Axes setup screens
+     * @return  - The Axes parameter Map
+     */
+    public Map< String, Integer > getAxesParams();
+
+
+    /**
+     * Get/return the specific Speed parameters within the Speed's setup screen
+     * @return  - The Speed parameter Map
+     */
+    public Map< String, Integer > getSpeedParams();
 
 }

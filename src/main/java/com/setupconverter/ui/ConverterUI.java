@@ -94,7 +94,7 @@ public class ConverterUI extends JFrame {
     private final static String INI = "ini";
     private final String[] m_systems;
     private String m_selection;
-    private int m_index;
+    //private int m_index;
 
     public boolean m_fileIsLoaded;
     public boolean m_fileIsSaved;
@@ -113,7 +113,7 @@ public class ConverterUI extends JFrame {
         super( "Convert_INI" );
         m_systems = new String[] { SYSTEM.BENCH.getName(), SYSTEM.HYPATH.getName() };
         m_operate = new OperateConverter();
-        m_index = m_systems.length + 1;
+        //m_index = m_systems.length + 1;
 
         // Frame settings
         JFrame.setDefaultLookAndFeelDecorated( true );
@@ -240,7 +240,7 @@ public class ConverterUI extends JFrame {
         m_comboBox.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed( ActionEvent evt ) {
-                m_index = m_comboBox.getSelectedIndex();
+                //m_index = m_comboBox.getSelectedIndex();
                 m_selection = (String)m_comboBox.getSelectedItem();
             }
         });
@@ -470,11 +470,12 @@ public class ConverterUI extends JFrame {
          * Gets/Returns combo box selected index
          * @return  - index selection from combo box
          */
-        public int getSelectedIndex() {
+        /*public int getSelectedIndex() {
             return m_index;
-        }
+        }*/
 
 
+        @Override
         public String getSelectedSystem() {
             return m_selection;
         }

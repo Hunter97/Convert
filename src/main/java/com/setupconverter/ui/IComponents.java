@@ -99,5 +99,12 @@ public interface IComponents {
      * @return File         - returns File object of selected file
      */
     public File getFile( int dialogType, String ext );
+
+
+    /**
+     * Get/return the selected system type from the comboBox
+     * @return  - The user selection from comboBox
+     */
+    public String getSelectedSystem();
 }
 
