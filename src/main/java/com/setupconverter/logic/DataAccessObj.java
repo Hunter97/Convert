@@ -210,7 +210,7 @@ public class DataAccessObj implements IDataAcess {
 
     @Override
     public void addBevelAxesDefaults() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //m_bevelDefaults.put( BEVEL.)
     }
 
 

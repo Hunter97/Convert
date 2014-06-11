@@ -83,7 +83,7 @@ import java.util.Map;
 
 
     /**
-     * Contains default speed settings for all drive types
+     * Contains default Speed settings for all drive types
      */
     public enum SPEED {
         MAX_EN( "MaxSpeed(english)=", 1000 ), MAX_M( "MaxSpeed(metric)=", 25400 ), SPEED1_EN( "GainSpeed1(english)=", 100 ), SPEED1_M( "GainSpeed1(metric)=", 2540 ), 
@@ -105,6 +105,31 @@ import java.util.Map;
          */
         public int getValue() {
             return m_value;
+        }
+
+        /**
+         * Get/return the String value of the enum type
+         * @return  String of enum type
+         */
+        public String getName() {
+            return m_name;
+        }
+    }
+
+
+    /**
+     * Contain Machine parameters, used to determine machine configuration
+     */
+    public enum MACHINE {
+        DUAL_GANTRY( "DualGantryInstalled=" ), FP( "FrontPanelInstalled=" ), SERCOS( "SercosSensorUtility=" ), AG( "ArcGlideTHCInstalled=" ),
+        PSCOMM_HYPERNET( "PSCommOverHypNetEn" ), STHC( "SensorTHCInstalled=" ), BEVEL_AXES( "SkewRotatorInstalled=" ), DUAL_BEVEL( "DualSkewRotatorInstalled=" ),
+        AUTO_HOME( "AutoHome=" ), DUAL_TRANS( "DualTransverseInstalled=" ), NO_ROTATE_TILT( "NoRotateTilt=" ), ONE_ROTATE_TILT( "OneRotateTilt=" ),
+        ROTATING_TRANS( "RotatingTransverse=" );
+
+        private final String m_name;
+
+        private MACHINE( String name ) {
+            this.m_name = name;
         }
 
         /**

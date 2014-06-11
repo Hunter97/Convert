@@ -35,6 +35,7 @@ public class ConvertLogic implements IProcess {
     private final ArrayList< String > m_paramList = new ArrayList<>();
 
     private final Map< String, Integer > m_IOParamMap = new LinkedHashMap<>();
+    private final Map< String, Integer > m_IOMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_LinkParamMap = new LinkedHashMap<>();
 
     private DataAccessObj m_dataAccess;
@@ -45,7 +46,18 @@ public class ConvertLogic implements IProcess {
     private File m_configFile = null;
     private int m_checksum = 0;
 
-    public boolean m_hasDT = false;
+    //public boolean m_hasDT = false;
+    public boolean m_frontPanelInstalled = false;
+    public boolean m_bevelInstalled = false;
+    public boolean m_dualBevelInstalled = false;
+    public boolean m_isDualTrans = false;
+    public boolean m_isOneRotateTilt = false;
+    public boolean m_isNoRotateTilt = false;
+    public boolean m_sthcInstalled = false;
+    public boolean m_arcGlideInstalled = false;
+    public boolean m_isRotatingTrans = false;
+    public boolean m_isDualGantry = false;
+
     public int[] m_axisNum = new int[ TOTAL_AXIS_BLOCKS ];
 
 
@@ -74,34 +86,34 @@ public class ConvertLogic implements IProcess {
      */
     @ Override
     public final void loadParams( File file ) throws IOException {
+        try (BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( file ), StandardCharsets.UTF_8 ))) {
+            StringBuffer sb = new StringBuffer();
+            int thisChar;
+            int lineFeed = 10;
 
-        BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( file ), StandardCharsets.UTF_8 ));
-        StringBuffer sb = new StringBuffer();
-        int thisChar;
-        int lineFeed = 10;
+            while(( thisChar = buffer.read() ) != -1 ) {
+                sb.append(( char )thisChar );
 
-        while(( thisChar = buffer.read() ) != -1 ) {
-            sb.append(( char )thisChar );
-
-            if( thisChar == lineFeed ) {
-                m_paramList.add( sb.toString() );
-                sb = new StringBuffer();
+                if( thisChar == lineFeed ) {
+                    m_paramList.add( sb.toString() );
+                    sb = new StringBuffer();
+                }
             }
         }
-
-        //if( buffer != null ) {
-            buffer.close();
-        //}
     }
 
 
     /**
-     * Gets all file parameters, starting after the argument block title, and adds
-     * the parameters to a Map< String, Integer > and returns the Map.
-     * @param map           - Map to store all file parameters
-     * @param blockTitle    - Title of block within parameter List (i.e. [Machine])
+     * Adds a block of parameters from the parameter List to a Map< String, Integer >
+     * and returns the resultant Map.  The block is specified by the argument block
+     * title.
+     * @param blockTitle    - Title of parameter block (i.e. [Machine])
+     * @param map           - Map to store a block of parameters from parameter List
+     * @return              - Argument Map, containing added parameters
+     * @throws ArrayIndexOutOfBoundsException
+     * @throws NumberFormatException
      */
-    public void addParamsToMap( String blockTitle, Map< String, Integer > map  ) throws ArrayIndexOutOfBoundsException, NumberFormatException {
+    public Map< String, Integer > addParamsToMap( String blockTitle, Map< String, Integer > map  ) throws ArrayIndexOutOfBoundsException, NumberFormatException {
         ListIterator< String > listItr;
         String param;
         String emptyLine = "\r\n";
@@ -111,7 +123,6 @@ public class ConvertLogic implements IProcess {
             listItr = m_paramList.listIterator( index +1 );
             while( !( param = listItr.next() ).startsWith( emptyLine )  && listItr.hasNext() ) {
                 if( !param.equals( emptyLine )) {
-                    //StringBuilder sb = new StringBuilder( param.length() );
                     String[] key = param.split( "[=\\s\\.]+" );
                     StringBuilder sb = new StringBuilder( key[0] ).append( "=" );
 
@@ -124,6 +135,37 @@ public class ConvertLogic implements IProcess {
                     }
                 }
             }
+        }
+
+        return map;
+    }
+
+
+    /**
+     * Changes a parameter value from the parameter list to the argument value.
+     * Parses the parameter list, starting after the argument block title, for a
+     * match to the String argument.  If a match is found, the argument value is
+     * added to the parameter, in place of the original value.
+     * @param blockTitle    - Title of parameter block in list (i.e. [Machine]) 
+     * @param paramName     - Parameter setting to be searched/changed in parameter list
+     * @param value         - Value to replace in parameter list
+     */
+    public void changeParamValue( String blockTitle, String paramName, int value ) {
+        int index;
+        String[] key = null;
+        String param;
+        String emptyLine = "\r\n";
+
+        if(( index = m_paramList.indexOf( blockTitle )) != -1 ) { //&& ( index = m_paramList..indexOf( paramName )) > -1 ) {
+            ListIterator< String > listItr = m_paramList.listIterator( index +1 );
+            while( !( param = listItr.next() ).startsWith( emptyLine ) && listItr.hasNext() ) {
+                if( param.startsWith( paramName )) {
+                    key = param.split( "[=\\s\\.]+" );
+                    break;
+                }
+            }
+
+            m_paramList.add(index, new StringBuilder( key[0] ).append( value ).toString() );
         }
     }
 
@@ -156,9 +198,10 @@ public class ConvertLogic implements IProcess {
 
 
     /**
-     * Parses the m_paramList List, starting after the argument block title, for a
-     * match to the String argument.  If a match is found, the value of that parameter
-     * is returned, otherwise a -1 is returned.
+     * Gets/returns the value of the argument parameter from within the parameter
+     * List. Parses the m_paramList List, starting after the argument block title,
+     * for a match to the String argument.  If a match is found, the value of that
+     * parameter is returned, otherwise a -1 is returned.
      * @param blockTitle    - Title of parameter block in list (i.e. [Machine])
      * @param paramName     - Parameter setting to be searched for within parameter List
      * @return              - The value of the parameter
@@ -167,11 +210,11 @@ public class ConvertLogic implements IProcess {
         int index;
         int value = -1;
         String param;
+        String emptyLine = "\r\n";
 
         if(( index = m_paramList.indexOf( blockTitle )) != -1) {
             ListIterator< String > listItr = m_paramList.listIterator( index +1 );
-            while( listItr.hasNext() ) {
-                param = listItr.next();
+            while( !( param = listItr.next() ).startsWith( emptyLine ) &&  listItr.hasNext() ) {
                 if( param.startsWith( paramName )) {
                     String[] key = param.split( "[=\\s\\.]+" );
                     value = Integer.parseInt( key[ 1 ] );
@@ -179,9 +222,9 @@ public class ConvertLogic implements IProcess {
                 }
             }
         }
-        else {
+        /*else {
             return value;
-        }
+        }*/
 
         return value;
     }
@@ -196,9 +239,9 @@ public class ConvertLogic implements IProcess {
      */
     private void replaceParams( String blockTitle, Map< String, Integer > map ) throws ArrayIndexOutOfBoundsException, NullPointerException {
 
-        ListIterator< String > paramIterator = null;
-        List< String > paramSubList = new ArrayList< String >();
-        String param = null;
+        ListIterator< String > paramIterator;
+        List< String > paramSubList = new ArrayList<>();
+        String param;
         String emptyLine = "\r\n";
         int startIndex;
         int replaceIndex;
@@ -223,27 +266,61 @@ public class ConvertLogic implements IProcess {
 
 
     /**  
-     * Parses setup file to determine the type of CNC (Hypath, Pico-path, or SERCOS),
-     * the type of THC's installed (STHC or AG), the port settings for serial links,
-     * and the types/number of axes installed.  Converts the original parameter file
-     * to use the gains settings based on the drive type selected by user and re- 
-     * arranges I/O to be used with a switch box.  The parameters are temporarily 
-     * saved to Map's and then put back into the original parameter file.  The file
-     * checksum is then recalculated.
+     * Converts the original parameter file to control the user specified drive 
+     * system.  Replaces Axes, I/O, Speed, and Machine settings based on the selected
+     * drive type.  I/O is re-arranges to allow user to satisfy homing and simulate
+     * cutting, by use of a switch box and loop-back jumper CPC.  Instantiates the
+     * DataAccessObj which provides access to the data that will be uses in the conversion.
      * @throws IOException  Is this needed?
      */
     @ Override
     public void convertFile() throws IOException {
         String system = m_ui.getSelectedSystem();
-        int axisNum = 0;
-
-        //m_bench = new Bench();
-        //m_containers = new DiagnosticBrds();
         m_dataAccess = new DataAccessObj( system );
+        int axisNum = 0;
+        int sthcTotal;
 
-        // Find/replace THC parameters with parameters from container class
-        int sthcTotal = getParamValue( BLOCK.MACHINE.getName(), "SensorTHCInstalled=" );
-        if( sthcTotal > 0 ) {
+        // Convert Speed parameters
+        replaceParams( BLOCK.SPEEDS.getName(), m_dataAccess.getSpeedParams() );
+
+
+        // Determine specific tools, bevel heads, pipe axes, THC's that are installed in Machine screen
+        if( getParamValue( BLOCK.MACHINE.getName(), MACHINE.FP.getName() ) > 0 ) {
+            m_frontPanelInstalled = true;
+        }
+       
+        if( getParamValue( BLOCK.MACHINE.getName(), MACHINE.BEVEL_AXES.getName() ) > 0 ) {
+            m_bevelInstalled = true;
+        }
+
+        if( getParamValue( BLOCK.MACHINE.getName(), MACHINE.DUAL_BEVEL.getName() ) > 0 ) {
+            m_dualBevelInstalled = true;
+        }
+
+        if( getParamValue( BLOCK.MACHINE.getName(), MACHINE.DUAL_TRANS.getName() ) > 0 ) {
+            m_isDualTrans = true;
+        }
+
+        if( getParamValue( BLOCK.MACHINE.getName(), MACHINE.NO_ROTATE_TILT.getName() ) > 0 ) {
+            m_isNoRotateTilt = true;
+        }
+
+        if( getParamValue( BLOCK.MACHINE.getName(), MACHINE.ONE_ROTATE_TILT.getName() ) > 0 ) {
+            m_isOneRotateTilt = true;
+        }
+
+        if( getParamValue( BLOCK.MACHINE.getName(), MACHINE.DUAL_GANTRY.getName() ) > 0 ) {
+            m_isDualGantry = true;
+        }
+
+        if( getParamValue( BLOCK.AXIS7.getName(), MACHINE.ROTATING_TRANS.getName() ) > 0 ) {
+            m_isRotatingTrans = true;
+        }
+
+
+        // Convert SensorTHC parameters
+        if(( sthcTotal = getParamValue( BLOCK.MACHINE.getName(), MACHINE.STHC.getName() )) > 0 ) {
+            m_sthcInstalled = true;
             m_dataAccess.addTHCDefaults();
             for( int iter = 0; iter < sthcTotal; iter++, axisNum++ ) {
                 replaceParams( new StringBuilder( "[THC" ).append( iter + 1 ).append( "]\r\n" ).toString(), m_dataAccess.getTHCAxisParams() );
@@ -252,21 +329,12 @@ public class ConvertLogic implements IProcess {
 
             replaceParams( BLOCK.AIC.getName(), m_dataAccess.getTHCAnalogParams() );
             replaceParams( BLOCK.MACHINE.getName(), m_dataAccess.getTHCMachineParams() );
+
+            m_IOMap.put( )
         }
 
-        // Find/replace parameters from Speed screen with parameters from container class
-        replaceParams( BLOCK.SPEEDS.getName(), m_dataAccess.getSpeedParams() );
- 
-        // Find/replace serial link settings
-        addParamsToMap( BLOCK.LINK.getName(), m_LinkParamMap );
-        resetLinkSettings();
-        replaceParams( BLOCK.LINK.getName(), m_LinkParamMap );
 
-        // File/replace I/O settings
-        addParamsToMap( "[I/O]\r\n", m_IOParamMap );
-        mergeIOMaps();
-        replaceParams( "[I/O]\r\n", m_IOParamMap );
-
+        // Convert X, Y, and Dual Transverse Axes parameters
         axisNum = 0;
         for( int i = 0; i < TOTAL_AXIS_BLOCKS; i++ ) {
             if( i == TOTAL_AXIS_BLOCKS - 1 ) {
@@ -278,38 +346,47 @@ public class ConvertLogic implements IProcess {
         }
 
 
-        /* Find all THC axis blocks and add to parameter List< String >()
-        int totalTHCs = getParamValue( "[Machine]\r\n", "SensorTHCInstalled=" );
-        for( int i = 1; i <= totalTHCs; i++ ) {
-            //axis = new StringBuilder( "[THC" + i + "]\r\n" );
-            //axis.append( "[THC" + i + "]\r\n" );
-            replaceParams( new StringBuilder( "[THC" + i + "]\r\n" ).toString(), m_dataAccess.get.getTHCParams() );
-        }*/
-
-
-        // Find all Rotate/Tilt axis blocks and add to parameter List< String >()
-        int singleBev = getParamValue( "[Machine]\r\n", "SkewRotatorInstalled=" );
-        int dualBev = getParamValue( "[Machine]\r\n", "DualSkewRotatorInstalled=" );
-        int noRotateTilt = getParamValue( "[Machine]\r\n", "NoRotateTilt=" );
-        int oneRotateTilt = getParamValue( "[Machine]\r\n", "OneRotateTilt=" );
-
-        if( singleBev > 0 && dualBev < 1 || singleBev > 0 && dualBev > 0 && oneRotateTilt > 0  ) {
-            replaceParams( "[Rotate]\r\n", m_dataAccess.getBevelParams() );
-            replaceParams( "[Tilt]\r\n", m_dataAccess.getBevelParams() );
+        // Convert Dual Gantry Axis parameters
+        if( m_isDualGantry ) {
+            replaceParams( BLOCK.DUAL_GANTRY.getName(), m_dataAccess.getAxesParams() );
         }
-        else if( singleBev > 0 && dualBev > 0 && noRotateTilt < 1) {
-            replaceParams( "[Rotate]\r\n", m_dataAccess.getBevelParams() );
-            replaceParams( "[Tilt]\r\n", m_dataAccess.getBevelParams() );
-            replaceParams( "[DualRotate]\r\n", m_dataAccess.getBevelParams() );
-            replaceParams( "[DualTilt]\r\n", m_dataAccess.getBevelParams() );
+        
+
+        // Convert Bevel Axes parameters
+        if( m_bevelInstalled && !m_isNoRotateTilt  ) {
+            changeParamValue( BLOCK.MACHINE.getName(), BEVEL.AUTO_HOME.getName(), BEVEL.AUTO_HOME.getValue() );
+
+            changeParamValue( BLOCK.ROTATE.getName(), BEVEL.ENCODER_CNTS.getName(), BEVEL.ENCODER_CNTS.getValue() );
+            changeParamValue( BLOCK.ROTATE.getName(), BEVEL.SERVO_ERROR.getName(), BEVEL.SERVO_ERROR.getValue() );
+            replaceParams( BLOCK.ROTATE.getName(), m_dataAccess.getAxesParams() );
+
+            changeParamValue( BLOCK.TILT.getName(), BEVEL.ENCODER_CNTS.getName(), BEVEL.ENCODER_CNTS.getValue() );
+            changeParamValue( BLOCK.TILT.getName(), BEVEL.SERVO_ERROR.getName(), BEVEL.SERVO_ERROR.getValue() );
+            replaceParams( BLOCK.TILT.getName(), m_dataAccess.getAxesParams() );
+
+            if( m_dualBevelInstalled && !m_isOneRotateTilt ) {
+                replaceParams( BLOCK.DUAL_ROTATE.getName(), m_dataAccess.getAxesParams() );
+                replaceParams( BLOCK.DUAL_TILT.getName(), m_dataAccess.getAxesParams() );
+            }
+
         }
+        
+        
+        // Get I/O assignments and re-map I/O to operate switch box & loopback CPC's
+        addParamsToMap( BLOCK.IO.getName(), m_IOParamMap );
+        if()
+        
+        mergeIOMaps();
+        replaceParams( "[I/O]\r\n", m_IOParamMap );
 
 
-        // Find the Dual Gantry axis block and add to parameter List< String >()
-        int dualGantryInstalled = getParamValue( "[Machine]\r\n", "DualGantryInstalled=" );
-        if( dualGantryInstalled > 0 ) {
-            replaceParams( "[DualGantry]\r\n", m_dataAccess.getAxesParams() );
-        }
+        
+
+
+         // Find/replace serial link settings
+        addParamsToMap( BLOCK.LINK.getName(), m_LinkParamMap );
+        resetLinkSettings();
+        replaceParams( BLOCK.LINK.getName(), m_LinkParamMap );
     }
 
 
@@ -322,10 +399,9 @@ public class ConvertLogic implements IProcess {
      * @param nextSection
      */
     private void mergeIOMaps() {
-
         Iterator< Entry< String, Integer >> itr = m_IOParamMap.entrySet().iterator();
         Entry< String, Integer > entry;
-        StringBuilder buildStr = null;
+        StringBuilder buildStr;
         String input = "Input";
         String output = "Output";
         String type = "Type=";
@@ -334,7 +410,7 @@ public class ConvertLogic implements IProcess {
         int outNumLoc = 1;
         int outTypeLoc = 49;
 
-        // Set all input logic to 0
+        // Set all input logic to normally open
         do {
             entry = itr.next();
             entry.setValue( 0 );
