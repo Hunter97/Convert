@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,7 +36,7 @@ public class ConvertLogic implements IProcess {
     private final ArrayList< String > m_paramList = new ArrayList<>();
 
     private final Map< String, Integer > m_IOParamMap = new LinkedHashMap<>();
-    private final Map< String, Integer > m_IOMap = new LinkedHashMap<>();
+    private final EnumMap< INPUT_NUM, INPUT_TYPE > m_IOMap = new EnumMap<>();
     private final Map< String, Integer > m_LinkParamMap = new LinkedHashMap<>();
 
     private DataAccessObj m_dataAccess;
@@ -50,13 +51,13 @@ public class ConvertLogic implements IProcess {
     public boolean m_frontPanelInstalled = false;
     public boolean m_bevelInstalled = false;
     public boolean m_dualBevelInstalled = false;
-    public boolean m_isDualTrans = false;
-    public boolean m_isOneRotateTilt = false;
-    public boolean m_isNoRotateTilt = false;
+    public boolean m_dualTransInstalled = false;
+    public boolean m_oneRotateTilt = false;
+    public boolean m_noRotateTilt = false;
     public boolean m_sthcInstalled = false;
     public boolean m_arcGlideInstalled = false;
     public boolean m_isRotatingTrans = false;
-    public boolean m_isDualGantry = false;
+    public boolean m_dualGantryInstalled = false;
 
     public int[] m_axisNum = new int[ TOTAL_AXIS_BLOCKS ];
 
@@ -279,6 +280,7 @@ public class ConvertLogic implements IProcess {
         m_dataAccess = new DataAccessObj( system );
         int axisNum = 0;
         int sthcTotal;
+        int agTHCTotal;
 
         // Convert Speed parameters
         replaceParams( BLOCK.SPEEDS.getName(), m_dataAccess.getSpeedParams() );
@@ -298,19 +300,19 @@ public class ConvertLogic implements IProcess {
         }
 
         if( getParamValue( BLOCK.MACHINE.getName(), MACHINE.DUAL_TRANS.getName() ) > 0 ) {
-            m_isDualTrans = true;
+            m_dualTransInstalled = true;
         }
 
         if( getParamValue( BLOCK.MACHINE.getName(), MACHINE.NO_ROTATE_TILT.getName() ) > 0 ) {
-            m_isNoRotateTilt = true;
+            m_noRotateTilt = true;
         }
 
         if( getParamValue( BLOCK.MACHINE.getName(), MACHINE.ONE_ROTATE_TILT.getName() ) > 0 ) {
-            m_isOneRotateTilt = true;
+            m_oneRotateTilt = true;
         }
 
         if( getParamValue( BLOCK.MACHINE.getName(), MACHINE.DUAL_GANTRY.getName() ) > 0 ) {
-            m_isDualGantry = true;
+            m_dualGantryInstalled = true;
         }
 
         if( getParamValue( BLOCK.AXIS7.getName(), MACHINE.ROTATING_TRANS.getName() ) > 0 ) {
@@ -325,12 +327,16 @@ public class ConvertLogic implements IProcess {
             for( int iter = 0; iter < sthcTotal; iter++, axisNum++ ) {
                 replaceParams( new StringBuilder( "[THC" ).append( iter + 1 ).append( "]\r\n" ).toString(), m_dataAccess.getTHCAxisParams() );
                 replaceParams( new StringBuilder( "[THC" ).append( iter + 1 ).append( "]\r\n" ).toString(), m_dataAccess.getAxesParams() );
+                m_IOMap.put( INPUT_NUM.DRIVE_DISABLED, INPUT_TYPE.INPUT_1 );
             }
 
             replaceParams( BLOCK.AIC.getName(), m_dataAccess.getTHCAnalogParams() );
             replaceParams( BLOCK.MACHINE.getName(), m_dataAccess.getTHCMachineParams() );
 
-            m_IOMap.put( )
+            //m_IOMap.put( )
+        }
+        else if(( agTHCTotal = getParamValue( BLOCK.MACHINE.getName(), MACHINE.STHC.getName() )) > 0 ) {
+            m_arcGlideInstalled = true;
         }
 
 
@@ -347,13 +353,13 @@ public class ConvertLogic implements IProcess {
 
 
         // Convert Dual Gantry Axis parameters
-        if( m_isDualGantry ) {
+        if( m_dualGantryInstalled ) {
             replaceParams( BLOCK.DUAL_GANTRY.getName(), m_dataAccess.getAxesParams() );
         }
         
 
         // Convert Bevel Axes parameters
-        if( m_bevelInstalled && !m_isNoRotateTilt  ) {
+        if( m_bevelInstalled && !m_noRotateTilt  ) {
             changeParamValue( BLOCK.MACHINE.getName(), BEVEL.AUTO_HOME.getName(), BEVEL.AUTO_HOME.getValue() );
 
             changeParamValue( BLOCK.ROTATE.getName(), BEVEL.ENCODER_CNTS.getName(), BEVEL.ENCODER_CNTS.getValue() );
@@ -364,7 +370,7 @@ public class ConvertLogic implements IProcess {
             changeParamValue( BLOCK.TILT.getName(), BEVEL.SERVO_ERROR.getName(), BEVEL.SERVO_ERROR.getValue() );
             replaceParams( BLOCK.TILT.getName(), m_dataAccess.getAxesParams() );
 
-            if( m_dualBevelInstalled && !m_isOneRotateTilt ) {
+            if( m_dualBevelInstalled && !m_oneRotateTilt ) {
                 replaceParams( BLOCK.DUAL_ROTATE.getName(), m_dataAccess.getAxesParams() );
                 replaceParams( BLOCK.DUAL_TILT.getName(), m_dataAccess.getAxesParams() );
             }

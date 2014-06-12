@@ -34,30 +34,80 @@ import java.util.Map;
     public interface IDataAcess {
 
     /**
-     * Input enum, contains all available inputs of the CNC.  Input integer values
-     * equals the input number in Phoenix
+     * Input number enum; represents all the inputs that can possible be used with this API.
      */
     public enum INPUT_NUM {
-        DRIVE_DISABLED( 10 ), X_NEG_OT( 11 ), X_POS_OT( 12 ), Y_NEG_OT( 13 ), Y_POS_OT( 14 ), TILT_POS_OT( 35 ), TILT_NEG_OT( 36 ), THC_AUTO_1( 46 ),
-        NCS_1( 47 ), THC_AUTO_2( 51 ), NCS_2( 52 ), THC_AUTO_3( 57 ), NCS_3( 57 ), THC_AUTO_4( 61 ), NCS_4( 62 ),FUME_SELECT( 83 ), TORCH_COLLISION( 100 ),
-        TEST_LIFTER( 102 ), TILT2_POS_OT( 103 ), TILT2_NEG_OT( 104 ), ROT_2_HOME( 105 ), CUT_SENSE_1( 106 ), CUT_SENSE_2( 107 ), CUT_SENSE_3( 108 ),
-        CUT_SENSE_4( 109 ), PARK_HEAD_1( 126 ), PARK_HEAD_2( 127 ), DUAL_HEAD_COLLISION( 130 ), FUME_SENSE( 131 ), JOYSTICK_UP( 133 ), JOYSTICK_DOWN( 134 ),
-        JOYSTICK_LEFT( 135 ), JOYSTICK_RIGHT( 136 ), TILT_PLUS( 137 ), TILT_MINUS( 138 ), ROTATE_PLUS( 139 ), ROTATE_MINUS( 140 ), RDY_TO_FIRE_1( 169 ),
-        RDY_TO_FIRE_2( 170), RDY_TO_FIRE_3( 171 ), RDY_TO_FIRE_4( 172 ), AUTO_SELECT_1( 182 ), AUTO_SELECT_2( 183 ), AUTO_SELECT_3( 184 ), AUTO_SELECT_4( 185 ),
-        MANUAL_SELECT_1( 202 ), MANUAL_SELECT_2( 203 ), MANUAL_SELECT_3( 204), MANUAL_SELECT_4( 205 ), RAISE_ALL_TORCHES( 282 ), AUTO_SELECT_ALL( 283 ),
-        MANUAL_IGNITION_SEL( 284 ), HIGH_PREHEAT_SEL( 285 ), LOW_PREHEAT_SEL( 286 ), PIERCE_SELECT( 287 ), RAISE_TORCH_1( 288 ), RAISE_TORCH_2( 289 ),
-        RAISE_TORCH_3( 290 ), RAISE_TORCH_4( 292 ), LOWER_TORCH_1( 308 ), LOWER_TORCH_2( 309 ), LOWER_TORCH_3( 310 ), LOWER_TORCH_4( 311 ), RAISE_TORCH_1A( 337 ),
-        LOWER_TORCH_1A( 338 ), FP_STOP( 356 ), FP_START( 357 ), FP_MANUAL( 358 ), CUT_SELECT( 361 ), LOWER_ALL_TORCHES( 362 ), FP_BACK_ON_PATH( 377 ),
-        FP_FORWARD_ON_PATH( 378 ), TOOL_CYCLE_ACTIVE( 383 );
+        DRIVE_DISABLED( "Input10Number=", 10 ), X_NEG_OT( "Input11Number=", 11 ), X_POS_OT( "Input12Number=", 12 ), Y_NEG_OT( "Input13Number=", 13 ), Y_POS_OT( "Input14Number=", 14 ),
+        TILT_POS_OT( "Input35Number=", 35 ), TILT_NEG_OT( "Input36Number=", 36 ), THC_AUTO_1( "Input46Number=", 46 ), NCS_1( "Input47Number=", 47 ), THC_AUTO_2( "Input51Number=", 51 ),
+        NCS_2( "Input52Number=", 52 ), THC_AUTO_3( "Input56Number=", 56 ), NCS_3( "Input57Number=", 57 ), THC_AUTO_4( "Input61Number=", 61 ), NCS_4( "Input62Number=", 62 ),
+        FUME_SELECT( "Input83Number=", 83 ), TORCH_COLLISION( "Input100Number=", 100 ), TEST_LIFTER( "Input102Number=", 102 ), TILT2_POS_OT( "Input103Number=", 103 ),
+        TILT2_NEG_OT( "Input104Number=", 104 ), ROT_2_HOME( "Input105Number=", 105 ), CUT_SENSE_1( "Input106Number=", 106 ), CUT_SENSE_2( "Input107Number=", 107 ), 
+        CUT_SENSE_3( "Input108Number=", 108 ), CUT_SENSE_4( "Input109Number=", 109 ), PARK_HEAD_1( "Input126Number=", 126 ), PARK_HEAD_2( "Input127Number=", 127 ),
+        DUAL_HEAD_COLLISION( "Input130Number=", 130 ), FUME_SENSE( "Input131Number=", 131 ), JOYSTICK_UP( "Input133Number=", 133 ), JOYSTICK_DOWN( "Input134Number=", 134 ),
+        JOYSTICK_LEFT( "Input135Number=", 135 ), JOYSTICK_RIGHT( "Input136Number=", 136 ), TILT_PLUS( "Input137Number=", 137 ), TILT_MINUS( "Input138Number=", 138 ),
+        ROTATE_PLUS( "Input139Number=", 139 ), ROTATE_MINUS( "Input140Number=", 140 ), RDY_TO_FIRE_1( "Input169Number=", 169 ), RDY_TO_FIRE_2( "Input170Number=", 170),
+        RDY_TO_FIRE_3( "Input171Number=", 171 ), RDY_TO_FIRE_4( "Input172Number=", 172 ), AUTO_SELECT_1( "Input182Number=", 182 ), AUTO_SELECT_2( "Input183Number=", 183 ),
+        AUTO_SELECT_4( "Input185Number=", 185 ), MANUAL_SELECT_1( "Input202Number=", 202 ), MANUAL_SELECT_2( "Input203Number=", 203 ), MANUAL_SELECT_3( "Input204Number=", 204),
+        MANUAL_SELECT_4( "Input205Number=", 205 ), RAISE_ALL_TORCHES( "Input282Number=", 282 ), AUTO_SELECT_ALL( "Input283Number=", 283 ), MANUAL_IGNITION_SEL( "Input284Number=", 284 ),
+        HIGH_PREHEAT_SEL( "Input285Number=", 285 ), LOW_PREHEAT_SEL( "Input286Number=", 286 ), PIERCE_SELECT( "Input287Number=", 287 ), RAISE_TORCH_1( "Input288Number=", 288 ),
+        RAISE_TORCH_2( "Input289Number=", 289 ), RAISE_TORCH_3( "Input290Number=", 290 ), RAISE_TORCH_4( "Input292Number=", 292 ), LOWER_TORCH_1( "Input308Number=", 308 ),
+        LOWER_TORCH_2( "Input309Number=", 309 ), LOWER_TORCH_3( "Input310Number=", 310 ), LOWER_TORCH_4( "Input311Number=", 311 ), RAISE_TORCH_1A( "Input337Number=", 337 ),
+        LOWER_TORCH_1A( "Input338Number=", 338 ), FP_STOP( "Input356Number=", 356 ), FP_START( "Input3579Number=", 357 ), FP_MANUAL( "Input358Number=", 358 ),
+        CUT_SELECT( "Input361Number=", 361 ), LOWER_ALL_TORCHES( "Input362Number=", 362 ), FP_BACK_ON_PATH( "Input377Number=", 377 ), FP_FORWARD_ON_PATH( "Input378Number=", 378 ),
+        TOOL_CYCLE_ACTIVE( "Input383Number=", 383 );
 
-        private final int value;
+        private final int m_value;
+        private final String m_name;
 
-        private INPUT_NUM( int value ) {
-            this.value = value;
+        private INPUT_NUM( String name, int value ) {
+            this.m_value = value;
+            this.m_name = name;
         }
 
+        /**
+         * Get/return the input number, the integer value represented by the input
+         * @return  - Value of the input
+         */
         public int getValue() {
-            return value;
+            return m_value;
+        }
+
+        /**
+         * Get/return the String representation of the input
+         * @return  - String representation of the input (i.e. "Input10Number="
+         */
+        public String getName() {
+            return m_name;
+        }
+    }
+
+
+    /**
+     * Input assignment enum; represent physical input the INPUT_NUM was assigned
+     * too (DriveDisabled assigned to input 1 is equivalent to: Input1Type=10)
+     */
+    public enum INPUT_TYPE {
+        INPUT_1( "Input1Type=" ), INPUT_2( "Input2Type=" ), INPUT_3( "Input3Type=" ), INPUT_4( "Input4Type=" ), INPUT_5( "Input5Type=" ), INPUT_6( "Input6Type=" ), INPUT_7( "Input7Type=" ),
+        INPUT_8( "Input8Type=" ), INPUT_9( "Input9Type=" ), INPUT_10( "Input10Type=" ), INPUT_11( "Input11Type=" ), INPUT_12( "Input12Type=" ), INPUT_13( "Input13Type=" ),
+        INPUT_14( "Input14Type=" ), INPUT_15( "Input15Type=" ), INPUT_16( "Input16Type=" ), INPUT_17( "Input17Type=" ), INPUT_18( "Input18Type=" ), INPUT_19( "Input19Type=" ),
+        INPUT_20( "Input20Type=" ), INPUT_21( "Input21Type=" ), INPUT_22( "Input22Type=" ), INPUT_40( "Input40Type=" ), INPUT_41( "Input41Type=" ), INPUT_42( "Input42Type=" ),
+        INPUT_43( "Input43Type=" ), INPUT_44( "Input44Type=" ), INPUT_129( "Input129Type=" ), INPUT_130( "Input130Type=" ), INPUT_131( "Input131Type=" ), INPUT_132( "Input132Type=" ),
+        INPUIT_133( "Input133Type=" ), INPUT_134( "Input134Type=" ), INPUT_135( "Input135Type=" ), INPUT_136( "Input136Type=" ), INPUT_137( "Input137Type=" ), INPUT_138( "Input138Type=" ),
+        INPUT_139( "Input139Type=" ), INPUT_140( "Input140Type=" ), INPUT_141( "Input141Type=" ), INPUT_142( "Input142Type=" ), INPUT_143( "Input143Type=" ), INPUT_144( "Input144Type=" ),
+        INPUT_145( "Input145Type=" );
+
+        private final String m_name;
+
+        private INPUT_TYPE( String name ) {
+            this.m_name = name;
+        }
+
+        /**
+         * Get/return the String associated with the enum
+         * @return  String equivalent of the enum
+         */
+        public String getName() {
+            return m_name;
         }
     }
 
