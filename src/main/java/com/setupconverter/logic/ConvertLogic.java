@@ -32,12 +32,17 @@ import java.util.Map.Entry;
 public class ConvertLogic implements IProcess {
 
     private static final int TOTAL_AXIS_BLOCKS = 3;
+    private static final String REG_EXP = "[=\\s\\.]+";
 
     private final ArrayList< String > m_paramList = new ArrayList<>();
 
     private final Map< String, Integer > m_IOParamMap = new LinkedHashMap<>();
-    private final EnumMap< INPUT_NUM, INPUT_TYPE > m_IOMap = new EnumMap<>();
+    private final EnumMap< INPUT_TYPE, INPUT_NUM > m_inputEnumMap = new EnumMap<>( INPUT_TYPE.class );
+    private final Map< String, Integer > m_inputTypeMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_LinkParamMap = new LinkedHashMap<>();
+    private final Map< String, Integer > m_inputNumberMap = new LinkedHashMap<>();
+
+    
 
     private DataAccessObj m_dataAccess;
     //private Bench m_bench;
@@ -124,7 +129,7 @@ public class ConvertLogic implements IProcess {
             listItr = m_paramList.listIterator( index +1 );
             while( !( param = listItr.next() ).startsWith( emptyLine )  && listItr.hasNext() ) {
                 if( !param.equals( emptyLine )) {
-                    String[] key = param.split( "[=\\s\\.]+" );
+                    String[] key = param.split( REG_EXP );
                     StringBuilder sb = new StringBuilder( key[0] ).append( "=" );
 
                     try {
@@ -161,7 +166,7 @@ public class ConvertLogic implements IProcess {
             ListIterator< String > listItr = m_paramList.listIterator( index +1 );
             while( !( param = listItr.next() ).startsWith( emptyLine ) && listItr.hasNext() ) {
                 if( param.startsWith( paramName )) {
-                    key = param.split( "[=\\s\\.]+" );
+                    key = param.split( REG_EXP );
                     break;
                 }
             }
@@ -217,7 +222,7 @@ public class ConvertLogic implements IProcess {
             ListIterator< String > listItr = m_paramList.listIterator( index +1 );
             while( !( param = listItr.next() ).startsWith( emptyLine ) &&  listItr.hasNext() ) {
                 if( param.startsWith( paramName )) {
-                    String[] key = param.split( "[=\\s\\.]+" );
+                    String[] key = param.split( REG_EXP );
                     value = Integer.parseInt( key[ 1 ] );
                     break;
                 }
@@ -324,18 +329,18 @@ public class ConvertLogic implements IProcess {
         if(( sthcTotal = getParamValue( BLOCK.MACHINE.getName(), MACHINE.STHC.getName() )) > 0 ) {
             m_sthcInstalled = true;
             m_dataAccess.addTHCDefaults();
-            for( int iter = 0; iter < sthcTotal; iter++, axisNum++ ) {
-                replaceParams( new StringBuilder( "[THC" ).append( iter + 1 ).append( "]\r\n" ).toString(), m_dataAccess.getTHCAxisParams() );
-                replaceParams( new StringBuilder( "[THC" ).append( iter + 1 ).append( "]\r\n" ).toString(), m_dataAccess.getAxesParams() );
-                m_IOMap.put( INPUT_NUM.DRIVE_DISABLED, INPUT_TYPE.INPUT_1 );
+            for( int i = 0; i < sthcTotal; i++, axisNum++ ) {
+                replaceParams( new StringBuilder( "[THC" ).append( i + 1 ).append( "]\r\n" ).toString(), m_dataAccess.getTHCAxisParams() );
+                replaceParams( new StringBuilder( "[THC" ).append( i + 1 ).append( "]\r\n" ).toString(), m_dataAccess.getAxesParams() );
+
+                addInput( new StringBuilder( "NCS_" ).append( i + 1 ).toString(), i + 1 );
+                StringBuilder sb = new StringBuilder( "NCS_" ).append( i + 1 );
             }
 
             replaceParams( BLOCK.AIC.getName(), m_dataAccess.getTHCAnalogParams() );
-            replaceParams( BLOCK.MACHINE.getName(), m_dataAccess.getTHCMachineParams() );
-
-            //m_IOMap.put( )
+            replaceParams( BLOCK.MACHINE.getName(), m_dataAccess.getTHCMachineParams() );  
         }
-        else if(( agTHCTotal = getParamValue( BLOCK.MACHINE.getName(), MACHINE.STHC.getName() )) > 0 ) {
+        else if(( agTHCTotal = getParamValue( BLOCK.MACHINE.getName(), MACHINE.AG.getName() )) > 0 ) {
             m_arcGlideInstalled = true;
         }
 
@@ -380,7 +385,9 @@ public class ConvertLogic implements IProcess {
         
         // Get I/O assignments and re-map I/O to operate switch box & loopback CPC's
         addParamsToMap( BLOCK.IO.getName(), m_IOParamMap );
-        if()
+        if( m_sthcInstalled ) {
+            //m_IOMap.
+        }
         
         mergeIOMaps();
         replaceParams( "[I/O]\r\n", m_IOParamMap );
@@ -394,6 +401,31 @@ public class ConvertLogic implements IProcess {
         resetLinkSettings();
         replaceParams( BLOCK.LINK.getName(), m_LinkParamMap );
     }
+
+
+    /**
+     * Adding input types to the input type map.  Should I have it return?
+     * @param index
+     * @param endIndex
+     */
+    public void addInput( String input, int index ) { //, int endIndex ) {
+        //for(int i = 0; i < endIndex; i++, index++ ) {
+            for( INPUT_TYPE type : INPUT_TYPE.values() ) {
+                if( type.getValue() == index ) {
+                    for( INPUT_NUM number : INPUT_NUM.values() ) {
+                        if( number.getName().contentEquals( new StringBuilder( input ) )) {
+                            m_inputTypeMap.put( type.getName(), number.getValue() );        // i.e. Input1Type=47, assigns Input1 to NozzleContactSense1.
+                            m_inputNumberMap.put( number.getName(), type.getValue() );      // i.e. Input47Number=1, assigns NozzleContactSense1 to Input1.
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+            }
+        //}
+    }
+    
 
 
     /**

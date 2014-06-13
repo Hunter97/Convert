@@ -79,6 +79,19 @@ import java.util.Map;
         public String getName() {
             return m_name;
         }
+
+        public static INPUT_NUM getType( String name ) {
+            INPUT_NUM temp = null;
+
+            for( INPUT_NUM type : INPUT_NUM.values() ) {
+                if( type.m_name.equals( name ) ) {
+                    temp = type;
+                    break;
+                }
+            }
+
+            return temp;
+        }
     }
 
 
@@ -87,24 +100,36 @@ import java.util.Map;
      * too (DriveDisabled assigned to input 1 is equivalent to: Input1Type=10)
      */
     public enum INPUT_TYPE {
-        INPUT_1( "Input1Type=" ), INPUT_2( "Input2Type=" ), INPUT_3( "Input3Type=" ), INPUT_4( "Input4Type=" ), INPUT_5( "Input5Type=" ), INPUT_6( "Input6Type=" ), INPUT_7( "Input7Type=" ),
-        INPUT_8( "Input8Type=" ), INPUT_9( "Input9Type=" ), INPUT_10( "Input10Type=" ), INPUT_11( "Input11Type=" ), INPUT_12( "Input12Type=" ), INPUT_13( "Input13Type=" ),
-        INPUT_14( "Input14Type=" ), INPUT_15( "Input15Type=" ), INPUT_16( "Input16Type=" ), INPUT_17( "Input17Type=" ), INPUT_18( "Input18Type=" ), INPUT_19( "Input19Type=" ),
-        INPUT_20( "Input20Type=" ), INPUT_21( "Input21Type=" ), INPUT_22( "Input22Type=" ), INPUT_40( "Input40Type=" ), INPUT_41( "Input41Type=" ), INPUT_42( "Input42Type=" ),
-        INPUT_43( "Input43Type=" ), INPUT_44( "Input44Type=" ), INPUT_129( "Input129Type=" ), INPUT_130( "Input130Type=" ), INPUT_131( "Input131Type=" ), INPUT_132( "Input132Type=" ),
-        INPUIT_133( "Input133Type=" ), INPUT_134( "Input134Type=" ), INPUT_135( "Input135Type=" ), INPUT_136( "Input136Type=" ), INPUT_137( "Input137Type=" ), INPUT_138( "Input138Type=" ),
-        INPUT_139( "Input139Type=" ), INPUT_140( "Input140Type=" ), INPUT_141( "Input141Type=" ), INPUT_142( "Input142Type=" ), INPUT_143( "Input143Type=" ), INPUT_144( "Input144Type=" ),
-        INPUT_145( "Input145Type=" );
+        INPUT_1( "Input1Type=", 1 ), INPUT_2( "Input2Type=", 2 ), INPUT_3( "Input3Type=", 3 ), INPUT_4( "Input4Type=", 4 ), INPUT_5( "Input5Type=", 5 ), INPUT_6( "Input6Type=", 6 ),
+        INPUT_7( "Input7Type=", 7 ), INPUT_8( "Input8Type=", 8 ), INPUT_9( "Input9Type=", 9 ), INPUT_10( "Input10Type=", 10 ), INPUT_11( "Input11Type=", 11 ),
+        INPUT_12( "Input12Type=", 12 ), INPUT_13( "Input13Type=", 13 ), INPUT_14( "Input14Type=", 14 ), INPUT_15( "Input15Type=", 15 ), INPUT_16( "Input16Type=", 16 ),
+        INPUT_17( "Input17Type=", 17 ), INPUT_18( "Input18Type=", 18 ), INPUT_19( "Input19Type=", 19 ), INPUT_20( "Input20Type=", 20 ), INPUT_21( "Input21Type=", 21 ),
+        INPUT_22( "Input22Type=", 22 ), INPUT_40( "Input40Type=", 40 ), INPUT_41( "Input41Type=", 41 ), INPUT_42( "Input42Type=", 42 ), INPUT_43( "Input43Type=", 43 ),
+        INPUT_44( "Input44Type=", 44 ), INPUT_129( "Input129Type=", 129 ), INPUT_130( "Input130Type=", 130 ), INPUT_131( "Input131Type=", 131 ), INPUT_132( "Input132Type=", 132 ),
+        INPUIT_133( "Input133Type=", 133 ), INPUT_134( "Input134Type=", 134 ), INPUT_135( "Input135Type=", 135 ), INPUT_136( "Input136Type=", 136 ), INPUT_137( "Input137Type=", 137 ),
+        INPUT_138( "Input138Type=", 138 ), INPUT_139( "Input139Type=", 139 ), INPUT_140( "Input140Type=", 140 ), INPUT_141( "Input141Type=", 141 ), INPUT_142( "Input142Type=", 142 ),
+        INPUT_143( "Input143Type=", 143 ), INPUT_144( "Input144Type=", 144 ), INPUT_145( "Input145Type=", 145 );
 
+	private final int m_value;
         private final String m_name;
 
-        private INPUT_TYPE( String name ) {
+        private INPUT_TYPE( String name, int value ) {
+            this.m_value = value;
             this.m_name = name;
         }
 
         /**
-         * Get/return the String associated with the enum
-         * @return  String equivalent of the enum
+         * Get/return the input type; the integer value that represents the physical
+         * input.  
+         * @return  - The value of the input type (i.e. 1 represents Input 1)
+         */
+        public int getValue() {
+            return m_value;
+        }
+
+        /**
+         * Get/return the String associated with the Input Type
+         * @return  - The String for this input location (i.e. Input1Type= )
          */
         public String getName() {
             return m_name;
