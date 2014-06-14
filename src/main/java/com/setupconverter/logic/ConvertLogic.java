@@ -325,36 +325,74 @@ public class ConvertLogic implements IProcess {
         }
 
 
-        // Convert SensorTHC parameters
+        // Convert THC parameters
         if(( sthcTotal = getParamValue( BLOCK.MACHINE.getName(), MACHINE.STHC.getName() )) > 0 ) {
             m_sthcInstalled = true;
             m_dataAccess.addTHCDefaults();
+
             for( int i = 0; i < sthcTotal; i++, axisNum++ ) {
                 replaceParams( new StringBuilder( "[THC" ).append( i + 1 ).append( "]\r\n" ).toString(), m_dataAccess.getTHCAxisParams() );
                 replaceParams( new StringBuilder( "[THC" ).append( i + 1 ).append( "]\r\n" ).toString(), m_dataAccess.getAxesParams() );
-
-                addInput( new StringBuilder( "NCS_" ).append( i + 1 ).toString(), i + 1 );
-                StringBuilder sb = new StringBuilder( "NCS_" ).append( i + 1 );
             }
 
             replaceParams( BLOCK.AIC.getName(), m_dataAccess.getTHCAnalogParams() );
-            replaceParams( BLOCK.MACHINE.getName(), m_dataAccess.getTHCMachineParams() );  
+            replaceParams( BLOCK.MACHINE.getName(), m_dataAccess.getTHCMachineParams() );
+
+            m_inputTypeMap.put( INPUT_TYPE.INPUT_1.getName(), INPUT_NUM.NCS_1.getValue() );    // i.e. Input1Type=47, assigns Input1 to NozzleContactSense1.
+            m_inputNumberMap.put( INPUT_NUM.NCS_1.getName(), INPUT_TYPE.INPUT_1.getValue() );  // i.e. Input47Number=1, assigns NozzleContactSense1 to Input1. 
+
+            if( sthcTotal == 4 ) {
+                m_inputTypeMap.put( INPUT_TYPE.INPUT_4.getName(), INPUT_NUM.NCS_4.getValue() );
+                m_inputNumberMap.put( INPUT_NUM.NCS_4.getName(), INPUT_TYPE.INPUT_4.getValue() );
+            }
+            else if( sthcTotal >= 3 ) {
+                m_inputTypeMap.put( INPUT_TYPE.INPUT_4.getName(), INPUT_NUM.NCS_4.getValue() );
+                m_inputNumberMap.put( INPUT_NUM.NCS_4.getName(), INPUT_TYPE.INPUT_4.getValue() );
+            }
+            if( sthcTotal >= 2 ) {
+                m_inputTypeMap.put( INPUT_TYPE.INPUT_4.getName(), INPUT_NUM.NCS_4.getValue() );
+                m_inputNumberMap.put( INPUT_NUM.NCS_4.getName(), INPUT_TYPE.INPUT_4.getValue() );
+            }
+            
         }
         else if(( agTHCTotal = getParamValue( BLOCK.MACHINE.getName(), MACHINE.AG.getName() )) > 0 ) {
             m_arcGlideInstalled = true;
+            m_inputTypeMap.put( INPUT_TYPE.INPUT_1.getName(), INPUT_NUM.RDY_TO_FIRE_1.getValue() );
+            m_inputNumberMap.put( INPUT_NUM.RDY_TO_FIRE_1.getName(), INPUT_TYPE.INPUT_1.getValue() );
+
+            if( agTHCTotal == 4 ) {
+                m_inputTypeMap.put( INPUT_TYPE.INPUT_4.getName(), INPUT_NUM.RDY_TO_FIRE_4.getValue() );
+                m_inputNumberMap.put( INPUT_NUM.RDY_TO_FIRE_4.getName(), INPUT_TYPE.INPUT_4.getValue() );
+            }
+            else if( agTHCTotal >= 3 ) {
+                m_inputTypeMap.put( INPUT_TYPE.INPUT_3.getName(), INPUT_NUM.RDY_TO_FIRE_3.getValue() );
+                m_inputNumberMap.put( INPUT_NUM.RDY_TO_FIRE_3.getName(), INPUT_TYPE.INPUT_3.getValue() );
+            }
+            else if( agTHCTotal >= 2 ) {
+                m_inputTypeMap.put( INPUT_TYPE.INPUT_2.getName(), INPUT_NUM.RDY_TO_FIRE_2.getValue() );
+                m_inputNumberMap.put( INPUT_NUM.RDY_TO_FIRE_2.getName(), INPUT_TYPE.INPUT_2.getValue() );
+            }
         }
 
+        int nextInputType = m_inputTypeMap.size() + 1;
+        int nextInputNum = m_inputNumberMap.size() + 1;
 
-        // Convert X, Y, and Dual Transverse Axes parameters
-        axisNum = 0;
-        for( int i = 0; i < TOTAL_AXIS_BLOCKS; i++ ) {
-            if( i == TOTAL_AXIS_BLOCKS - 1 ) {
+
+        // Convert X, Y Axes parameters
+        replaceParams( BLOCK.AXIS1.getName(), m_dataAccess.getAxesParams() );
+        replaceParams( BLOCK.AXIS2.getName(), m_dataAccess.getAxesParams() );
+        //m_inputTypeMap.put(system, axisNum)
+
+
+        //axisNum = 0;
+        /*for( int i = 0; i < TOTAL_AXIS_BLOCKS; i++ ) {
+            /*if( i == TOTAL_AXIS_BLOCKS - 1 ) {
                 axisNum = 6;
             }
 
-            replaceParams( new StringBuilder( "[Axis" + axisNum + "]\r\n" ).toString(), m_dataAccess.getAxesParams() );
-            axisNum++;
-        }
+            replaceParams( new StringBuilder( "[Axis" + i + "]\r\n" ).toString(), m_dataAccess.getAxesParams() );
+            //axisNum++;
+        }*/
 
 
         // Convert Dual Gantry Axis parameters
@@ -389,7 +427,7 @@ public class ConvertLogic implements IProcess {
             //m_IOMap.
         }
         
-        mergeIOMaps();
+        //mergeIOMaps();
         replaceParams( "[I/O]\r\n", m_IOParamMap );
 
 
@@ -405,11 +443,14 @@ public class ConvertLogic implements IProcess {
 
     /**
      * Adding input types to the input type map.  Should I have it return?
+     * @param input
      * @param index
-     * @param endIndex
      */
     public void addInput( String input, int index ) { //, int endIndex ) {
-        //for(int i = 0; i < endIndex; i++, index++ ) {
+        INPUT_NUM temp = INPUT_NUM.getType("NCS_1");
+        if( temp.equals(input)) {
+            System.out.println("test");
+        }
             for( INPUT_TYPE type : INPUT_TYPE.values() ) {
                 if( type.getValue() == index ) {
                     for( INPUT_NUM number : INPUT_NUM.values() ) {
@@ -436,7 +477,7 @@ public class ConvertLogic implements IProcess {
      * @param set
      * @param nextSection
      */
-    private void mergeIOMaps() {
+    /*private void mergeIOMaps() {
         Iterator< Entry< String, Integer >> itr = m_IOParamMap.entrySet().iterator();
         Entry< String, Integer > entry;
         StringBuilder buildStr;
@@ -537,7 +578,7 @@ public class ConvertLogic implements IProcess {
 
             outNumLoc++;
         }
-    }
+    }*/
 
 
     /**

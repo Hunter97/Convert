@@ -57,7 +57,7 @@ public class DataAccessObj implements IDataAcess {
 
         addAxesDefaults( type );
         addSpeedDefaults();
-        setInputTypeMap();
+        //setInputTypeMap();
     }
 
 
