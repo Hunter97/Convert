@@ -35,14 +35,14 @@ public interface IDataAcess {
 
 
     /**
-     * Enumeration constants containing the titles to each block (or group) of parameters
+     * Enumeration constants containing the titles to each block of parameters
      * within the parameter List.  Each constant represents a string in the form of
      * "[Title]\r\n".
      */
     public enum BLOCK {
         MACHINE( "[Machine]\r\n" ), SPEEDS( "[Speeds]\r\n" ), AIC( "[AnalogInputCard]\r\n" ), LINK( "[Link]\r\n" ), IO( "[I/O]\r\n" ), ROTATE( "[Rotate]\r\n" ), TILT( "[Tilt]\r\n" ),
-        DUAL_ROTATE( "[DualRotate]\r\n" ), DUAL_TILT( "[DualTilt]\r\n" ), DUAL_GANTRY( "[DualGantry]\r\n" ), THC1( "[THC1]\r\n" ), THC2( "[THC2]\r\n" ), THC3( "[THC3]\r\n" ),
-        THC4( "[THC4]\r\n" ), AXIS1( "[Axis0]\r\n" ), AXIS2( "[Axis1]\r\n" ), AXIS7( "[Axis6]\r\n" );
+        DUAL_ROTATE( "[DualRotate]\r\n" ), DUAL_TILT( "[DualTilt]\r\n" ), DUAL_GANTRY( "[DualGantry]\r\n" ), THC_1( "[THC1]\r\n" ), THC_2( "[THC2]\r\n" ), THC_3( "[THC3]\r\n" ),
+        THC_4( "[THC4]\r\n" ), AXIS_1( "[Axis0]\r\n" ), AXIS_2( "[Axis1]\r\n" ), AXIS_7( "[Axis6]\r\n" );
 
         private final String m_name;
 
@@ -59,8 +59,14 @@ public interface IDataAcess {
         }
     }
 
+
     /**
-     * Input number enum; represents all the inputs that can possible be used with this API.
+     * Input device assignment enum; represents each available input device as an
+     * integer value. The value represents the device and the String is how the
+     * parameter is represented within the parameter file.  
+     * In the parameter file: Input#Number is equal to a physical input, where #
+     * is the integer value of the input device.
+     * i.e. Input47Number=1, where device #47 (NCS1) is assigned to Input 1
      */
     public enum INPUT_NUM {
         DRIVE_DISABLED( "Input10Number=", 10 ), X_NEG_OT( "Input11Number=", 11 ), X_POS_OT( "Input12Number=", 12 ), Y_NEG_OT( "Input13Number=", 13 ), Y_POS_OT( "Input14Number=", 14 ),
@@ -91,25 +97,31 @@ public interface IDataAcess {
         }
 
         /**
-         * Get/return the input number, the integer value represented by the input
-         * @return  - Value of the input
+         * Get/return the integer value for this input device
+         * @return  - The input device as an integer
          */
         public int getValue() {
             return m_value;
         }
 
         /**
-         * Get/return the String representation of the input
-         * @return  - String representation of the input (i.e. "Input10Number="
+         * Get/return the String representation of this input device
+         * @return  - The input device as a String
          */
         public String getName() {
             return m_name;
         }
 
+        /**
+         * Gets/returns the enum type that matches the String argument.
+         * @param name  - The String value of this enum
+         * @return      - This enum type
+         */
         public static INPUT_NUM getType( String name ) {
             INPUT_NUM temp = null;
 
             for( INPUT_NUM type : INPUT_NUM.values() ) {
+                System.out.println(type.getName());
                 if( type.getName().equals( name ) ) {
                     temp = type;
                     break;
@@ -122,8 +134,12 @@ public interface IDataAcess {
 
 
     /**
-     * Input assignment enum; represent physical input the INPUT_NUM was assigned
-     * too (DriveDisabled assigned to input 1 is equivalent to: Input1Type=10)
+     * Input assignment enum; represent each physical input as a integer value.
+     * The value is equal to the physical input and the String is how the parameter
+     * is represented within the parameter file.
+     * In the parameter file: Input#Type is equal to the integer value of an input
+     * device, where # is equal to this physical input.
+     * i.e. Input1Type=47 where Input 1 is assigned to device #47 (NCS1)
      */
     public enum INPUT_TYPE {
         INPUT_1( "Input1Type=", 1 ), INPUT_2( "Input2Type=", 2 ), INPUT_3( "Input3Type=", 3 ), INPUT_4( "Input4Type=", 4 ), INPUT_5( "Input5Type=", 5 ), INPUT_6( "Input6Type=", 6 ),
@@ -145,20 +161,38 @@ public interface IDataAcess {
         }
 
         /**
-         * Get/return the input type; the integer value that represents the physical
-         * input.  
-         * @return  - The value of the input type (i.e. 1 represents Input 1)
+         * Get/return the integer value for this input device 
+         * @return  - The input device as an integer
          */
         public int getValue() {
             return m_value;
         }
 
         /**
-         * Get/return the String associated with the Input Type
-         * @return  - The String for this input location (i.e. Input1Type= )
+         * Get/return the String representation of this input device
+         * @return  - The input device as a String
          */
         public String getName() {
             return m_name;
+        }
+
+        /**
+         * Gets/returns the enum type that matches the String argument.
+         * @param name  - The String value of this enum
+         * @return      - This enum type
+         */
+        public static INPUT_TYPE getType( String name ) {
+            INPUT_TYPE temp = null;
+
+            for( INPUT_TYPE type : INPUT_TYPE.values() ) {
+                System.out.println(type.getName());
+                if( type.getName().equals( name ) ) {
+                    temp = type;
+                    break;
+                }
+            }
+
+            return temp;
         }
     }
 
@@ -221,15 +255,15 @@ public interface IDataAcess {
     /**
      * Contain Machine parameters, used to determine machine configuration
      */
-    public enum MACHINE {
-        DUAL_GANTRY( "DualGantryInstalled=" ), FP( "FrontPanelInstalled=" ), SERCOS( "SercosSensorUtility=" ), AG( "ArcGlideTHCInstalled=" ),
-        PSCOMM_HYPERNET( "PSCommOverHypNetEn" ), STHC( "SensorTHCInstalled=" ), BEVEL_AXES( "SkewRotatorInstalled=" ), DUAL_BEVEL( "DualSkewRotatorInstalled=" ),
-        AUTO_HOME( "AutoHome=" ), DUAL_TRANS( "DualTransverseInstalled=" ), NO_ROTATE_TILT( "NoRotateTilt=" ), ONE_ROTATE_TILT( "OneRotateTilt=" ),
-        ROTATING_TRANS( "RotatingTransverse=" );
+    public enum PARAMETER {
+        DUAL_GANTRY( "DualGantryInstalled=" ), FP( "FrontPanelInstalled=" ), SERCOS( "SercosSensorUtility=" ), AG( "ArcGlideTHCInstalled=" ), PSCOMM_HYPERNET( "PSCommOverHypNetEn" ),
+        STHC( "SensorTHCInstalled=" ), BEVEL_AXES( "SkewRotatorInstalled=" ), DUAL_BEVEL( "DualSkewRotatorInstalled=" ), AUTO_HOME( "AutoHome=" ),
+        DUAL_TRANS( "DualTransverseInstalled=" ), NO_ROTATE_TILT( "NoRotateTilt=" ), ONE_ROTATE_TILT( "OneRotateTilt=" ), ROTATING_TRANS( "RotatingTransverse=" ),
+        X_AXIS_ORIENTATION( "XAxisOrientation=" ), DUAL_TILTING( "DualTiltMode=" );
 
         private final String m_name;
 
-        private MACHINE( String name ) {
+        private PARAMETER( String name ) {
             this.m_name = name;
         }
 
