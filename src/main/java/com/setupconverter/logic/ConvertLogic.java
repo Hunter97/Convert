@@ -544,7 +544,7 @@ public class ConvertLogic implements IProcess {
     private void mergeIOMaps() {
         Iterator< Entry< String, Integer >> itr = m_IOParamMap.entrySet().iterator();
         Entry< String, Integer > entry;
-        StringBuilder inputType;
+        String inputType;
         StringBuilder inputNumber;
         String input = "Input";
         String output = "Output";
@@ -566,42 +566,24 @@ public class ConvertLogic implements IProcess {
         // Set input type's to 0, if and only if input type is not re-assigned by a default parameter
         do {
             entry = itr.next();
-            if( !m_inputNumberMap.containsKey( entry.getKey() ) && entry.getValue() > 0 ) {
-                inputType = new StringBuilder( input ).append( entry.getValue() ).append( type );
-                if( m_inputTypeMap.containsKey( inputType.toString() )) {
-                    m_IOParamMap.put( inputType.toString(), inTypeLoc );
-                    m_IOParamMap.put( new StringBuilder( input ).append( inTypeLoc++ ).append( number ).toString(), entry.getValue() );
+            inputType = new StringBuilder( input ).append( entry.getValue() ).append( type ).toString();
+            if( !m_inputNumberMap.containsKey( entry.getKey() )) { //&& entry.getValue() > 0 ) {
+                if( m_inputTypeMap.containsKey( inputType )) {
+                    int value = getParamValue( BLOCK.IO.getName(), inputType );
+                    m_inputNumberMap.put( entry.getKey(), inTypeLoc );
+                    m_inputTypeMap.put( new StringBuilder( input ).append( inTypeLoc++ ).append( type ).toString(), value );
                 }
-
-                inputType = new StringBuilder( input + inTypeLoc + type );
-                //buildStr.append( input + inTypeLoc + type );
-                m_IOParamMap.put( inputType.toString(), inNumLoc );
-                entry.setValue( inTypeLoc++ );
             }
-            else if( m_dataAccess.getInputParams().containsKey( entry.getKey() )) {
-                if( entry.getValue() > 0 ) {
-                    inputType = new StringBuilder( input + entry.getValue() + type );
-                    //buildStr.append( input + entry.getValue() + type );
-                    if( !m_dataAccess.getInputParams().containsKey( inputType.toString() )) {
-                        m_IOParamMap.put( inputType.toString(), 0 );
-                    }
-
+            else {
+                if( !m_inputTypeMap.containsKey( inputType ) ) {
+                    m_inputTypeMap.put( inputType, 0 );
                 }
-
-                int defaultValue = m_dataAccess.getInputParams().get( entry.getKey() );
-                inputType = new StringBuilder( input + defaultValue + type );
-                //buildStr.append( input + defaultValue + type );
-                m_IOParamMap.put( inputType.toString(), inNumLoc );
-                entry.setValue( defaultValue );
             }
-
-            inNumLoc++;
-
         } while( !entry.getKey().startsWith( "Input1Type=" ) && itr.hasNext() );
 
 
         // Iterate over all InputTypes to get to output logic then set all output logic to 0
-        do {
+        /*do {
             if( !entry.getKey().startsWith( "Input" )) {
                 entry.setValue( 0 );
             }
@@ -643,7 +625,7 @@ public class ConvertLogic implements IProcess {
             }
 
             outNumLoc++;
-        }
+        }*/
     }
 
 
