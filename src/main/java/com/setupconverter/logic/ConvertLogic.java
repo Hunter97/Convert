@@ -40,10 +40,11 @@ public class ConvertLogic implements IProcess {
     private final ArrayList< String > m_paramList = new ArrayList<>();
 
     private final Map< String, Integer > m_IOParamMap = new LinkedHashMap<>();
-    //private final EnumMap< INPUT_TYPE, INPUT_NUM > m_inputEnumMap = new EnumMap<>( INPUT_TYPE.class );
     private final Map< String, Integer > m_inputTypeMap = new LinkedHashMap<>();
-    private final Map< String, Integer > m_LinkParamMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_inputNumberMap = new LinkedHashMap<>();
+    private final Map< String, Integer > m_outputTypeMap = new LinkedHashMap<>();
+    private final Map< String, Integer > m_outputNumberMap = new LinkedHashMap<>();
+    private final Map< String, Integer > m_LinkParamMap = new LinkedHashMap<>();
 
     private DataAccessObj m_dataAccess;
     public OperateConverter m_operate;
@@ -147,7 +148,7 @@ public class ConvertLogic implements IProcess {
 
 
     /**
-     * Changes a parameter value from the parameter list to the argument value.
+     * Changes the value of a parameter from the parameter list to the argument value.
      * Parses the parameter list, starting after the argument block title, for a
      * match to the String argument.  If a match is found, the argument value is
      * added to the parameter, in place of the original value.
@@ -157,7 +158,6 @@ public class ConvertLogic implements IProcess {
      */
     public void changeParamValue( String blockTitle, String paramName, int value ) {
         int index;
-        String[] key = null;
         String param;
         String emptyLine = "\r\n";
 
@@ -165,12 +165,11 @@ public class ConvertLogic implements IProcess {
             ListIterator< String > listItr = m_paramList.listIterator( index +1 );
             while( !( param = listItr.next() ).startsWith( emptyLine ) && listItr.hasNext() ) {
                 if( param.startsWith( paramName )) {
-                    key = param.split( REG_EXP );
+                    String[] key = param.split( REG_EXP );
+                    m_paramList.add(index, new StringBuilder( key[0] ).append( value ).toString() );
                     break;
                 }
             }
-
-            m_paramList.add(index, new StringBuilder( key[0] ).append( value ).toString() );
         }
     }
 
@@ -285,7 +284,7 @@ public class ConvertLogic implements IProcess {
         int sthcTotal;
         int agTHCTotal;
         int row1_NextIndex = 1;
-        int row2_NextIndex = 9;
+        int row2_Index = 9;
         int row3_NextIndex = 17;
 
 
@@ -390,42 +389,43 @@ public class ConvertLogic implements IProcess {
         replaceParams( BLOCK.AXIS_1.getName(), m_dataAccess.getAxesParams() );
         replaceParams( BLOCK.AXIS_2.getName(), m_dataAccess.getAxesParams() );
 
-        if( m_dualTransInstalled ) {
-            replaceParams( BLOCK.AXIS_7.getName(), m_dataAccess.getAxesParams() );
-
-            if( m_isRotatingTrans ) {
-                changeParamValue( BLOCK.AXIS_7.getName(), BEVEL.ENCODER_CNTS.getName(), BEVEL.ENCODER_CNTS.getValue() );
-                changeParamValue( BLOCK.AXIS_7.getName(), BEVEL.SERVO_ERROR.getName(), BEVEL.SERVO_ERROR.getValue() );
-                addInput( row1_NextIndex++, INPUT_NUM.X_NEG_OT.getValue() );
-                addInput( row1_NextIndex + 7, INPUT_NUM.X_POS_OT.getValue() );
-                addInput( row1_NextIndex++, INPUT_NUM.Y_NEG_OT.getValue() );
-                addInput( row1_NextIndex + 7, INPUT_NUM.Y_POS_OT.getValue() );
-                addInput( row1_NextIndex++, INPUT_NUM.ROT_2_HOME.getValue() );
-            }
-            else {
-                if( m_xOnRail ) {
-                    addInput( row1_NextIndex++, INPUT_NUM.X_NEG_OT.getValue() );
-                    addInput( row1_NextIndex + 7, INPUT_NUM.X_POS_OT.getValue() );
-                    addInput( row1_NextIndex++, INPUT_NUM.Y_NEG_OT.getValue() );
-                    addInput( row1_NextIndex++, INPUT_NUM.Y_POS_OT.getValue() );
-                }
-                else {
-                    addInput( row1_NextIndex++, INPUT_NUM.Y_NEG_OT.getValue() );
-                    addInput( row1_NextIndex + 7, INPUT_NUM.Y_POS_OT.getValue() );
-                    addInput( row1_NextIndex++, INPUT_NUM.X_NEG_OT.getValue() );
-                    addInput( row1_NextIndex++, INPUT_NUM.X_POS_OT.getValue() );
-                }
-            }
-
-            addInput( row1_NextIndex + 7, INPUT_NUM.DUAL_HEAD_COLLISION.getValue() );
-            addInput( row1_NextIndex++, INPUT_NUM.PARK_HEAD_1.getValue() );
-            addInput( row1_NextIndex + 7, INPUT_NUM.PARK_HEAD_2.getValue() );
-        }
-        else {
+        if( m_xOnRail ) {
             addInput( row1_NextIndex++, INPUT_NUM.X_NEG_OT.getValue() );
             addInput( row1_NextIndex + 7, INPUT_NUM.X_POS_OT.getValue() );
             addInput( row1_NextIndex++, INPUT_NUM.Y_NEG_OT.getValue() );
             addInput( row1_NextIndex + 7, INPUT_NUM.Y_POS_OT.getValue() );
+        }
+        else {
+            addInput( row1_NextIndex++, INPUT_NUM.Y_NEG_OT.getValue() );
+            addInput( row1_NextIndex + 7, INPUT_NUM.Y_POS_OT.getValue() );
+            addInput( row1_NextIndex++, INPUT_NUM.X_NEG_OT.getValue() );
+            addInput( row1_NextIndex + 7, INPUT_NUM.X_POS_OT.getValue() );
+        }
+
+        if( m_dualTransInstalled ) {
+            replaceParams( BLOCK.AXIS_7.getName(), m_dataAccess.getAxesParams() );
+            row2_Index = row1_NextIndex + 8;
+
+            if( m_isRotatingTrans ) {
+                changeParamValue( BLOCK.AXIS_7.getName(), HYPATH.DUALTRANS_CNTS_EN.getName(), HYPATH.DUALTRANS_CNTS_EN.getValue() );
+                changeParamValue( BLOCK.AXIS_7.getName(), HYPATH.DUALTRANS_CNTS_M.getName(), HYPATH.DUALTRANS_CNTS_M.getValue() );
+                changeParamValue( BLOCK.AXIS_7.getName(), HYPATH.SERVO_ERROR_EN.getName(), HYPATH.SERVO_ERROR_EN.getValue() );
+                changeParamValue( BLOCK.AXIS_7.getName(), HYPATH.SERVO_ERROR_M.getName(), HYPATH.SERVO_ERROR_M.getValue() );
+
+                addInput( row1_NextIndex++, INPUT_NUM.ROT_2_HOME.getValue() );
+            }
+            else {
+                if( m_xOnRail ) {
+                    addInput( row1_NextIndex++, INPUT_NUM.Y_POS_OT.getValue() );
+                }
+                else {
+                    addInput( row1_NextIndex++, INPUT_NUM.X_POS_OT.getValue() );
+                }
+            }
+
+            addInput( row2_Index, INPUT_NUM.DUAL_HEAD_COLLISION.getValue() );
+            addInput( row1_NextIndex++, INPUT_NUM.PARK_HEAD_1.getValue() );
+            addInput( row1_NextIndex + 7, INPUT_NUM.PARK_HEAD_2.getValue() );
         }
 
 
@@ -458,7 +458,7 @@ public class ConvertLogic implements IProcess {
             }
             else {
                 if( row1_NextIndex < 8 ) {
-                   addInput( row1_NextIndex++, INPUT_NUM.TILT_PLUS.getValue() );
+                    addInput( row1_NextIndex++, INPUT_NUM.TILT_PLUS.getValue() );
                     addInput( row1_NextIndex + 7, INPUT_NUM.TILT_MINUS.getValue() );
                     addInput( row1_NextIndex++, INPUT_NUM.ROTATE_PLUS.getValue() );
                     addInput( row1_NextIndex + 7, INPUT_NUM.ROTATE_MINUS.getValue() );
@@ -472,13 +472,23 @@ public class ConvertLogic implements IProcess {
             }
 
             if( m_dualBevelInstalled && !m_oneRotateTilt ) {
-                replaceParams( BLOCK.DUAL_ROTATE.getName(), m_dataAccess.getAxesParams() );
-                changeParamValue( BLOCK.DUAL_ROTATE.getName(), BEVEL.ENCODER_CNTS.getName(), BEVEL.ENCODER_CNTS.getValue() );
-                changeParamValue( BLOCK.DUAL_ROTATE.getName(), BEVEL.SERVO_ERROR.getName(), BEVEL.SERVO_ERROR.getValue() );
+                if( m_dualTiltInstalled ) {
+                    replaceParams( BLOCK.DUAL_TILT.getName(), m_dataAccess.getAxesParams() );
+                    changeParamValue( BLOCK.DUAL_TILT.getName(), BEVEL.ENCODER_CNTS.getName(), BEVEL.ENCODER_CNTS.getValue() );
+                    changeParamValue( BLOCK.DUAL_TILT.getName(), BEVEL.SERVO_ERROR.getName(), BEVEL.SERVO_ERROR.getValue() );
 
-                replaceParams( BLOCK.DUAL_TILT.getName(), m_dataAccess.getAxesParams() );
-                changeParamValue( BLOCK.DUAL_TILT.getName(), BEVEL.ENCODER_CNTS.getName(), BEVEL.ENCODER_CNTS.getValue() );
-                changeParamValue( BLOCK.DUAL_TILT.getName(), BEVEL.SERVO_ERROR.getName(), BEVEL.SERVO_ERROR.getValue() );
+                    if( row1_NextIndex < 8 ) {
+                        addInput( row1_NextIndex++, INPUT_NUM.D )
+                    }
+                }
+                else {
+                    replaceParams( BLOCK.DUAL_ROTATE.getName(), m_dataAccess.getAxesParams() );
+                    changeParamValue( BLOCK.DUAL_ROTATE.getName(), BEVEL.ENCODER_CNTS.getName(), BEVEL.ENCODER_CNTS.getValue() );
+                    changeParamValue( BLOCK.DUAL_ROTATE.getName(), BEVEL.SERVO_ERROR.getName(), BEVEL.SERVO_ERROR.getValue() );
+
+                }
+                
+                
 
                 // Need to add rotate 2 OT's and verify tilt_plus/minus & rotate_plus/minus are OT's.
                 // Add check for dual- dual tilting bevel heads
@@ -487,7 +497,7 @@ public class ConvertLogic implements IProcess {
         }
 
         // Add Drive Disabled and Torch Collsion Inputs
-        addInput( row2_NextIndex++, INPUT_NUM.DRIVE_DISABLED.getValue() );
+        addInput( row2_Index++, INPUT_NUM.DRIVE_DISABLED.getValue() );
 
         if( row1_NextIndex < 17 ) {
             addInput( 16, INPUT_NUM.TORCH_COLLISION.getValue() );
@@ -534,9 +544,10 @@ public class ConvertLogic implements IProcess {
 
 
     /**
-     * Merges default IO parameters from the container class into the local IO Map.
-     * Re-assign IO in the local IO Map, if not part of default IO parameters.
-     * 
+     * Merges the default IO parameters from the container class into the I/O block
+     * of the parameter file.  Inputs and outputs that are in the parameter file
+     * but not found in the default input and output maps will be re-assigned, 
+     * beginning at input and output 49.
      * @param listItr
      * @param set
      * @param nextSection
@@ -544,88 +555,51 @@ public class ConvertLogic implements IProcess {
     private void mergeIOMaps() {
         Iterator< Entry< String, Integer >> itr = m_IOParamMap.entrySet().iterator();
         Entry< String, Integer > entry;
-        String inputType;
-        StringBuilder inputNumber;
         String input = "Input";
         String output = "Output";
         String type = "Type=";
-        String number = "Number=";
-        int inNumLoc = 1;
         int inTypeLoc = 49;
-        int outNumLoc = 1;
         int outTypeLoc = 49;
 
+
         // Set all input logic to normally open
-        do {
-            entry = itr.next();
+        while( !( entry = itr.next() ).getKey().startsWith( "InputLogic20=" ) && itr.hasNext() ) {
             entry.setValue( 0 );
-        } while( !entry.getKey().startsWith( "InputLogic20=" ) && itr.hasNext() );
+        }
 
-
-        // Merge default inputs into this map and re-assign unlike inputs of this map starting at input 49
-        // Set input type's to 0, if and only if input type is not re-assigned by a default parameter
-        do {
-            entry = itr.next();
-            inputType = new StringBuilder( input ).append( entry.getValue() ).append( type ).toString();
-            if( !m_inputNumberMap.containsKey( entry.getKey() )) { //&& entry.getValue() > 0 ) {
+        // Parse the I/O block in parameter list and compare input devices to both
+        // input Maps.  Add non matches to Map's, begining at input 49.  Add matches
+        // to Input#Type map and set its value to 0 (basically setting its original
+        // input location to Spare).
+        while( !( entry = itr.next() ).getKey().startsWith( INPUT_TYPE.INPUT_1.getName() ) && itr.hasNext() ) {
+            String inputType = new StringBuilder( input ).append( entry.getValue() ).append( type ).toString();
+            if( !m_inputNumberMap.containsKey( entry.getKey() ) && entry.getValue() > 0 ) {
                 if( m_inputTypeMap.containsKey( inputType )) {
                     int value = getParamValue( BLOCK.IO.getName(), inputType );
                     m_inputNumberMap.put( entry.getKey(), inTypeLoc );
                     m_inputTypeMap.put( new StringBuilder( input ).append( inTypeLoc++ ).append( type ).toString(), value );
                 }
             }
-            else {
+            else if( entry.getValue() > 0 ) {
                 if( !m_inputTypeMap.containsKey( inputType ) ) {
                     m_inputTypeMap.put( inputType, 0 );
                 }
             }
-        } while( !entry.getKey().startsWith( "Input1Type=" ) && itr.hasNext() );
+        }
 
-
-        // Iterate over all InputTypes to get to output logic then set all output logic to 0
-        /*do {
-            if( !entry.getKey().startsWith( "Input" )) {
-                entry.setValue( 0 );
+        // Merge Input#Number map into IO Parameter map
+        for( Entry< String, Integer> map : m_inputNumberMap.entrySet() ) {
+            if( m_IOParamMap.containsKey( map.getKey() )) {
+                m_IOParamMap.put( map.getKey(), map.getValue() );
             }
+        }
 
-            entry = itr.next();
-
-        } while( !entry.getKey().startsWith( "OutputLogic20=" ) && itr.hasNext() );
-
-
-        // Merge default output into this map and re-assign unlike outputs of this map starting at output 49
-        // Set output type's to 0, if and only if output type is not re-assigned by a default parameter
-        while( !(( entry = itr.next() ).getKey().startsWith( "Output1Type=" )) && itr.hasNext() ) {
-            if( !m_dataAccess.getOutputParams().containsKey( entry.getKey() ) && entry.getValue() > 0 ) {
-                inputType = new StringBuilder( output + entry.getValue() + type );
-                //buildStr.append( output + entry.getValue() + type );
-                if( !m_dataAccess.getOutputParams().containsKey( inputType.toString() )) {
-                    m_IOParamMap.put( inputType.toString(), 0 );
-                }
-
-                inputType = new StringBuilder( output + outTypeLoc + type );
-                //buildStr.append( output + outTypeLoc + type );
-                m_IOParamMap.put( inputType.toString(), outNumLoc );
-                entry.setValue( outTypeLoc++ );
+        // Merge Input#Type map into IO Paramerter map
+        for( Entry< String, Integer > map : m_inputTypeMap.entrySet() ) {
+            if( m_IOParamMap.containsKey( map.getKey() )) {
+               m_IOParamMap.put( map.getKey(), map.getValue() );
             }
-            else if( m_dataAccess.getOutputParams().containsKey( entry.getKey() )) {
-                if( entry.getValue() > 0 ) {
-                    inputType = new StringBuilder( output + entry.getValue() + type );
-                    //buildStr.append( output + entry.getValue() + type );
-                    if( !m_dataAccess.getOutputParams().containsKey( inputType.toString() )) {
-                        m_IOParamMap.put( inputType.toString(), 0 );
-                    }
-                }
-
-                int defaultValue = m_dataAccess.getOutputParams().get( entry.getKey() );
-                inputType = new StringBuilder( output + defaultValue + type );
-                //buildStr.append( output + defaultValue + type );
-                m_IOParamMap.put( inputType.toString(), outNumLoc );
-                entry.setValue( defaultValue );
-            }
-
-            outNumLoc++;
-        }*/
+        }
     }
 
 
