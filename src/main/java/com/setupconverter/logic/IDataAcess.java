@@ -40,9 +40,9 @@ public interface IDataAcess {
      * "[Title]\r\n".
      */
     public enum BLOCK {
-        MACHINE( "[Machine]\r\n" ), SPEEDS( "[Speeds]\r\n" ), AIC( "[AnalogInputCard]\r\n" ), LINK( "[Link]\r\n" ), IO( "[I/O]\r\n" ), ROTATE( "[Rotate]\r\n" ), TILT( "[Tilt]\r\n" ),
-        DUAL_ROTATE( "[DualRotate]\r\n" ), DUAL_TILT( "[DualTilt]\r\n" ), DUAL_GANTRY( "[DualGantry]\r\n" ), THC_1( "[THC1]\r\n" ), THC_2( "[THC2]\r\n" ), THC_3( "[THC3]\r\n" ),
-        THC_4( "[THC4]\r\n" ), AXIS_1( "[Axis0]\r\n" ), AXIS_2( "[Axis1]\r\n" ), AXIS_7( "[Axis6]\r\n" );
+        MACHINE( "[Machine]\r\n" ), SPEEDS( "[Speeds]\r\n" ), AIC( "[AnalogInputCard]\r\n" ), LINK( "[Link]\r\n" ), IO( "[I/O]\r\n" ), ROTATE( "[Rotate]\r\n" ),
+        TILT( "[Tilt]\r\n" ), DUAL_ROTATE( "[DualRotate]\r\n" ), DUAL_TILT( "[DualTilt]\r\n" ), DUAL_GANTRY( "[DualGantry]\r\n" ), THC_1( "[THC1]\r\n" ),
+        THC_2( "[THC2]\r\n" ), THC_3( "[THC3]\r\n" ), THC_4( "[THC4]\r\n" ), AXIS_1( "[Axis0]\r\n" ), AXIS_2( "[Axis1]\r\n" ), AXIS_7( "[Axis6]\r\n" );
 
         private final String m_name;
 
@@ -69,24 +69,26 @@ public interface IDataAcess {
      * i.e. Input47Number=1, where device #47 (NCS1) is assigned to Input 1
      */
     public enum INPUT_NUM {
-        DRIVE_DISABLED( "Input10Number=", 10 ), X_NEG_OT( "Input11Number=", 11 ), X_POS_OT( "Input12Number=", 12 ), Y_NEG_OT( "Input13Number=", 13 ), Y_POS_OT( "Input14Number=", 14 ),
-        TILT_POS_OT( "Input35Number=", 35 ), TILT_NEG_OT( "Input36Number=", 36 ), THC_AUTO_1( "Input46Number=", 46 ), NCS_1( "Input47Number=", 47 ), THC_AUTO_2( "Input51Number=", 51 ),
-        NCS_2( "Input52Number=", 52 ), THC_AUTO_3( "Input56Number=", 56 ), NCS_3( "Input57Number=", 57 ), THC_AUTO_4( "Input61Number=", 61 ), NCS_4( "Input62Number=", 62 ),
+        DRIVE_DISABLED( "Input10Number=", 10 ), X_NEG_OT( "Input11Number=", 11 ), X_POS_OT( "Input12Number=", 12 ), Y_NEG_OT( "Input13Number=", 13 ),
+        Y_POS_OT( "Input14Number=", 14 ), TILT_POS_OT( "Input35Number=", 35 ), TILT_NEG_OT( "Input36Number=", 36 ), ROTATE_HOME( "Input37Number=", 37 ),
+        THC_AUTO_1( "Input46Number=", 46 ), NCS_1( "Input47Number=", 47 ), THC_AUTO_2( "Input51Number=", 51 ), NCS_2( "Input52Number=", 52 ),
+        THC_AUTO_3( "Input56Number=", 56 ), NCS_3( "Input57Number=", 57 ), THC_AUTO_4( "Input61Number=", 61 ), NCS_4( "Input62Number=", 62 ),
         FUME_SELECT( "Input83Number=", 83 ), TORCH_COLLISION( "Input100Number=", 100 ), TEST_LIFTER( "Input102Number=", 102 ), TILT2_POS_OT( "Input103Number=", 103 ),
-        TILT2_NEG_OT( "Input104Number=", 104 ), ROT_2_HOME( "Input105Number=", 105 ), CUT_SENSE_1( "Input106Number=", 106 ), CUT_SENSE_2( "Input107Number=", 107 ), 
+        TILT2_NEG_OT( "Input104Number=", 104 ), ROT_2_HOME( "Input105Number=", 105 ), CUT_SENSE_1( "Input106Number=", 106 ), CUT_SENSE_2( "Input107Number=", 107 ),
         CUT_SENSE_3( "Input108Number=", 108 ), CUT_SENSE_4( "Input109Number=", 109 ), PARK_HEAD_1( "Input126Number=", 126 ), PARK_HEAD_2( "Input127Number=", 127 ),
         DUAL_HEAD_COLLISION( "Input130Number=", 130 ), FUME_SENSE( "Input131Number=", 131 ), JOYSTICK_UP( "Input133Number=", 133 ), JOYSTICK_DOWN( "Input134Number=", 134 ),
         JOYSTICK_LEFT( "Input135Number=", 135 ), JOYSTICK_RIGHT( "Input136Number=", 136 ), TILT_PLUS( "Input137Number=", 137 ), TILT_MINUS( "Input138Number=", 138 ),
         ROTATE_PLUS( "Input139Number=", 139 ), ROTATE_MINUS( "Input140Number=", 140 ), RDY_TO_FIRE_1( "Input169Number=", 169 ), RDY_TO_FIRE_2( "Input170Number=", 170),
-        RDY_TO_FIRE_3( "Input171Number=", 171 ), RDY_TO_FIRE_4( "Input172Number=", 172 ), AUTO_SELECT_1( "Input182Number=", 182 ), AUTO_SELECT_2( "Input183Number=", 183 ),
+        RDY_TO_FIRE_3( "Input171Number=", 171 ), RDY_TO_FIRE_4( "Input172Number=", 172 ), TILT3_POS_OT( "Input178Number=", 178 ), TILT3_NEG_OT( "Input179Number=", 179 ),
+        TILT4_POS_OT( "Input178Number=", 180 ), TILT4_NEG_OT( "Input179Number=", 181 ), AUTO_SELECT_1( "Input182Number=", 182 ), AUTO_SELECT_2( "Input183Number=", 183 ),
         AUTO_SELECT_4( "Input185Number=", 185 ), MANUAL_SELECT_1( "Input202Number=", 202 ), MANUAL_SELECT_2( "Input203Number=", 203 ), MANUAL_SELECT_3( "Input204Number=", 204),
-        MANUAL_SELECT_4( "Input205Number=", 205 ), RAISE_ALL_TORCHES( "Input282Number=", 282 ), AUTO_SELECT_ALL( "Input283Number=", 283 ), MANUAL_IGNITION_SEL( "Input284Number=", 284 ),
-        HIGH_PREHEAT_SEL( "Input285Number=", 285 ), LOW_PREHEAT_SEL( "Input286Number=", 286 ), PIERCE_SELECT( "Input287Number=", 287 ), RAISE_TORCH_1( "Input288Number=", 288 ),
-        RAISE_TORCH_2( "Input289Number=", 289 ), RAISE_TORCH_3( "Input290Number=", 290 ), RAISE_TORCH_4( "Input292Number=", 292 ), LOWER_TORCH_1( "Input308Number=", 308 ),
-        LOWER_TORCH_2( "Input309Number=", 309 ), LOWER_TORCH_3( "Input310Number=", 310 ), LOWER_TORCH_4( "Input311Number=", 311 ), RAISE_TORCH_1A( "Input337Number=", 337 ),
-        LOWER_TORCH_1A( "Input338Number=", 338 ), FP_STOP( "Input356Number=", 356 ), FP_START( "Input3579Number=", 357 ), FP_MANUAL( "Input358Number=", 358 ),
-        CUT_SELECT( "Input361Number=", 361 ), LOWER_ALL_TORCHES( "Input362Number=", 362 ), FP_BACK_ON_PATH( "Input377Number=", 377 ), FP_FORWARD_ON_PATH( "Input378Number=", 378 ),
-        TOOL_CYCLE_ACTIVE( "Input383Number=", 383 );
+        MANUAL_SELECT_4( "Input205Number=", 205 ), RAISE_ALL_TORCHES( "Input282Number=", 282 ), AUTO_SELECT_ALL( "Input283Number=", 283 ),
+        MANUAL_IGNITION_SEL( "Input284Number=", 284 ), HIGH_PREHEAT_SEL( "Input285Number=", 285 ), LOW_PREHEAT_SEL( "Input286Number=", 286 ),
+        PIERCE_SELECT( "Input287Number=", 287 ), RAISE_TORCH_1( "Input288Number=", 288 ), RAISE_TORCH_2( "Input289Number=", 289 ), RAISE_TORCH_3( "Input290Number=", 290 ),
+        RAISE_TORCH_4( "Input292Number=", 292 ), LOWER_TORCH_1( "Input308Number=", 308 ), LOWER_TORCH_2( "Input309Number=", 309 ), LOWER_TORCH_3( "Input310Number=", 310 ),
+        LOWER_TORCH_4( "Input311Number=", 311 ), RAISE_TORCH_1A( "Input337Number=", 337 ), LOWER_TORCH_1A( "Input338Number=", 338 ), FP_STOP( "Input356Number=", 356 ),
+        FP_START( "Input3579Number=", 357 ), FP_MANUAL( "Input358Number=", 358 ), CUT_SELECT( "Input361Number=", 361 ), LOWER_ALL_TORCHES( "Input362Number=", 362 ),
+        FP_BACK_ON_PATH( "Input377Number=", 377 ), FP_FORWARD_ON_PATH( "Input378Number=", 378 ), TOOL_CYCLE_ACTIVE( "Input383Number=", 383 );
 
         private final int m_value;
         private final String m_name;

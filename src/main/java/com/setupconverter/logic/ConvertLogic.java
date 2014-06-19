@@ -274,7 +274,7 @@ public class ConvertLogic implements IProcess {
      * system.  Replaces Axes, I/O, Speed, and Machine settings based on the selected
      * drive type.  I/O is re-arranges to allow user to satisfy homing and simulate
      * cutting, by use of a switch box and loop-back jumper CPC.  Instantiates the
-     * DataAccessObj which provides access to the data that will be uses in the conversion.
+     * DataAccessObj which provides access to the specific drive system type.
      * @throws IOException  Is this needed?
      */
     @ Override
@@ -385,7 +385,7 @@ public class ConvertLogic implements IProcess {
         }
 
 
-        // Convert X & Y Axes parameters
+        // Convert X & Y Axes parameters and homing inputs
         replaceParams( BLOCK.AXIS_1.getName(), m_dataAccess.getAxesParams() );
         replaceParams( BLOCK.AXIS_2.getName(), m_dataAccess.getAxesParams() );
 
@@ -402,9 +402,15 @@ public class ConvertLogic implements IProcess {
             addInput( row1_NextIndex + 7, INPUT_NUM.X_POS_OT.getValue() );
         }
 
+
+        // Add Drive Disabled Input
+        addInput( row2_Index++, INPUT_NUM.DRIVE_DISABLED.getValue() );
+
+
+        // Convert Dual Transverse parameters and add its inputs
         if( m_dualTransInstalled ) {
             replaceParams( BLOCK.AXIS_7.getName(), m_dataAccess.getAxesParams() );
-            row2_Index = row1_NextIndex + 8;
+            row2_Index = row1_NextIndex + 7;
 
             if( m_isRotatingTrans ) {
                 changeParamValue( BLOCK.AXIS_7.getName(), HYPATH.DUALTRANS_CNTS_EN.getName(), HYPATH.DUALTRANS_CNTS_EN.getValue() );
@@ -424,12 +430,20 @@ public class ConvertLogic implements IProcess {
             }
 
             addInput( row2_Index, INPUT_NUM.DUAL_HEAD_COLLISION.getValue() );
-            addInput( row1_NextIndex++, INPUT_NUM.PARK_HEAD_1.getValue() );
-            addInput( row1_NextIndex + 7, INPUT_NUM.PARK_HEAD_2.getValue() );
+
+            if( row1_NextIndex < 8 ) {
+                
+                addInput( row1_NextIndex++, INPUT_NUM.PARK_HEAD_1.getValue() );
+                addInput( row1_NextIndex + 7, INPUT_NUM.PARK_HEAD_2.getValue() );
+            }
+            else {
+                addInput( row3_NextIndex++, INPUT_NUM.PARK_HEAD_1.getValue() );
+                addInput( row3_NextIndex++, INPUT_NUM.PARK_HEAD_2.getValue() );
+            }
         }
 
 
-        // Convert Bevel Axes parameters
+        // Convert Bevel Axes parameters and add homing inputs
         if( m_bevelInstalled && ( m_dualBevelInstalled && !m_noRotateTilt || !m_dualBevelInstalled )) {
             changeParamValue( BLOCK.MACHINE.getName(), BEVEL.AUTO_HOME.getName(), BEVEL.AUTO_HOME.getValue() );
 
@@ -444,30 +458,26 @@ public class ConvertLogic implements IProcess {
             
             if( m_dualTiltInstalled ) {
                 if( row1_NextIndex < 8 ) {
-                    addInput( row1_NextIndex++, INPUT_NUM.TILT_PLUS.getValue() );
-                    addInput( row1_NextIndex + 7, INPUT_NUM.TILT_MINUS.getValue() );
+                    addInput( row1_NextIndex++, INPUT_NUM.TILT_POS_OT.getValue() );
+                    addInput( row1_NextIndex + 7, INPUT_NUM.TILT_NEG_OT.getValue() );
                     addInput( row1_NextIndex++, INPUT_NUM.TILT2_POS_OT.getValue() );
                     addInput( row1_NextIndex + 7, INPUT_NUM.TILT2_NEG_OT.getValue() );
                 }
                 else {
-                    addInput( row3_NextIndex++, INPUT_NUM.TILT_PLUS.getValue() );
-                    addInput( row3_NextIndex++, INPUT_NUM.TILT_MINUS.getValue() );
-                    addInput( row3_NextIndex++, INPUT_NUM.TILT2_POS_OT.getValue() );
-                    addInput( row3_NextIndex++, INPUT_NUM.TILT2_NEG_OT.getValue() );
+                    addInput( row3_NextIndex++, INPUT_NUM.TILT_POS_OT.getValue() );
+                    addInput( row3_NextIndex++, INPUT_NUM.TILT2_POS_OT.getValue() ); 
                 }
             }
             else {
                 if( row1_NextIndex < 8 ) {
-                    addInput( row1_NextIndex++, INPUT_NUM.TILT_PLUS.getValue() );
-                    addInput( row1_NextIndex + 7, INPUT_NUM.TILT_MINUS.getValue() );
-                    addInput( row1_NextIndex++, INPUT_NUM.ROTATE_PLUS.getValue() );
-                    addInput( row1_NextIndex + 7, INPUT_NUM.ROTATE_MINUS.getValue() );
+                    addInput( row1_NextIndex++, INPUT_NUM.TILT_POS_OT.getValue() );
+                    addInput( row1_NextIndex + 7, INPUT_NUM.TILT_NEG_OT.getValue() );
+                    addInput( row1_NextIndex++, INPUT_NUM.ROTATE_HOME.getValue() );
+                    row2_Index = row1_NextIndex + 7;
                 }
                 else {
-                    addInput( row3_NextIndex++, INPUT_NUM.TILT_PLUS.getValue() );
-                    addInput( row3_NextIndex++, INPUT_NUM.TILT_MINUS.getValue() );
-                    addInput( row3_NextIndex++, INPUT_NUM.ROTATE_PLUS.getValue() );
-                    addInput( row3_NextIndex++, INPUT_NUM.ROTATE_MINUS.getValue() );
+                    addInput( row3_NextIndex++, INPUT_NUM.TILT_POS_OT.getValue() );
+                    addInput( row3_NextIndex++, INPUT_NUM.ROTATE_HOME.getValue() );
                 }
             }
 
@@ -478,7 +488,14 @@ public class ConvertLogic implements IProcess {
                     changeParamValue( BLOCK.DUAL_TILT.getName(), BEVEL.SERVO_ERROR.getName(), BEVEL.SERVO_ERROR.getValue() );
 
                     if( row1_NextIndex < 8 ) {
-                        addInput( row1_NextIndex++, INPUT_NUM.D )
+                        addInput( row1_NextIndex++, INPUT_NUM.TILT3_POS_OT.getValue() );
+                        addInput( row1_NextIndex + 7, INPUT_NUM.TILT3_NEG_OT.getValue() );
+                        addInput( row1_NextIndex++, INPUT_NUM.TILT4_POS_OT.getValue() );
+                        addInput( row1_NextIndex + 7, INPUT_NUM.TILT4_NEG_OT.getValue() );
+                    }
+                    else {
+                        addInput( row3_NextIndex++, INPUT_NUM.TILT3_POS_OT.getValue() );
+                        addInput( row3_NextIndex++, INPUT_NUM.TILT4_POS_OT.getValue() );
                     }
                 }
                 else {
@@ -486,33 +503,34 @@ public class ConvertLogic implements IProcess {
                     changeParamValue( BLOCK.DUAL_ROTATE.getName(), BEVEL.ENCODER_CNTS.getName(), BEVEL.ENCODER_CNTS.getValue() );
                     changeParamValue( BLOCK.DUAL_ROTATE.getName(), BEVEL.SERVO_ERROR.getName(), BEVEL.SERVO_ERROR.getValue() );
 
-                }
-                
-                
+                    if( row1_NextIndex < 8 ) {
+                        addInput( row1_NextIndex++, INPUT_NUM.TILT3_POS_OT.getValue() );
+                        addInput( row1_NextIndex + 7, INPUT_NUM.TILT3_NEG_OT.getValue() );
+                        addInput( row1_NextIndex++, INPUT_NUM.ROT_2_HOME.getValue() );
+                        row2_Index = row1_NextIndex + 7;
+                    }
 
-                // Need to add rotate 2 OT's and verify tilt_plus/minus & rotate_plus/minus are OT's.
-                // Add check for dual- dual tilting bevel heads
-                //addInput( row3_NextIndex++, INPUT_NUM.)
+                }
             }
         }
 
-        // Add Drive Disabled and Torch Collsion Inputs
-        addInput( row2_Index++, INPUT_NUM.DRIVE_DISABLED.getValue() );
 
-        if( row1_NextIndex < 17 ) {
-            addInput( 16, INPUT_NUM.TORCH_COLLISION.getValue() );
+        // Add Torch Collision input
+        if( row2_Index < 9 ) {
+            addInput( row2_Index++, INPUT_NUM.TORCH_COLLISION.getValue() );
         }
-        else if( row3_NextIndex < 22 ) {
-            addInput( 22, INPUT_NUM.TORCH_COLLISION.getValue() );
+        else if( row3_NextIndex < 24 ) {
+            addInput( row3_NextIndex, INPUT_NUM.TORCH_COLLISION.getValue() );
         }
 
 
+        // Merge in axes and IO settings from container into parameter file
         addParamsToMap( BLOCK.IO.getName(), m_IOParamMap );
-        mergeIOMaps();
-        replaceParams( "[I/O]\r\n", m_IOParamMap );
+        shuffleIO();
+        replaceParams( BLOCK.IO.getName(), m_IOParamMap );
 
 
-         // Find/replace serial link settings
+        // Set all port settings to none and merge back into parameter file
         addParamsToMap( BLOCK.LINK.getName(), m_LinkParamMap );
         resetLinkSettings();
         replaceParams( BLOCK.LINK.getName(), m_LinkParamMap );
@@ -544,15 +562,16 @@ public class ConvertLogic implements IProcess {
 
 
     /**
-     * Merges the default IO parameters from the container class into the I/O block
-     * of the parameter file.  Inputs and outputs that are in the parameter file
-     * but not found in the default input and output maps will be re-assigned, 
-     * beginning at input and output 49.
+     * Re-arranges the inputs from the parameter file to allow use of a 24 input
+     * switch box to control inputs, sets all input logic to normally open, moves 
+     * or assigns cut control and cut sense to IO 40.  Inputs that are not used for
+     * homing or to disabling drives are move to IO 49 and higher.  When shuffle
+     * is complete, adds IO Parameters back into parameter file.
      * @param listItr
      * @param set
      * @param nextSection
      */
-    private void mergeIOMaps() {
+    private void shuffleIO() {
         Iterator< Entry< String, Integer >> itr = m_IOParamMap.entrySet().iterator();
         Entry< String, Integer > entry;
         String input = "Input";
@@ -567,10 +586,9 @@ public class ConvertLogic implements IProcess {
             entry.setValue( 0 );
         }
 
-        // Parse the I/O block in parameter list and compare input devices to both
-        // input Maps.  Add non matches to Map's, begining at input 49.  Add matches
-        // to Input#Type map and set its value to 0 (basically setting its original
-        // input location to Spare).
+        // Shuffle inputs from parameter file with those from container class.  The
+        // InputNumber Map are preferred inputs to operate switch box, based on applicaiton.
+        // Move's non essential inputs to input 49 and higher.
         while( !( entry = itr.next() ).getKey().startsWith( INPUT_TYPE.INPUT_1.getName() ) && itr.hasNext() ) {
             String inputType = new StringBuilder( input ).append( entry.getValue() ).append( type ).toString();
             if( !m_inputNumberMap.containsKey( entry.getKey() ) && entry.getValue() > 0 ) {
@@ -585,6 +603,11 @@ public class ConvertLogic implements IProcess {
                     m_inputTypeMap.put( inputType, 0 );
                 }
             }
+        }
+
+        // Set all output logic to normally open
+        while( !( entry = itr.next() ).getKey().startsWith( "OutputLogic20=" ) && itr.hasNext() ) {
+            entry.setValue( 0 );
         }
 
         // Merge Input#Number map into IO Parameter map
