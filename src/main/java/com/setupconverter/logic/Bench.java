@@ -165,17 +165,17 @@ public final class Bench {
         m_outputParams.put( "Output476Number=", 9 );
         m_outputParams.put( "Output1Type=", OUTPUT.HOLD_IGN1.getValue() );
         m_outputParams.put( "Output2Type=", OUTPUT.THD.getValue() );
-        m_outputParams.put( "Output3Type=", OUTPUT.NCE1.getValue() );
-        m_outputParams.put( "Output5Type=", OUTPUT.VENT1.getValue() );
-        m_outputParams.put( "Output6Type=", OUTPUT.VENT2.getValue() );
-        m_outputParams.put( "Output7Type=", OUTPUT.VENT3.getValue() );
-        m_outputParams.put( "Output8Type=", OUTPUT.VENT4.getValue() );
-        m_outputParams.put( "Output9Type=", OUTPUT.VENT5.getValue() );
-        m_outputParams.put( "Output17Type=", OUTPUT.CUT_CONTROL2.getValue() );
-        m_outputParams.put( "Output18Type=", OUTPUT.CUT_CONTROL1.getValue() );
+        m_outputParams.put( "Output3Type=", OUTPUT.NCE_1.getValue() );
+        m_outputParams.put( "Output5Type=", OUTPUT.VENT_1.getValue() );
+        m_outputParams.put( "Output6Type=", OUTPUT.VENT_2.getValue() );
+        m_outputParams.put( "Output7Type=", OUTPUT.VENT_3.getValue() );
+        m_outputParams.put( "Output8Type=", OUTPUT.VENT_4.getValue() );
+        m_outputParams.put( "Output9Type=", OUTPUT.VENT_5.getValue() );
+        m_outputParams.put( "Output17Type=", OUTPUT.CUT_CONTROL_2.getValue() );
+        m_outputParams.put( "Output18Type=", OUTPUT.CUT_CONTROL_1.getValue() );
         m_outputParams.put( "Output24Type=", OUTPUT.DRIVE_ENABLE.getValue() );
-        m_outputParams.put(  "Output129Type=", OUTPUT.STATION_ENABLE_LED1.getValue() );
-        m_outputParams.put( "Output130Type=", OUTPUT.STATION_ENABLE_LED2.getValue() );
+        m_outputParams.put(  "Output129Type=", OUTPUT.STATION_ENABLE_LED_1.getValue() );
+        m_outputParams.put( "Output130Type=", OUTPUT.STATION_ENABLE_LED_2.getValue() );
 
         // THC Axes
         m_thcParams.put( "PGain=", 20 );

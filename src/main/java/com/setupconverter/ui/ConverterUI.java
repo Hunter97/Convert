@@ -113,7 +113,6 @@ public class ConverterUI extends JFrame {
         super( "Convert_INI" );
         m_systems = new String[] { SYSTEM.BENCH.getName(), SYSTEM.HYPATH.getName() };
         m_operate = new OperateConverter();
-        //m_index = m_systems.length + 1;
 
         // Frame settings
         JFrame.setDefaultLookAndFeelDecorated( true );
@@ -233,14 +232,13 @@ public class ConverterUI extends JFrame {
         m_selectionPanel.add( m_comboBoxLabel, addConstraints( 0, 0, 1, 1, 0, 0.5, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets( 1, 1, 1, 25 )));
         m_comboBox = new JComboBox( m_systems );
         m_comboBox.setSelectedIndex( m_systems.length -1 );
-        //m_systemList.setEnabled( false );
         m_comboBox.setToolTipText("Select conversion type");
         m_selectionPanel.add( m_comboBox, addConstraints( 0, 1, 1, 1, 0, 0.5, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets( 1, 1, 80, 1 )));
+        m_selection = (String)m_comboBox.getSelectedItem();
 
         m_comboBox.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed( ActionEvent evt ) {
-                //m_index = m_comboBox.getSelectedIndex();
                 m_selection = (String)m_comboBox.getSelectedItem();
             }
         });

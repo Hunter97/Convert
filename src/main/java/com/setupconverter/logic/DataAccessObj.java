@@ -26,6 +26,7 @@ public class DataAccessObj implements IDataAcess {
     private final Map< String, Integer > m_thcAxisDefaults;
     private final Map< String, Integer > m_thcMachineDefaults;
     private final Map< String, Integer > m_thcAnalogDefaults;
+    private final Map< String, Integer > m_dualGantryDefaults;
     private Map< String, Integer > m_axesDefaults;
 
     private EnumMap< INPUT_TYPE, Integer > m_inputTypeMap;
@@ -40,6 +41,7 @@ public class DataAccessObj implements IDataAcess {
         this.m_speedDefaults = new LinkedHashMap<>();
         this.m_axesDefaults = new LinkedHashMap<>();
         this.m_thcAnalogDefaults = new LinkedHashMap<>();
+        this.m_dualGantryDefaults = new LinkedHashMap<>();
     }
 
 
@@ -54,10 +56,10 @@ public class DataAccessObj implements IDataAcess {
         this.m_speedDefaults = new LinkedHashMap<>();
         this.m_axesDefaults = new LinkedHashMap<>();
         this.m_thcAnalogDefaults = new LinkedHashMap<>();
+        this.m_dualGantryDefaults = new LinkedHashMap<>();
 
         addAxesDefaults( type );
         addSpeedDefaults();
-        //setInputTypeMap();
     }
 
 
@@ -98,10 +100,10 @@ public class DataAccessObj implements IDataAcess {
         hypathDefaults.put( HYPATH.ENCODER_CNTS_EN.getName(), HYPATH.ENCODER_CNTS_EN.getValue() );
         hypathDefaults.put( HYPATH.ENCODER_CNTS_M.getName(), HYPATH.ENCODER_CNTS_M.getValue() );
         hypathDefaults.put( HYPATH.ENCODER_MODE.getName(), HYPATH.ENCODER_MODE.getValue() );
-        hypathDefaults.put( HYPATH.ENCODER_POL.getName(), HYPATH.ENCODER_POL.getValue() );
+        hypathDefaults.put( HYPATH.ENCODER_POLARITY.getName(), HYPATH.ENCODER_POLARITY.getValue() );
         hypathDefaults.put( HYPATH.HOME_OT.getName(), HYPATH.HOME_OT.getValue() );
         hypathDefaults.put( HYPATH.HOME_SW.getName(), HYPATH.HOME_SW.getValue() );
-        hypathDefaults.put( HYPATH.HW_OT.getName(), HYPATH.HW_OT.getValue() );
+        hypathDefaults.put( HYPATH.USE_HW_OT.getName(), HYPATH.USE_HW_OT.getValue() );
         hypathDefaults.put( HYPATH.SERVO_ERROR_EN.getName(), HYPATH.SERVO_ERROR_EN.getValue() );
         hypathDefaults.put( HYPATH.SERVO_ERROR_M.getName(), HYPATH.SERVO_ERROR_M.getValue() );
 
@@ -146,10 +148,10 @@ public class DataAccessObj implements IDataAcess {
         picoDefaults.put( PICO_PATH.ENCODER_CNTS_EN.getName(), PICO_PATH.ENCODER_CNTS_EN.getValue() );
         picoDefaults.put( PICO_PATH.ENCODER_CNTS_M.getName(), PICO_PATH.ENCODER_CNTS_M.getValue() );
         picoDefaults.put( PICO_PATH.ENCODER_MODE.getName(), PICO_PATH.ENCODER_MODE.getValue() );
-        picoDefaults.put( PICO_PATH.ENCODER_POL.getName(), PICO_PATH.ENCODER_POL.getValue() );
+        picoDefaults.put( PICO_PATH.ENCODER_POLARITY.getName(), PICO_PATH.ENCODER_POLARITY.getValue() );
         picoDefaults.put( PICO_PATH.HOME_OT.getName(), PICO_PATH.HOME_OT.getValue() );
         picoDefaults.put( PICO_PATH.HOME_SW.getName(), PICO_PATH.HOME_SW.getValue() );
-        picoDefaults.put( PICO_PATH.HW_OT.getName(), PICO_PATH.HW_OT.getValue() );
+        picoDefaults.put( PICO_PATH.USE_HW_OT.getName(), PICO_PATH.USE_HW_OT.getValue() );
         picoDefaults.put( PICO_PATH.SERVO_ERROR_EN.getName(), PICO_PATH.SERVO_ERROR_EN.getValue() );
         picoDefaults.put( PICO_PATH.SERVO_ERROR_M.getName(), PICO_PATH.SERVO_ERROR_M.getValue() );
 
@@ -160,43 +162,43 @@ public class DataAccessObj implements IDataAcess {
     @Override
     public final void addSpeedDefaults() {
         // Add typical acceleration settings
-        m_speedDefaults.put( SPEED.ACCEL1.getName(), SPEED.ACCEL1.getValue() );
-        m_speedDefaults.put( SPEED.ACCEL2.getName(), SPEED.ACCEL2.getValue() );
-        m_speedDefaults.put( SPEED.ACCEL3.getName(), SPEED.ACCEL3.getValue() );
-        m_speedDefaults.put( SPEED.ACCEL4.getName(), SPEED.ACCEL4.getValue() );
-        m_speedDefaults.put( SPEED.ACCEL5.getName(), SPEED.ACCEL5.getValue() );
+        m_speedDefaults.put( SPEED.ACCEL_BREAK_1.getName(), SPEED.ACCEL_BREAK_1.getValue() );
+        m_speedDefaults.put( SPEED.ACCEL_BREAK_2.getName(), SPEED.ACCEL_BREAK_2.getValue() );
+        m_speedDefaults.put( SPEED.ACCEL_BREAK_3.getName(), SPEED.ACCEL_BREAK_3.getValue() );
+        m_speedDefaults.put( SPEED.ACCEL_BREAK_4.getName(), SPEED.ACCEL_BREAK_4.getValue() );
+        m_speedDefaults.put( SPEED.ACCEL_BREAK_5.getName(), SPEED.ACCEL_BREAK_5.getValue() );
 
         // Add typical max speed settings
-        m_speedDefaults.put( SPEED.MAX_EN.getName(), SPEED.MAX_EN.getValue() );
-        m_speedDefaults.put( SPEED.MAX_M.getName(), SPEED.MAX_M.getValue() );
+        m_speedDefaults.put( SPEED.MAX_SPEED_EN.getName(), SPEED.MAX_SPEED_EN.getValue() );
+        m_speedDefaults.put( SPEED.MAX_SPEED_M.getName(), SPEED.MAX_SPEED_M.getValue() );
 
         // Add typical speed breaks ranges
-        m_speedDefaults.put( SPEED.SPEED1_EN.getName(), SPEED.SPEED1_EN.getValue() );
-        m_speedDefaults.put( SPEED.SPEED1_M.getName(), SPEED.SPEED1_M.getValue() );
-        m_speedDefaults.put( SPEED.SPEED2_EN.getName(), SPEED.SPEED2_EN.getValue() );
-        m_speedDefaults.put( SPEED.SPEED2_M.getName(), SPEED.SPEED2_M.getValue() );
-        m_speedDefaults.put( SPEED.SPEED3_EN.getName(), SPEED.SPEED3_EN.getValue() );
-        m_speedDefaults.put( SPEED.SPEED3_M.getName(), SPEED.SPEED3_M.getValue() );
-        m_speedDefaults.put( SPEED.SPEED4_EN.getName(), SPEED.SPEED4_EN.getValue() );
-        m_speedDefaults.put( SPEED.SPEED4_M.getName(), SPEED.SPEED4_M.getValue() );
-        m_speedDefaults.put( SPEED.SPEED5_EN.getName(), SPEED.SPEED5_EN.getValue() );
-        m_speedDefaults.put( SPEED.SPEED5_M.getName(), SPEED.SPEED5_M.getValue() );
+        m_speedDefaults.put( SPEED.SPEED_RANGE_1_EN.getName(), SPEED.SPEED_RANGE_1_EN.getValue() );
+        m_speedDefaults.put( SPEED.SPEED_RANGE_1_M.getName(), SPEED.SPEED_RANGE_1_M.getValue() );
+        m_speedDefaults.put( SPEED.SPEED_RANGE_2_EN.getName(), SPEED.SPEED_RANGE_2_EN.getValue() );
+        m_speedDefaults.put( SPEED.SPEED_RANGE_2_M.getName(), SPEED.SPEED_RANGE_2_M.getValue() );
+        m_speedDefaults.put( SPEED.SPEED_RANGE_3_EN.getName(), SPEED.SPEED_RANGE_3_EN.getValue() );
+        m_speedDefaults.put( SPEED.SPEED_RANGE_3_M.getName(), SPEED.SPEED_RANGE_3_M.getValue() );
+        m_speedDefaults.put( SPEED.SPEED_RANGE_4_EN.getName(), SPEED.SPEED_RANGE_4_EN.getValue() );
+        m_speedDefaults.put( SPEED.SPEED_RANGE_4_M.getName(), SPEED.SPEED_RANGE_4_M.getValue() );
+        m_speedDefaults.put( SPEED.SPEED_RANGE_5_EN.getName(), SPEED.SPEED_RANGE_5_EN.getValue() );
+        m_speedDefaults.put( SPEED.SPEED_RANGE_5_M.getName(), SPEED.SPEED_RANGE_5_M.getValue() );
     }
 
 
     @Override
     public void addTHCDefaults() {
-        m_thcMachineDefaults.put( THC.ANALOG1.getName(), THC.ANALOG1.getValue() );
-        m_thcMachineDefaults.put( THC.ANALOG2.getName(), THC.ANALOG2.getValue() );
+        m_thcMachineDefaults.put( THC.ANALOG_1.getName(), THC.ANALOG_1.getValue() );
+        m_thcMachineDefaults.put( THC.ANALOG_2.getName(), THC.ANALOG_2.getValue() );
 
         m_thcAxisDefaults.put( THC.HARD_STOP.getName(), THC.HARD_STOP.getValue() );
-        m_thcAxisDefaults.put( THC.HOMING.getName(), THC.HOMING.getValue() );
+        m_thcAxisDefaults.put( THC.HOME_SWITCH.getName(), THC.HOME_SWITCH.getValue() );
         m_thcAxisDefaults.put( THC.SLIDE_EN.getName(), THC.SLIDE_EN.getValue() );
         m_thcAxisDefaults.put( THC.SLIDE_M.getName(), THC.SLIDE_M.getValue() );
 
-        m_thcAnalogDefaults.put( THC.SPEEDPOT1_INSTALLED.getName(), THC.SPEEDPOT1_INSTALLED.getValue() );
-        m_thcAnalogDefaults.put( THC.SPEEDPOT1_ANALOG1.getName(), THC.SPEEDPOT1_ANALOG1.getValue() );
-        m_thcAnalogDefaults.put( THC.SPEEDPOT1_ANALOG2.getName(), THC.SPEEDPOT1_ANALOG2.getValue() );
+        m_thcAnalogDefaults.put( THC.SPEEDPOT_1_INSTALLED.getName(), THC.SPEEDPOT_1_INSTALLED.getValue() );
+        m_thcAnalogDefaults.put( THC.SPEEDPOT_1_ANALOG_1.getName(), THC.SPEEDPOT_1_ANALOG_1.getValue() );
+        m_thcAnalogDefaults.put( THC.SPEEDPOT_1_ANALOG_2.getName(), THC.SPEEDPOT_1_ANALOG_2.getValue() );
     }
 
 
@@ -230,6 +232,13 @@ public class DataAccessObj implements IDataAcess {
 
 
     @Override
+    public void addDualGantryDefaults() {
+        m_dualGantryDefaults.put( DUAL_GANTRY.SKEW_ERROR_EN.getName(), 1 );
+        m_dualGantryDefaults.put( DUAL_GANTRY.SKEW_ERROR_M.getName(), 25 );
+    }
+
+
+    @Override
     public Map< String, Integer > getTHCAxisParams() {
         return m_thcAxisDefaults;
     }
@@ -256,5 +265,11 @@ public class DataAccessObj implements IDataAcess {
     @Override
     public Map< String, Integer > getSpeedParams() {
         return m_speedDefaults;
+    }
+
+
+    @Override
+    public Map< String, Integer > getDualGantryParams() {
+        return m_dualGantryDefaults;
     }
 }
