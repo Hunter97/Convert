@@ -262,8 +262,7 @@ public class ConverterUI extends JFrame {
      * @return              - GridBagConstraints object with constraints set
      */
     private GridBagConstraints addConstraints( int xPos, int yPos, int width, int height, double weight_X, double weight_Y, int anchor,
-            int fill, Insets pad_cells ) {
-        
+        int fill, Insets pad_cells ) {
         GridBagConstraints gbc = new GridBagConstraints();
 
         gbc.gridx = xPos;

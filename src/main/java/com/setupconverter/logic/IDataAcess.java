@@ -61,15 +61,15 @@ public interface IDataAcess {
 
 
     /**
-     * Input device assignment enum; represents each available input device as an
+     * Input device assignment enum; represents available input devices as an
      * integer value. The value represents the device and the String is how the
      * parameter is represented within the parameter file.  
      * In the parameter file: Input#Number is equal to a physical input, where #
      * is the integer value of the input device.
-     * i.e. Input47Number=1, where device #47 (NCS1) is assigned to Input 1
+     * i.e. Input47Number=1, where device #47 is assigned to Input 1
      */
     public enum INPUT_NUM {
-        DRIVE_DISABLED( "Input10Number=", 10 ), X_NEG_OT( "Input11Number=", 11 ), X_POS_OT( "Input12Number=", 12 ), Y_NEG_OT( "Input13Number=", 13 ),
+        CUT_MARK_SENSE( "Input4Number=", 4 ), DRIVE_DISABLED( "Input10Number=", 10 ), X_NEG_OT( "Input11Number=", 11 ), X_POS_OT( "Input12Number=", 12 ), Y_NEG_OT( "Input13Number=", 13 ),
         Y_POS_OT( "Input14Number=", 14 ), TILT_POS_OT( "Input35Number=", 35 ), TILT_NEG_OT( "Input36Number=", 36 ), ROTATE_HOME( "Input37Number=", 37 ),
         THC_AUTO_1( "Input46Number=", 46 ), NCS_1( "Input47Number=", 47 ), THC_AUTO_2( "Input51Number=", 51 ), NCS_2( "Input52Number=", 52 ),
         THC_AUTO_3( "Input56Number=", 56 ), NCS_3( "Input57Number=", 57 ), THC_AUTO_4( "Input61Number=", 61 ), NCS_4( "Input62Number=", 62 ),
@@ -203,18 +203,53 @@ public interface IDataAcess {
      * Output enum, contains all available inputs of the CNC.  Output integer values
      * equals the output number in Phoenix
      */
-    public enum OUTPUT {
-        THD( 4 ), DRIVE_ENABLE( 55 ), NCE_1( 57 ), HOLD_IGN1( 58 ), CUT_CONTROL_1( 197 ), CUT_CONTROL_2( 198 ), STATION_ENABLE_LED_1( 217 ), STATION_ENABLE_LED_2( 218 ),
-        VENT_1( 472 ), VENT_2( 473 ), VENT_3( 474 ), VENT_4( 475 ), VENT_5( 476 );
+    public enum OUTPUT_NUM {
+        THD( "Output4Number=", 4 ), CUT_CONTROL( "Output8Number=", 8 ), DRIVE_ENABLE( "Output55Number=", 55 ), NCE_1( "Output57Number=", 57 ), HOLD_IGN1( "Output58Number=", 58 ),
+        CUT_CONTROL_1( "Output197Number=", 197 ), CUT_CONTROL_2( "Output198Number=", 198 ), CUT_CONTROL_3( "Output198Number=", 198 ), CUT_CONTROL_4( "Output198Number=", 198 ),
+        STATION_ENABLE_LED_1( "Output217Number=", 217 ), STATION_ENABLE_LED_2( "Output218Number=", 218 ), VENT_1( "Output472Number=", 472 ), VENT_2( "Output473Number=", 473 ),
+        VENT_3( "Output474Number=", 474 ), VENT_4( "Output475Number=", 475 ), VENT_5( "Output476Number=", 476 );
 
-        private final int value;
+        private final int m_value;
+        private final String m_name;
 
-        private OUTPUT( int value ) {
-            this.value = value;
+        private OUTPUT_NUM( String name, int value ) {
+            this.m_value = value;
+            this.m_name = name;
         }
 
+        /**
+         * Get/return the integer value for this input device
+         * @return  - The input device as an integer
+         */
         public int getValue() {
-            return value;
+            return m_value;
+        }
+
+        /**
+         * Get/return the String representation of this input device
+         * @return  - The input device as a String
+         */
+        public String getName() {
+            return m_name;
+        }
+
+        /**
+         * Gets/returns the enum type that matches the String argument.
+         * @param name  - The String value of this enum
+         * @return      - This enum type
+         */
+        public static OUTPUT_NUM getType( String name ) {
+            OUTPUT_NUM temp = null;
+
+            for( OUTPUT_NUM type : OUTPUT_NUM.values() ) {
+                System.out.println(type.getName());
+                if( type.getName().equals( name ) ) {
+                    temp = type;
+                    break;
+                }
+            }
+
+            return temp;
         }
     }
 

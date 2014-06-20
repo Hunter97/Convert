@@ -4,7 +4,7 @@
 package com.setupconverter.logic;
 
 import com.setupconverter.logic.IDataAcess.INPUT_NUM;
-import com.setupconverter.logic.IDataAcess.OUTPUT;
+import com.setupconverter.logic.IDataAcess.OUTPUT_NUM;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -163,19 +163,19 @@ public final class Bench {
         m_outputParams.put( "Output474Number=", 7 );
         m_outputParams.put( "Output475Number=", 8 );
         m_outputParams.put( "Output476Number=", 9 );
-        m_outputParams.put( "Output1Type=", OUTPUT.HOLD_IGN1.getValue() );
-        m_outputParams.put( "Output2Type=", OUTPUT.THD.getValue() );
-        m_outputParams.put( "Output3Type=", OUTPUT.NCE_1.getValue() );
-        m_outputParams.put( "Output5Type=", OUTPUT.VENT_1.getValue() );
-        m_outputParams.put( "Output6Type=", OUTPUT.VENT_2.getValue() );
-        m_outputParams.put( "Output7Type=", OUTPUT.VENT_3.getValue() );
-        m_outputParams.put( "Output8Type=", OUTPUT.VENT_4.getValue() );
-        m_outputParams.put( "Output9Type=", OUTPUT.VENT_5.getValue() );
-        m_outputParams.put( "Output17Type=", OUTPUT.CUT_CONTROL_2.getValue() );
-        m_outputParams.put( "Output18Type=", OUTPUT.CUT_CONTROL_1.getValue() );
-        m_outputParams.put( "Output24Type=", OUTPUT.DRIVE_ENABLE.getValue() );
-        m_outputParams.put(  "Output129Type=", OUTPUT.STATION_ENABLE_LED_1.getValue() );
-        m_outputParams.put( "Output130Type=", OUTPUT.STATION_ENABLE_LED_2.getValue() );
+        m_outputParams.put( "Output1Type=", OUTPUT_NUM.HOLD_IGN1.getValue() );
+        m_outputParams.put( "Output2Type=", OUTPUT_NUM.THD.getValue() );
+        m_outputParams.put( "Output3Type=", OUTPUT_NUM.NCE_1.getValue() );
+        m_outputParams.put( "Output5Type=", OUTPUT_NUM.VENT_1.getValue() );
+        m_outputParams.put( "Output6Type=", OUTPUT_NUM.VENT_2.getValue() );
+        m_outputParams.put( "Output7Type=", OUTPUT_NUM.VENT_3.getValue() );
+        m_outputParams.put( "Output8Type=", OUTPUT_NUM.VENT_4.getValue() );
+        m_outputParams.put( "Output9Type=", OUTPUT_NUM.VENT_5.getValue() );
+        m_outputParams.put( "Output17Type=", OUTPUT_NUM.CUT_CONTROL_2.getValue() );
+        m_outputParams.put( "Output18Type=", OUTPUT_NUM.CUT_CONTROL_1.getValue() );
+        m_outputParams.put( "Output24Type=", OUTPUT_NUM.DRIVE_ENABLE.getValue() );
+        m_outputParams.put(  "Output129Type=", OUTPUT_NUM.STATION_ENABLE_LED_1.getValue() );
+        m_outputParams.put( "Output130Type=", OUTPUT_NUM.STATION_ENABLE_LED_2.getValue() );
 
         // THC Axes
         m_thcParams.put( "PGain=", 20 );
