@@ -277,6 +277,7 @@ public class ConvertLogic implements IProcess {
         int row2_NextIndex = 9;
         int row3_NextIndex = 17;
         int torchCollisionLoc = 16;
+        int typeLoc;
 
 
         // Determine specific tools, bevel heads, pipe axes, THC's that are installed in Machine screen
@@ -512,27 +513,48 @@ public class ConvertLogic implements IProcess {
         }
 
 
+        // Re-assign Cut Sense inputs and Cut Control outputs, beginning at I/O 40
         if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_MARK_SENSE.getName() ) > 0 ) {
-            changeParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_MARK_SENSE.getName(), 40 );
+            addInput( 40, INPUT_NUM.CUT_MARK_SENSE.getValue() );
         }
         else if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_1.getName() ) > 0 ) {
-            changeParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_1.getName(), 40 );
+            addInput( 40, INPUT_NUM.CUT_SENSE_1.getValue() );
 
             if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_2.getName() ) > 0 ) {
-                changeParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_2.getName(), 41 );
+                addInput( 41, INPUT_NUM.CUT_SENSE_2.getValue() );
             }
 
             if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_3.getName() ) > 0 ) {
-                changeParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_3.getName(), 42 );
+                addInput( 42, INPUT_NUM.CUT_SENSE_3.getValue() );
             }
 
             if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_4.getName() ) > 0 ) {
-                changeParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_4.getName(), 43 );
+                addInput( 43, INPUT_NUM.CUT_SENSE_4.getValue() );
             }
         }
 
-        //if( getParamValue( BLOCK.IO.getName(), OUTPUT_NUM.))
-        
+        if( getParamValue( BLOCK.IO.getName(), OUTPUT_NUM.CUT_CONTROL.getName() ) > 0 ) {
+            addOutput( 40, OUTPUT_NUM.CUT_CONTROL.getValue() );
+        }
+        else if( getParamValue( BLOCK.IO.getName(), OUTPUT_NUM.CUT_CONTROL.getName() ) > 0 ) {
+            addOutput( 40, OUTPUT_NUM.CUT_CONTROL_1.getValue() );
+
+            if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_2.getName() ) > 0 ) {
+                addOutput( 41, OUTPUT_NUM.CUT_CONTROL_2.getValue() );
+            }
+
+            if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_3.getName() ) > 0 ) {
+                addOutput( 42, OUTPUT_NUM.CUT_CONTROL_3.getValue() );
+            }
+
+            if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_4.getName() ) > 0 ) {
+                addOutput( 43, OUTPUT_NUM.CUT_CONTROL_4.getValue() );
+            }
+        }
+
+
+        // Re-assign Drive Enable output
+        addOutput( 25, OUTPUT_NUM.DRIVE_ENABLE.getValue() );
 
 
         // Merge in axes and IO settings from container into parameter file
@@ -551,14 +573,24 @@ public class ConvertLogic implements IProcess {
     /**
      * Add's an input type and input number to the InputType Map and the InputNumber
      * Map.
-     * @param typeIndex - The next physical input to be assigned
-     * @param numIndex  - The input device to be assign to an input
+     * @param typeIndex - The physical input to be assigned to an input device
+     * @param numIndex  - The input device to be assign to an input location
      */
     public void addInput( int typeIndex, int numIndex ) {
-        INPUT_TYPE inputType = INPUT_TYPE.getType( new StringBuilder( INPUT ).append( typeIndex ).append( TYPE ).toString() );
-        INPUT_NUM inputNumber = INPUT_NUM.getType( new StringBuilder( INPUT ).append( numIndex ).append( NUMBER ).toString() );
-        m_inputTypeMap.put( inputType.getName(), inputNumber.getValue() );
-        m_inputNumberMap.put( inputNumber.getName(), inputType.getValue() );
+        m_inputTypeMap.put( new StringBuilder( INPUT ).append( typeIndex ).append( TYPE ).toString(), numIndex );
+        m_inputNumberMap.put( new StringBuilder( INPUT ).append( numIndex ).append( NUMBER   ).toString(), typeIndex );
+    }
+
+
+    /**
+     * Add's an output type and output number to the OutputType Map and the OutputNumber
+     * Map.
+     * @param typeIndex - The physical output to be assigned to a device
+     * @param numIndex  - The output device to be assigned to an output location
+     */
+    public void addOutput( int typeIndex, int numIndex ) {
+        m_outputTypeMap.put( new StringBuilder( OUTPUT ).append( typeIndex ).append( TYPE ).toString(), numIndex );
+        m_outputNumberMap.put( new StringBuilder( OUTPUT ).append( numIndex ).append( NUMBER ).toString() , typeIndex );
     }
 
 
