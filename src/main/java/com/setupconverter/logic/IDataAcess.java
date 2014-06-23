@@ -35,9 +35,8 @@ public interface IDataAcess {
 
 
     /**
-     * Enumeration constants containing the titles to each block of parameters
-     * within the parameter List.  Each constant represents a string in the form of
-     * "[Title]\r\n".
+     * Enumeration constants containing titles to several blocks within the parameter list.
+     * Each constant represents a string in the form of "[Title]\r\n".
      */
     public enum BLOCK {
         MACHINE( "[Machine]\r\n" ), SPEEDS( "[Speeds]\r\n" ), AIC( "[AnalogInputCard]\r\n" ), LINK( "[Link]\r\n" ), IO( "[I/O]\r\n" ), ROTATE( "[Rotate]\r\n" ),
@@ -136,72 +135,12 @@ public interface IDataAcess {
 
 
     /**
-     * Input assignment enum; represent each physical input as a integer value.
-     * The value is equal to the physical input and the String is how the parameter
-     * is represented within the parameter file.
-     * In the parameter file: Input#Type is equal to the integer value of an input
-     * device, where # is equal to this physical input.
-     * i.e. Input1Type=47 where Input 1 is assigned to device #47 (NCS1)
-     */
-    public enum INPUT_TYPE {
-        INPUT_1( "Input1Type=", 1 ), INPUT_2( "Input2Type=", 2 ), INPUT_3( "Input3Type=", 3 ), INPUT_4( "Input4Type=", 4 ), INPUT_5( "Input5Type=", 5 ), INPUT_6( "Input6Type=", 6 ),
-        INPUT_7( "Input7Type=", 7 ), INPUT_8( "Input8Type=", 8 ), INPUT_9( "Input9Type=", 9 ), INPUT_10( "Input10Type=", 10 ), INPUT_11( "Input11Type=", 11 ),
-        INPUT_12( "Input12Type=", 12 ), INPUT_13( "Input13Type=", 13 ), INPUT_14( "Input14Type=", 14 ), INPUT_15( "Input15Type=", 15 ), INPUT_16( "Input16Type=", 16 ),
-        INPUT_17( "Input17Type=", 17 ), INPUT_18( "Input18Type=", 18 ), INPUT_19( "Input19Type=", 19 ), INPUT_20( "Input20Type=", 20 ), INPUT_21( "Input21Type=", 21 ),
-        INPUT_22( "Input22Type=", 22 ), INPUT_40( "Input40Type=", 40 ), INPUT_41( "Input41Type=", 41 ), INPUT_42( "Input42Type=", 42 ), INPUT_43( "Input43Type=", 43 ),
-        INPUT_44( "Input44Type=", 44 ), INPUT_129( "Input129Type=", 129 ), INPUT_130( "Input130Type=", 130 ), INPUT_131( "Input131Type=", 131 ), INPUT_132( "Input132Type=", 132 ),
-        INPUIT_133( "Input133Type=", 133 ), INPUT_134( "Input134Type=", 134 ), INPUT_135( "Input135Type=", 135 ), INPUT_136( "Input136Type=", 136 ), INPUT_137( "Input137Type=", 137 ),
-        INPUT_138( "Input138Type=", 138 ), INPUT_139( "Input139Type=", 139 ), INPUT_140( "Input140Type=", 140 ), INPUT_141( "Input141Type=", 141 ), INPUT_142( "Input142Type=", 142 ),
-        INPUT_143( "Input143Type=", 143 ), INPUT_144( "Input144Type=", 144 ), INPUT_145( "Input145Type=", 145 );
-
-	private final int m_value;
-        private final String m_name;
-
-        private INPUT_TYPE( String name, int value ) {
-            this.m_value = value;
-            this.m_name = name;
-        }
-
-        /**
-         * Get/return the integer value for this input device 
-         * @return  - The input device as an integer
-         */
-        public int getValue() {
-            return m_value;
-        }
-
-        /**
-         * Get/return the String representation of this input device
-         * @return  - The input device as a String
-         */
-        public String getName() {
-            return m_name;
-        }
-
-        /**
-         * Gets/returns the enum type that matches the String argument.
-         * @param name  - The String value of this enum
-         * @return      - This enum type
-         */
-        public static INPUT_TYPE getType( String name ) {
-            INPUT_TYPE temp = null;
-
-            for( INPUT_TYPE type : INPUT_TYPE.values() ) {
-                System.out.println(type.getName());
-                if( type.getName().equals( name ) ) {
-                    temp = type;
-                    break;
-                }
-            }
-
-            return temp;
-        }
-    }
-
-
-    /**
-     * Output enum, contains all available inputs of the CNC.  Output integer values
-     * equals the output number in Phoenix
+     * Output device assignment enum; represents available output devices as an
+     * integer value. The value represents the device and the String is how the
+     * parameter is represented within the parameter file.  
+     * In the parameter file: Output#Number is equal to a physical output, where #
+     * is the integer value of the output device.
+     * i.e. Output8Number=1, where device #8 is assigned to Output 1
      */
     public enum OUTPUT_NUM {
         THD( "Output4Number=", 4 ), CUT_CONTROL( "Output8Number=", 8 ), DRIVE_ENABLE( "Output55Number=", 55 ), NCE_1( "Output57Number=", 57 ), HOLD_IGN1( "Output58Number=", 58 ),
@@ -218,16 +157,16 @@ public interface IDataAcess {
         }
 
         /**
-         * Get/return the integer value for this input device
-         * @return  - The input device as an integer
+         * Get/return the integer value for this output device
+         * @return  - The output device as an integer
          */
         public int getValue() {
             return m_value;
         }
 
         /**
-         * Get/return the String representation of this input device
-         * @return  - The input device as a String
+         * Get/return the String representation of this output device
+         * @return  - The output device as a String
          */
         public String getName() {
             return m_name;
@@ -258,10 +197,12 @@ public interface IDataAcess {
      * Contains default Speed settings for all drive types
      */
     public enum SPEED {
-        MAX_SPEED_EN( "MaxSpeed(english)=", 1000 ), MAX_SPEED_M( "MaxSpeed(metric)=", 25400 ), SPEED_RANGE_1_EN( "GainSpeed1(english)=", 100 ), SPEED_RANGE_1_M( "GainSpeed1(metric)=", 2540 ), 
-        SPEED_RANGE_2_EN( "GainSpeed2(english)=", 300 ), SPEED_RANGE_2_M( "GainSpeed2(metric)=", 7620 ), SPEED_RANGE_3_EN( "GainSpeed3(english)=", 500 ), SPEED_RANGE_3_M( "GainSpeed3(metric)=", 12700 ), 
-        SPEED_RANGE_4_EN( "GainSpeed4(english)=", 1000 ), SPEED_RANGE_4_M( "GainSpeed4(metric)=", 25400 ), SPEED_RANGE_5_EN( "GainSpeed5(english)=", 1000 ), SPEED_RANGE_5_M( "GainSpeed5(metric)=", 25400 ),
-        ACCEL_BREAK_1( "AccelRate=", 20 ), ACCEL_BREAK_2( "AccelRate2=", 40 ), ACCEL_BREAK_3( "AccelRate3=", 50 ), ACCEL_BREAK_4( "AccelRate4=", 60 ), ACCEL_BREAK_5( "AccelRate5=", 60 );
+        MAX_SPEED_EN( "MaxSpeed(english)=", 1000 ), MAX_SPEED_M( "MaxSpeed(metric)=", 25400 ), SPEED_RANGE_1_EN( "GainSpeed1(english)=", 100 ),
+        SPEED_RANGE_1_M( "GainSpeed1(metric)=", 2540 ), SPEED_RANGE_2_EN( "GainSpeed2(english)=", 300 ), SPEED_RANGE_2_M( "GainSpeed2(metric)=", 7620 ),
+        SPEED_RANGE_3_EN( "GainSpeed3(english)=", 500 ), SPEED_RANGE_3_M( "GainSpeed3(metric)=", 12700 ), SPEED_RANGE_4_EN( "GainSpeed4(english)=", 1000 ),
+        SPEED_RANGE_4_M( "GainSpeed4(metric)=", 25400 ), SPEED_RANGE_5_EN( "GainSpeed5(english)=", 1000 ), SPEED_RANGE_5_M( "GainSpeed5(metric)=", 25400 ),
+        ACCEL_BREAK_1( "AccelRate=", 20 ), ACCEL_BREAK_2( "AccelRate2=", 40 ), ACCEL_BREAK_3( "AccelRate3=", 50 ), ACCEL_BREAK_4( "AccelRate4=", 60 ),
+        ACCEL_BREAK_5( "AccelRate5=", 60 );
 
         private final int m_value;
         private final String m_name;
@@ -290,13 +231,14 @@ public interface IDataAcess {
 
 
     /**
-     * Contain Machine parameters, used to determine machine configuration
+     * Group of specific machine parameters that signify the type of application setup file
+     * is configured to be.
      */
     public enum PARAMETER {
         DUAL_GANTRY( "DualGantryInstalled=" ), FP( "FrontPanelInstalled=" ), SERCOS( "SercosSensorUtility=" ), AG( "ArcGlideTHCInstalled=" ), PSCOMM_HYPERNET( "PSCommOverHypNetEn" ),
         STHC( "SensorTHCInstalled=" ), BEVEL_AXES( "SkewRotatorInstalled=" ), DUAL_BEVEL( "DualSkewRotatorInstalled=" ), AUTO_HOME( "AutoHome=" ),
         DUAL_TRANS( "DualTransverseInstalled=" ), NO_ROTATE_TILT( "NoRotateTilt=" ), ONE_ROTATE_TILT( "OneRotateTilt=" ), ROTATING_TRANS( "RotatingTransverse=" ),
-        X_AXIS_ORIENTATION( "XAxisOrientation=" ), DUAL_TILTING( "DualTiltMode=" );
+        X_AXIS_ORIENTATION( "XAxisOrientation=" ), DUAL_TILTING( "DualTiltMode=" ), CHECK_SUM( "Checksum=" );
 
         private final String m_name;
 
@@ -315,8 +257,7 @@ public interface IDataAcess {
 
 
     /**
-     * Default Axes settings for a CNC using the Hypath diagnostic boards.
-     * @author prwallace
+     * Default Axes settings for a CNC using the Hypath diagnostic boards
      */
     public enum HYPATH {
         PGAIN( "PGain=", 2000 ), IGAIN( "IGain=", 0 ), DGAIN( "DGain=", 0 ), FGAIN( "FGain=", 0 ), VGAIN( "VGain=", 0 ), PGAIN_2( "PGain2=", 2000 ), IGAIN_2( "IGain2=", 0 ),
@@ -358,7 +299,7 @@ public interface IDataAcess {
 
 
     /**
-     *
+     * Default Axes settings for a CNC using the Picopath diagnostic boards.
      */
     public enum PICO_PATH {
         PGAIN( "PGain=", 20 ), IGAIN( "IGain=", 0 ), DGAIN( "DGain=", 20 ), FGAIN( "FGain=", 100 ), VGAIN( "VGain=", 0 ), PGAIN_2( "PGain2=", 20 ), IGAIN_2( "IGain2=", 0 ),
@@ -400,8 +341,7 @@ public interface IDataAcess {
 
 
     /**
-     * Default settings for a CNC containing one or more SensorTHC's.  Stall force
-     * not set because value is a double.
+     * Default settings for a CNC containing one or more SensorTHC's.
      */
     public enum THC {
         SLIDE_EN( "SlideLength(english)=", 10 ), SLIDE_M( "SlideLength(metric)=", 254 ), HARD_STOP( "UseHardStop=", 0 ), HOME_SWITCH( "UseHomeSwitch=", 1 ), ANALOG_1( "THCAnalog1=", 0 ),

@@ -41,6 +41,7 @@ public class ConvertLogic implements IProcess {
     private static final String OUTPUT = "Output";
     private static final String TYPE = "Type=";
     private static final String NUMBER = "Number=";
+    private static final String PORT = "Port";
 
     private final ArrayList< String > m_paramList = new ArrayList<>();
 
@@ -513,7 +514,7 @@ public class ConvertLogic implements IProcess {
         }
 
 
-        // Re-assign Cut Sense inputs and Cut Control outputs, beginning at I/O 40
+        // Re-assign Cut Sense inputs beginning at input 40
         if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_MARK_SENSE.getName() ) > 0 ) {
             addInput( 40, INPUT_NUM.CUT_MARK_SENSE.getValue() );
         }
@@ -533,6 +534,7 @@ public class ConvertLogic implements IProcess {
             }
         }
 
+        // Re-assign Cut Control outputs beginning at output 40
         if( getParamValue( BLOCK.IO.getName(), OUTPUT_NUM.CUT_CONTROL.getName() ) > 0 ) {
             addOutput( 40, OUTPUT_NUM.CUT_CONTROL.getValue() );
         }
@@ -557,13 +559,13 @@ public class ConvertLogic implements IProcess {
         addOutput( 25, OUTPUT_NUM.DRIVE_ENABLE.getValue() );
 
 
-        // Merge in axes and IO settings from container into parameter file
+        // Merge in IO settings into parameter file
         addParamsToMap( BLOCK.IO.getName(), m_IOParamMap );
         shuffleIO();
         replaceAllParams( BLOCK.IO.getName(), m_IOParamMap );
 
 
-        // Set all port settings to none and merge back into parameter file
+        // Set all port settings to none and merge changes into parameter file
         addParamsToMap( BLOCK.LINK.getName(), m_LinkParamMap );
         resetLinkSettings();
         replaceAllParams( BLOCK.LINK.getName(), m_LinkParamMap );
@@ -595,14 +597,15 @@ public class ConvertLogic implements IProcess {
 
 
     /**
-     * Merge I/O assignments from the InputNumber, InputType, OutputNumber, and OutputType
-     * Map's into the IO Parameter Map.  If matches found, relocate I/O beginning at I/O 49
-     * and/or set the I/O type to 0 (sets to Spare).  Also sets all I/O logic to zero.
+     * Merge I/O from the data access class into the IO Parameter Map that contains
+     * all I/O assignments from the parameter file.  Test for like type assignments 
+     * (same I/O position) and relocate to I/O 49 and higher.  Test for like number
+     * assignments (same device) and set original type assignment to 0 (replaced 
+     * by this output assignment).
      */
     private void shuffleIO() {
         Iterator< Entry< String, Integer >> iterator = m_IOParamMap.entrySet().iterator();
         Entry< String, Integer > entry;
-        int value;
         int inTypeLoc = 49;
         int outTypeLoc = 49;
 
@@ -611,18 +614,18 @@ public class ConvertLogic implements IProcess {
             entry.setValue( 0 );
         }
 
-        // Temporarily merge input assignments from IO Map into InputNumber and InputType Map's
-        while( !( entry = iterator.next() ).getKey().startsWith( INPUT_TYPE.INPUT_1.getName() ) && iterator.hasNext() ) {
+        // Merge assignmented inputs from IO Map into InputNumber and InputType Map's
+        while( !( entry = iterator.next() ).getKey().startsWith( new StringBuilder( INPUT ).append( 1 ).append( TYPE ).toString() ) && iterator.hasNext() ) {
             String inputType = new StringBuilder( INPUT ).append( entry.getValue() ).append( TYPE ).toString();
             if( !m_inputNumberMap.containsKey( entry.getKey() ) && entry.getValue() > 0 ) {
-                value = getParamValue( BLOCK.IO.getName(), inputType );
+                int inValue = getParamValue( BLOCK.IO.getName(), inputType );
                 if( m_inputTypeMap.containsKey( inputType )) {
                     m_inputNumberMap.put( entry.getKey(), inTypeLoc );
-                    m_inputTypeMap.put( new StringBuilder( INPUT ).append( inTypeLoc++ ).append( TYPE ).toString(), value );
+                    m_inputTypeMap.put( new StringBuilder( INPUT ).append( inTypeLoc++ ).append( TYPE ).toString(), inValue );
                 }
                 else {
                     m_inputNumberMap.put( entry.getKey(), entry.getValue() );
-                    m_inputTypeMap.put( inputType, value );
+                    m_inputTypeMap.put( inputType, inValue );
                 }
             }
             else if( entry.getValue() > 0 ) {
@@ -637,34 +640,44 @@ public class ConvertLogic implements IProcess {
             entry.setValue( 0 );
         }
 
-        // Temporarily merge input assignments from IO Map into InputNumber and InputType Map's
-        while( !( entry = iterator.next() ).getKey().startsWith( INPUT_TYPE.INPUT_1.getName() ) && iterator.hasNext() ) {
-            String inputType = new StringBuilder( INPUT ).append( entry.getValue() ).append( TYPE ).toString();
-            if( !m_inputNumberMap.containsKey( entry.getKey() ) && entry.getValue() > 0 ) {
-                value = getParamValue( BLOCK.IO.getName(), inputType );
-                if( m_inputTypeMap.containsKey( inputType )) {
-                    m_inputNumberMap.put( entry.getKey(), inTypeLoc );
-                    m_inputTypeMap.put( new StringBuilder( INPUT ).append( inTypeLoc++ ).append( TYPE ).toString(), value );
+        // Merge assigned outputs from IO Map into OutputNumber and OutputType Map's
+        while( !( entry = iterator.next() ).getKey().startsWith( new StringBuilder( OUTPUT ).append( 1 ).append( TYPE ).toString() ) && iterator.hasNext() ) {
+            String outputType = new StringBuilder( OUTPUT ).append( entry.getValue() ).append( TYPE ).toString();
+            if( !m_outputNumberMap.containsKey( entry.getKey() ) && entry.getValue() > 0 ) {
+                int outValue = getParamValue( BLOCK.IO.getName(), outputType );
+                if( m_outputTypeMap.containsKey( outputType )) {
+                    m_outputNumberMap.put( entry.getKey(), outTypeLoc );
+                    m_outputTypeMap.put( new StringBuilder( OUTPUT ).append( outTypeLoc++ ).append( TYPE ).toString(), outValue );
                 }
                 else {
-                    m_inputNumberMap.put( entry.getKey(), entry.getValue() );
-                    m_inputTypeMap.put( inputType, value );
+                    m_outputNumberMap.put( entry.getKey(), entry.getValue() );
+                    m_outputTypeMap.put( outputType, outValue );
                 }
             }
             else if( entry.getValue() > 0 ) {
-                if( !m_inputTypeMap.containsKey( inputType ) ) {
-                    m_inputTypeMap.put( inputType, 0 );
+                if( !m_outputTypeMap.containsKey( outputType ) ) {
+                    m_outputTypeMap.put( outputType, 0 );
                 }
             }
         }
 
-        // Merge Input#Number map into IO Parameter map
+        // Merge Input#Number Map into IO Parameter Map
         for( Entry< String, Integer> map : m_inputNumberMap.entrySet() ) {
             m_IOParamMap.put( map.getKey(), map.getValue() );
         }
 
-        // Merge Input#Type map into IO Paramerter map
+        // Merge Input#Type Map into IO Paramerter Map
         for( Entry< String, Integer > map : m_inputTypeMap.entrySet() ) {
+            m_IOParamMap.put( map.getKey(), map.getValue() );
+        }
+
+        // Merge Output#Number Map into IO Parameter Map
+        for( Entry< String, Integer > map : m_outputNumberMap.entrySet() ) {
+            m_IOParamMap.put( map.getKey(), map.getValue() );
+        }
+
+        // Merge Output#Type Map into IO Parameter Map
+        for( Entry< String, Integer > map : m_outputTypeMap.entrySet() ) {
             m_IOParamMap.put( map.getKey(), map.getValue() );
         }
     }
@@ -675,27 +688,18 @@ public class ConvertLogic implements IProcess {
      * serial ports assigned for the HPR to port "None" to allow for simulation. 
      */
     private void resetLinkSettings() {
-        StringBuilder portType;
-        StringBuilder portNum;
-        String port = "Port";
-        String number = "Number=";
-        String type = "Type=";
         int numLoc = 1;
         int typeLoc = 1;
 
         for( Entry< String, Integer > entry : m_LinkParamMap.entrySet() ){
-
-            portType = new StringBuilder( port ).append( typeLoc ).append( type );
-            portNum = new StringBuilder( port ).append( numLoc ).append( number );
-
-            if( entry.getKey().contains( portType )) {
+            if( entry.getKey().contains( new StringBuilder( PORT ).append( typeLoc ).append( TYPE ) )) {
                 if(( entry.getValue() > 2 && entry.getValue() < 5 ) || entry.getValue() > 6 ) {
                     entry.setValue( 0 );
                 }
                 typeLoc++;
             }
 
-            if( entry.getKey().contains( portNum )) {
+            if( entry.getKey().contains( new StringBuilder( PORT ).append( numLoc ).append( NUMBER ) )) {
                 if(( numLoc > 2 && numLoc < 5 ) || numLoc > 6  ) {
                     entry.setValue( 0 );
                 }

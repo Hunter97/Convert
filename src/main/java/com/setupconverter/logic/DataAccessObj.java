@@ -29,7 +29,7 @@ public class DataAccessObj implements IDataAcess {
     private final Map< String, Integer > m_dualGantryDefaults;
     private Map< String, Integer > m_axesDefaults;
 
-    private EnumMap< INPUT_TYPE, Integer > m_inputTypeMap;
+    //private EnumMap< INPUT_TYPE, Integer > m_inputTypeMap;
 
 
     /**
