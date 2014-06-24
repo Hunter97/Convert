@@ -13,7 +13,6 @@
 package com.setupconverter.logic;
 
 import com.setupconverter.ui.IComponents.SYSTEM;
-import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -28,8 +27,6 @@ public class DataAccessObj implements IDataAcess {
     private final Map< String, Integer > m_thcAnalogDefaults;
     private final Map< String, Integer > m_dualGantryDefaults;
     private Map< String, Integer > m_axesDefaults;
-
-    //private EnumMap< INPUT_TYPE, Integer > m_inputTypeMap;
 
 
     /**

@@ -1,12 +1,33 @@
 /**
+ * ConverterLogic
+ *  Paul Wallace
+ *  June 2014
+ * 
+ *  ConverterLogic provides the logic for the SetupConverter API.  The purpose of 
+ *  the API is to convert the axes parameters and arrange the I/O from a customers
+ *  setup file so one can load the parameter file into a specific piece of test
+ *  equipment and operate the motors, satisfy homing, and control cutting.
+ * 
+ *  The ConverterLogic object uses the DataAccessObject to retrieve data specific
+ *  to each servo system that is selectable from the UI.  The axes, speed, and I/O 
+ *  parameters from the DataAcessObj over-write the same parameters found in the
+ *  parameter file.  When the file is saved, the checksum is recalculated and the
+ *  converted parameter file is saved to the file system.
+ * 
+ *  Main attributes:
+ *      *   Accesses the data stored in the DAO interface through the DAO class.
+ *      *   Finds the matching parameters within the parameter file and replaces
+ *          with the data from the DAO interface.
+ *      *   Determines the application type and configures I/O appropriately so
+ *          user can satisfy homing and control the cutting.
+ *      *   Recalculates the checksum and saves the file to the file system.
+ *      *   Implements the IProcess interface, which defines the capabilities of 
+ *          of this class.
+ * 
+ *  Implements:  IProcess
  * 
  */
 package com.setupconverter.logic;
-
-import com.setupconverter.logic.IDataAcess.*;
-import com.setupconverter.ui.ConverterUI.OperateConverter;
-
-import java.awt.Color;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,24 +38,28 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import java.nio.charset.StandardCharsets;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.setupconverter.logic.IDataAcess.*;
+import com.setupconverter.ui.ConverterUI.OperateConverter;
+
+import java.nio.charset.StandardCharsets;
+import java.awt.Color;
+
 
 /**
- * 
+ * Logic class for SetupConverter API.  Implements IProcess and retrieves/manipulates
+ * data from IDAO.
  * @author prwallace
  */
 public class ConvertLogic implements IProcess {
 
-    private static final int TOTAL_AXIS_BLOCKS = 3;
+    //private static final int TOTAL_AXIS_BLOCKS = 3;
     private static final String REG_EXP = "[=\\s\\.]+";
     private static final String EMPTY_LINE = "\r\n";
     private static final String INPUT = "Input";
@@ -43,20 +68,13 @@ public class ConvertLogic implements IProcess {
     private static final String NUMBER = "Number=";
     private static final String PORT = "Port";
 
-    private final ArrayList< String > m_paramList = new ArrayList<>();
-
     private final Map< String, Integer > m_IOParamMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_inputTypeMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_inputNumberMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_outputTypeMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_outputNumberMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_LinkParamMap = new LinkedHashMap<>();
-
-    private DataAccessObj m_dataAccess;
-    public OperateConverter m_operate;
-
-    private File m_configFile = null;
-    private int m_checksum = 0;
+    private final ArrayList< String > m_paramList = new ArrayList<>();
 
     public boolean m_frontPanelInstalled = false;
     public boolean m_bevelInstalled = false;
@@ -71,6 +89,11 @@ public class ConvertLogic implements IProcess {
     public boolean m_dualTiltInstalled = false;
     public boolean m_xOnRail = false;
 
+    private File m_configFile = null;
+    private int m_checksum = 0;
+
+    private DataAccessObj m_dataAccess;
+    public OperateConverter m_operate;
 
 
     /**
@@ -170,7 +193,7 @@ public class ConvertLogic implements IProcess {
                 if( param.startsWith( paramName )) {
                     int replaceIndex = listIterator.previousIndex();
                     String[] key = param.split( REG_EXP );
-                    m_paramList.set(replaceIndex, new StringBuilder( key[0] ).append( value ).toString() );
+                    m_paramList.set(replaceIndex, new StringBuilder( key[0] ).append( "=" ).append( value ).append( EMPTY_LINE ).toString() );
                     break;
                 }
             }
@@ -278,7 +301,6 @@ public class ConvertLogic implements IProcess {
         int row2_NextIndex = 9;
         int row3_NextIndex = 17;
         int torchCollisionLoc = 16;
-        int typeLoc;
 
 
         // Determine specific tools, bevel heads, pipe axes, THC's that are installed in Machine screen

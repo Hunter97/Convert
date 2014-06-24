@@ -1,7 +1,7 @@
 /**
  *  ConverterUI
  *  Paul Wallace
- *  May 2014
+ *  June 2014
  * 
  *  ConverterUI provides the user interface for the application SetupConverter.
  * 
