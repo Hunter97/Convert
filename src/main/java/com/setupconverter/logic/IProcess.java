@@ -13,13 +13,13 @@ import java.io.IOException;
  */
 public interface IProcess {
 
-    public void loadParams( File file ) throws IOException;
+    public void load( File file ) throws IOException;
 
     public void setChecksum() throws IOException;
 
     public int getChecksum();
 
-    public void convertFile() throws IOException;
+    public void convert() throws IOException;
 
-    public void writeParam( File file ) throws IOException;
+    public void write( File file ) throws IOException;
 }

@@ -1,5 +1,5 @@
 /**
- * ConverterLogic
+ *  ConverterLogic
  *  Paul Wallace
  *  June 2014
  * 
@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.setupconverter.logic.IDataAcess.*;
-import com.setupconverter.ui.ConverterUI.OperateConverter;
+import com.setupconverter.ui.ConvertUI.OperateConverter;
 
 import java.nio.charset.StandardCharsets;
 import java.awt.Color;
@@ -58,8 +58,6 @@ import java.awt.Color;
  * @author prwallace
  */
 public class ConvertLogic implements IProcess {
-
-    //private static final int TOTAL_AXIS_BLOCKS = 3;
     private static final String REG_EXP = "[=\\s\\.]+";
     private static final String EMPTY_LINE = "\r\n";
     private static final String INPUT = "Input";
@@ -73,26 +71,76 @@ public class ConvertLogic implements IProcess {
     private final Map< String, Integer > m_inputNumberMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_outputTypeMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_outputNumberMap = new LinkedHashMap<>();
-    private final Map< String, Integer > m_LinkParamMap = new LinkedHashMap<>();
+    private final Map< String, Integer > m_linkParamMap = new LinkedHashMap<>();
     private final ArrayList< String > m_paramList = new ArrayList<>();
-
-    public boolean m_frontPanelInstalled = false;
-    public boolean m_bevelInstalled = false;
-    public boolean m_dualBevelInstalled = false;
-    public boolean m_dualTransInstalled = false;
-    public boolean m_oneRotateTilt = false;
-    public boolean m_noRotateTilt = false;
-    public boolean m_sthcInstalled = false;
-    public boolean m_arcGlideInstalled = false;
-    public boolean m_isRotatingTrans = false;
-    public boolean m_dualGantryInstalled = false;
-    public boolean m_dualTiltInstalled = false;
-    public boolean m_xOnRail = false;
 
     private File m_configFile = null;
     private int m_checksum = 0;
-
     private DataAccessObj m_dataAccess;
+
+    /**
+     * EDGE Pro Front Panel Installed
+     */
+    public boolean m_frontPanelInstalled = false;
+
+    /**
+     * One Rotate/Tilt Selected
+     */
+    public boolean m_bevelInstalled = false;
+
+    /**
+     * Dual Rotate/Tile Selected
+     */
+    public boolean m_dualBevelInstalled = false;
+
+    /**
+     * Dual Transverse Selected
+     */
+    public boolean m_dualTransInstalled = false;
+
+    /**
+     * Dual Transverse, one single bevel head installed
+     */
+    public boolean m_oneRotateTilt = false;
+
+    /**
+     * Dual Transverse, no bevel heads installed
+     */
+    public boolean m_noRotateTilt = false;
+
+    /**
+     * SensorTHC axis or axes installed
+     */
+    public boolean m_sthcInstalled = false;
+
+    /**
+     * ArcGlide station or stations installed
+     */
+    public boolean m_arcGlideInstalled = false;
+
+    /**
+     * One pipe axis installed
+     */
+    public boolean m_isRotatingTrans = false;
+
+    /**
+     * Dual gantry axis installed
+     */
+    public boolean m_dualGantryInstalled = false;
+
+    /**
+     * Dual tilting bevel head installed
+     */
+    public boolean m_dualTiltInstalled = false;
+
+    /**
+     * X axis installed on Rail axis
+     */
+    public boolean m_xOnRail = false;
+
+    /**
+     * UI inner class variable
+     */
     public OperateConverter m_operate;
 
 
@@ -104,7 +152,7 @@ public class ConvertLogic implements IProcess {
      */
     public ConvertLogic( File file, OperateConverter operate ) throws IOException {//
         m_configFile = file;
-        loadParams( m_configFile );
+        load( m_configFile );
         m_operate = operate;
     }
 
@@ -114,13 +162,12 @@ public class ConvertLogic implements IProcess {
      * line is delimited by a carriage return/line feed combination (\r\n}.
      * The File argument is loaded into a BufferedReader that is wrapped by a
      * FileInputStream that uses the standard character set UTF_8.
-     * 
      * @param file  - File reference to the configuration file
      * @category StandardCharsets.UTF_8
      * @throws IOException
      */
     @ Override
-    public final void loadParams( File file ) throws IOException {
+    public final void load( File file ) throws IOException {
         try (BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( file ), StandardCharsets.UTF_8 ))) {
             StringBuilder sb = new StringBuilder();
             int thisChar;
@@ -147,7 +194,7 @@ public class ConvertLogic implements IProcess {
      * @throws ArrayIndexOutOfBoundsException
      * @throws NumberFormatException
      */
-    public Map< String, Integer > addParamsToMap( String blockTitle, Map< String, Integer > map  ) throws ArrayIndexOutOfBoundsException, NumberFormatException {
+    public Map< String, Integer > add( String blockTitle, Map< String, Integer > map  ) throws ArrayIndexOutOfBoundsException, NumberFormatException {
         String param;
         int index;
 
@@ -236,7 +283,7 @@ public class ConvertLogic implements IProcess {
      * @param paramName     - Parameter setting to be searched for within parameter List
      * @return              - The value of the parameter
      */
-    public int getParamValue( String blockTitle, String paramName ) {
+    public int getValue( String blockTitle, String paramName ) {
         String param;
         int index;
         int value = -1;
@@ -292,7 +339,7 @@ public class ConvertLogic implements IProcess {
      * @throws IOException  Is this needed?
      */
     @ Override
-    public void convertFile() throws IOException {
+    public void convert() throws IOException {
         String system = m_operate.getSelectedSystem();
         m_dataAccess = new DataAccessObj( system );
         int sthcTotal;
@@ -304,43 +351,43 @@ public class ConvertLogic implements IProcess {
 
 
         // Determine specific tools, bevel heads, pipe axes, THC's that are installed in Machine screen
-        if( getParamValue( BLOCK.MACHINE.getName(), PARAMETER.FP.getName() ) > 0 ) {
+        if( getValue( BLOCK.MACHINE.getName(), PARAMETER.FP.getName() ) > 0 ) {
             m_frontPanelInstalled = true;
         }
        
-        if( getParamValue( BLOCK.MACHINE.getName(), PARAMETER.BEVEL_AXES.getName() ) > 0 ) {
+        if( getValue( BLOCK.MACHINE.getName(), PARAMETER.BEVEL_AXES.getName() ) > 0 ) {
             m_bevelInstalled = true;
         }
 
-        if( getParamValue( BLOCK.MACHINE.getName(), PARAMETER.DUAL_BEVEL.getName() ) > 0 ) {
+        if( getValue( BLOCK.MACHINE.getName(), PARAMETER.DUAL_BEVEL.getName() ) > 0 ) {
             m_dualBevelInstalled = true;
         }
 
-        if( getParamValue( BLOCK.MACHINE.getName(), PARAMETER.DUAL_TRANS.getName() ) > 0 ) {
+        if( getValue( BLOCK.MACHINE.getName(), PARAMETER.DUAL_TRANS.getName() ) > 0 ) {
             m_dualTransInstalled = true;
         }
 
-        if( getParamValue( BLOCK.MACHINE.getName(), PARAMETER.NO_ROTATE_TILT.getName() ) > 0 ) {
+        if( getValue( BLOCK.MACHINE.getName(), PARAMETER.NO_ROTATE_TILT.getName() ) > 0 ) {
             m_noRotateTilt = true;
         }
 
-        if( getParamValue( BLOCK.MACHINE.getName(), PARAMETER.ONE_ROTATE_TILT.getName() ) > 0 ) {
+        if( getValue( BLOCK.MACHINE.getName(), PARAMETER.ONE_ROTATE_TILT.getName() ) > 0 ) {
             m_oneRotateTilt = true;
         }
 
-        if( getParamValue( BLOCK.MACHINE.getName(), PARAMETER.DUAL_GANTRY.getName() ) > 0 ) {
+        if( getValue( BLOCK.MACHINE.getName(), PARAMETER.DUAL_GANTRY.getName() ) > 0 ) {
             m_dualGantryInstalled = true;
         }
 
-        if( getParamValue( BLOCK.AXIS_7.getName(), PARAMETER.ROTATING_TRANS.getName() ) > 0 ) {
+        if( getValue( BLOCK.AXIS_7.getName(), PARAMETER.ROTATING_TRANS.getName() ) > 0 ) {
             m_isRotatingTrans = true;
         }
 
-        if( getParamValue( BLOCK.MACHINE.getName(), PARAMETER.X_AXIS_ORIENTATION.getName() ) > 0 ) {
+        if( getValue( BLOCK.MACHINE.getName(), PARAMETER.X_AXIS_ORIENTATION.getName() ) > 0 ) {
             m_xOnRail = true;
         }
 
-        if( getParamValue( BLOCK.MACHINE.getName(), PARAMETER.DUAL_TILTING.getName() ) > 0 ) {
+        if( getValue( BLOCK.MACHINE.getName(), PARAMETER.DUAL_TILTING.getName() ) > 0 ) {
             m_dualTiltInstalled = true;
         }
 
@@ -350,7 +397,7 @@ public class ConvertLogic implements IProcess {
 
 
         // Convert THC parameters
-        if(( sthcTotal = getParamValue( BLOCK.MACHINE.getName(), PARAMETER.STHC.getName() )) > 0 ) {
+        if(( sthcTotal = getValue( BLOCK.MACHINE.getName(), PARAMETER.STHC.getName() )) > 0 ) {
             m_sthcInstalled = true;
             m_dataAccess.addTHCDefaults();
 
@@ -362,32 +409,32 @@ public class ConvertLogic implements IProcess {
             replaceAllParams( BLOCK.AIC.getName(), m_dataAccess.getTHCAnalogParams() );
             replaceAllParams( BLOCK.MACHINE.getName(), m_dataAccess.getTHCMachineParams() );
 
-            addInput( row1_NextIndex++, INPUT_NUM.NCS_1.getValue() );
+            setInput( row1_NextIndex++, INPUT_NUM.NCS_1.getValue() );
 
             if( sthcTotal >= 2 ) {
-                addInput( row1_NextIndex++, INPUT_NUM.NCS_2.getValue() );
+                setInput( row1_NextIndex++, INPUT_NUM.NCS_2.getValue() );
 
                 if( sthcTotal >= 3 ) {
-                    addInput( row1_NextIndex++, INPUT_NUM.NCS_3.getValue() );
+                    setInput( row1_NextIndex++, INPUT_NUM.NCS_3.getValue() );
 
                     if( sthcTotal >= 4 ) {  // Only supporting 4 STHC's at this time.
-                        addInput( row1_NextIndex++, INPUT_NUM.NCS_4.getValue() );
+                        setInput( row1_NextIndex++, INPUT_NUM.NCS_4.getValue() );
                     }
                 }
             }
         }
-        else if(( agTHCTotal = getParamValue( BLOCK.MACHINE.getName(), PARAMETER.AG.getName() )) > 0 ) {
+        else if(( agTHCTotal = getValue( BLOCK.MACHINE.getName(), PARAMETER.AG.getName() )) > 0 ) {
             m_arcGlideInstalled = true;
-            addInput( row1_NextIndex++, INPUT_NUM.RDY_TO_FIRE_1.getValue() );
+            setInput( row1_NextIndex++, INPUT_NUM.RDY_TO_FIRE_1.getValue() );
 
             if( agTHCTotal >= 2 ) {
-                addInput( row1_NextIndex++, INPUT_NUM.RDY_TO_FIRE_2.getValue() );
+                setInput( row1_NextIndex++, INPUT_NUM.RDY_TO_FIRE_2.getValue() );
 
                 if( agTHCTotal >= 3 ) {
-                    addInput( row1_NextIndex++, INPUT_NUM.RDY_TO_FIRE_3.getValue() );
+                    setInput( row1_NextIndex++, INPUT_NUM.RDY_TO_FIRE_3.getValue() );
 
                     if( agTHCTotal == 4 ) {
-                        addInput( row1_NextIndex++, INPUT_NUM.RDY_TO_FIRE_4.getValue() );
+                        setInput( row1_NextIndex++, INPUT_NUM.RDY_TO_FIRE_4.getValue() );
                     }
                 }
             }
@@ -402,7 +449,7 @@ public class ConvertLogic implements IProcess {
 
 
         // Add Drive Disabled Input
-        addInput( row2_NextIndex++, INPUT_NUM.DRIVE_DISABLED.getValue() );
+        setInput( row2_NextIndex++, INPUT_NUM.DRIVE_DISABLED.getValue() );
 
 
         // Convert X & Y Axes parameters and homing inputs
@@ -410,16 +457,16 @@ public class ConvertLogic implements IProcess {
         replaceAllParams( BLOCK.AXIS_2.getName(), m_dataAccess.getAxesParams() );
 
         if( m_xOnRail ) {
-            addInput( row1_NextIndex++, INPUT_NUM.X_NEG_OT.getValue() );
-            addInput( row2_NextIndex++, INPUT_NUM.X_POS_OT.getValue() );
-            addInput( row1_NextIndex++, INPUT_NUM.Y_NEG_OT.getValue() );
-            addInput( row2_NextIndex++, INPUT_NUM.Y_POS_OT.getValue() );
+            setInput( row1_NextIndex++, INPUT_NUM.X_NEG_OT.getValue() );
+            setInput( row2_NextIndex++, INPUT_NUM.X_POS_OT.getValue() );
+            setInput( row1_NextIndex++, INPUT_NUM.Y_NEG_OT.getValue() );
+            setInput( row2_NextIndex++, INPUT_NUM.Y_POS_OT.getValue() );
         }
         else {
-            addInput( row1_NextIndex++, INPUT_NUM.Y_NEG_OT.getValue() );
-            addInput( row2_NextIndex++, INPUT_NUM.Y_POS_OT.getValue() );
-            addInput( row1_NextIndex++, INPUT_NUM.X_NEG_OT.getValue() );
-            addInput( row2_NextIndex++, INPUT_NUM.X_POS_OT.getValue() );
+            setInput( row1_NextIndex++, INPUT_NUM.Y_NEG_OT.getValue() );
+            setInput( row2_NextIndex++, INPUT_NUM.Y_POS_OT.getValue() );
+            setInput( row1_NextIndex++, INPUT_NUM.X_NEG_OT.getValue() );
+            setInput( row2_NextIndex++, INPUT_NUM.X_POS_OT.getValue() );
         }
 
 
@@ -430,29 +477,29 @@ public class ConvertLogic implements IProcess {
             if( m_isRotatingTrans ) {
                 changeParamValue( BLOCK.AXIS_7.getName(),  "EncoderCounts(english)=", BEVEL.ENCODER_CNTS.getValue() );
                 changeParamValue( BLOCK.AXIS_7.getName(), "EncoderCounts(metric)=", BEVEL.ENCODER_CNTS.getValue() );
-                addInput( row1_NextIndex++, INPUT_NUM.ROT_2_HOME.getValue() );
-                addInput( row2_NextIndex++, INPUT_NUM.DUAL_HEAD_COLLISION.getValue() );
+                setInput( row1_NextIndex++, INPUT_NUM.ROT_2_HOME.getValue() );
+                setInput( row2_NextIndex++, INPUT_NUM.DUAL_HEAD_COLLISION.getValue() );
             }
             else {             
                 if( m_xOnRail ) {
-                    addInput( row1_NextIndex++, INPUT_NUM.Y_POS_OT.getValue() );
+                    setInput( row1_NextIndex++, INPUT_NUM.Y_POS_OT.getValue() );
                 }
                 else {
-                    addInput( row1_NextIndex++, INPUT_NUM.X_POS_OT.getValue() );
+                    setInput( row1_NextIndex++, INPUT_NUM.X_POS_OT.getValue() );
                 }
 
-                addInput( row1_NextIndex - 3, INPUT_NUM.DUAL_HEAD_COLLISION.getValue() );
+                setInput( row1_NextIndex - 3, INPUT_NUM.DUAL_HEAD_COLLISION.getValue() );
                 torchCollisionLoc = row2_NextIndex++;
             }
 
             if( row1_NextIndex < 8 ) {
                 
-                addInput( row1_NextIndex++, INPUT_NUM.PARK_HEAD_1.getValue() );
-                addInput( row2_NextIndex++, INPUT_NUM.PARK_HEAD_2.getValue() );
+                setInput( row1_NextIndex++, INPUT_NUM.PARK_HEAD_1.getValue() );
+                setInput( row2_NextIndex++, INPUT_NUM.PARK_HEAD_2.getValue() );
             }
             else {
-                addInput( row3_NextIndex++, INPUT_NUM.PARK_HEAD_1.getValue() );
-                addInput( row3_NextIndex++, INPUT_NUM.PARK_HEAD_2.getValue() );
+                setInput( row3_NextIndex++, INPUT_NUM.PARK_HEAD_1.getValue() );
+                setInput( row3_NextIndex++, INPUT_NUM.PARK_HEAD_2.getValue() );
             }
         }
 
@@ -471,26 +518,26 @@ public class ConvertLogic implements IProcess {
 
             if( m_dualTiltInstalled ) {
                 if( row1_NextIndex < 8 ) {
-                    addInput( row1_NextIndex++, INPUT_NUM.TILT_POS_OT.getValue() );
-                    addInput( row2_NextIndex++, INPUT_NUM.TILT_NEG_OT.getValue() );
-                    addInput( row1_NextIndex++, INPUT_NUM.TILT2_POS_OT.getValue() );
-                    addInput( row2_NextIndex++, INPUT_NUM.TILT2_NEG_OT.getValue() );
+                    setInput( row1_NextIndex++, INPUT_NUM.TILT_POS_OT.getValue() );
+                    setInput( row2_NextIndex++, INPUT_NUM.TILT_NEG_OT.getValue() );
+                    setInput( row1_NextIndex++, INPUT_NUM.TILT2_POS_OT.getValue() );
+                    setInput( row2_NextIndex++, INPUT_NUM.TILT2_NEG_OT.getValue() );
                 }
                 else {
-                    addInput( row3_NextIndex++, INPUT_NUM.TILT_POS_OT.getValue() );
-                    addInput( row3_NextIndex++, INPUT_NUM.TILT2_POS_OT.getValue() ); 
+                    setInput( row3_NextIndex++, INPUT_NUM.TILT_POS_OT.getValue() );
+                    setInput( row3_NextIndex++, INPUT_NUM.TILT2_POS_OT.getValue() ); 
                 }
             }
             else {
                 if( row1_NextIndex < 8 ) {
-                    addInput( row1_NextIndex++, INPUT_NUM.TILT_POS_OT.getValue() );
-                    addInput( row2_NextIndex++, INPUT_NUM.TILT_NEG_OT.getValue() );
-                    addInput( row1_NextIndex++, INPUT_NUM.ROTATE_HOME.getValue() );
+                    setInput( row1_NextIndex++, INPUT_NUM.TILT_POS_OT.getValue() );
+                    setInput( row2_NextIndex++, INPUT_NUM.TILT_NEG_OT.getValue() );
+                    setInput( row1_NextIndex++, INPUT_NUM.ROTATE_HOME.getValue() );
                     torchCollisionLoc = row2_NextIndex++;
                 }
                 else {
-                    addInput( row3_NextIndex++, INPUT_NUM.TILT_POS_OT.getValue() );
-                    addInput( row3_NextIndex++, INPUT_NUM.ROTATE_HOME.getValue() );
+                    setInput( row3_NextIndex++, INPUT_NUM.TILT_POS_OT.getValue() );
+                    setInput( row3_NextIndex++, INPUT_NUM.ROTATE_HOME.getValue() );
                 }
             }
 
@@ -501,14 +548,14 @@ public class ConvertLogic implements IProcess {
                     changeParamValue( BLOCK.DUAL_TILT.getName(), BEVEL.SERVO_ERROR.getName(), BEVEL.SERVO_ERROR.getValue() );
 
                     if( row1_NextIndex < 8 ) {
-                        addInput( row1_NextIndex++, INPUT_NUM.TILT3_POS_OT.getValue() );
-                        addInput( row2_NextIndex++, INPUT_NUM.TILT3_NEG_OT.getValue() );
-                        addInput( row1_NextIndex++, INPUT_NUM.TILT4_POS_OT.getValue() );
-                        addInput( row2_NextIndex++, INPUT_NUM.TILT4_NEG_OT.getValue() );
+                        setInput( row1_NextIndex++, INPUT_NUM.TILT3_POS_OT.getValue() );
+                        setInput( row2_NextIndex++, INPUT_NUM.TILT3_NEG_OT.getValue() );
+                        setInput( row1_NextIndex++, INPUT_NUM.TILT4_POS_OT.getValue() );
+                        setInput( row2_NextIndex++, INPUT_NUM.TILT4_NEG_OT.getValue() );
                     }
                     else {
-                        addInput( row3_NextIndex++, INPUT_NUM.TILT3_POS_OT.getValue() );
-                        addInput( row3_NextIndex++, INPUT_NUM.TILT4_POS_OT.getValue() );
+                        setInput( row3_NextIndex++, INPUT_NUM.TILT3_POS_OT.getValue() );
+                        setInput( row3_NextIndex++, INPUT_NUM.TILT4_POS_OT.getValue() );
                     }
                 }
                 else {
@@ -517,9 +564,9 @@ public class ConvertLogic implements IProcess {
                     changeParamValue( BLOCK.DUAL_ROTATE.getName(), BEVEL.SERVO_ERROR.getName(), BEVEL.SERVO_ERROR.getValue() );
 
                     if( row1_NextIndex < 8 ) {
-                        addInput( row1_NextIndex++, INPUT_NUM.TILT3_POS_OT.getValue() );
-                        addInput( row2_NextIndex++, INPUT_NUM.TILT3_NEG_OT.getValue() );
-                        addInput( row1_NextIndex++, INPUT_NUM.ROT_2_HOME.getValue() );
+                        setInput( row1_NextIndex++, INPUT_NUM.TILT3_POS_OT.getValue() );
+                        setInput( row2_NextIndex++, INPUT_NUM.TILT3_NEG_OT.getValue() );
+                        setInput( row1_NextIndex++, INPUT_NUM.ROT_2_HOME.getValue() );
                         torchCollisionLoc = row2_NextIndex++;
                     }
                 }
@@ -529,68 +576,68 @@ public class ConvertLogic implements IProcess {
 
         // Add Torch Collision input
         if( torchCollisionLoc < 17 ) {
-            addInput( torchCollisionLoc, INPUT_NUM.TORCH_COLLISION.getValue() );
+            setInput( torchCollisionLoc, INPUT_NUM.TORCH_COLLISION.getValue() );
         }
         else if( row3_NextIndex < 25 ) {
-            addInput( row3_NextIndex, INPUT_NUM.TORCH_COLLISION.getValue() );
+            setInput( row3_NextIndex, INPUT_NUM.TORCH_COLLISION.getValue() );
         }
 
 
         // Re-assign Cut Sense inputs beginning at input 40
-        if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_MARK_SENSE.getName() ) > 0 ) {
-            addInput( 40, INPUT_NUM.CUT_MARK_SENSE.getValue() );
+        if( getValue( BLOCK.IO.getName(), INPUT_NUM.CUT_MARK_SENSE.getName() ) > 0 ) {
+            setInput( 40, INPUT_NUM.CUT_MARK_SENSE.getValue() );
         }
-        else if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_1.getName() ) > 0 ) {
-            addInput( 40, INPUT_NUM.CUT_SENSE_1.getValue() );
+        else if( getValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_1.getName() ) > 0 ) {
+            setInput( 40, INPUT_NUM.CUT_SENSE_1.getValue() );
 
-            if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_2.getName() ) > 0 ) {
-                addInput( 41, INPUT_NUM.CUT_SENSE_2.getValue() );
+            if( getValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_2.getName() ) > 0 ) {
+                setInput( 41, INPUT_NUM.CUT_SENSE_2.getValue() );
             }
 
-            if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_3.getName() ) > 0 ) {
-                addInput( 42, INPUT_NUM.CUT_SENSE_3.getValue() );
+            if( getValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_3.getName() ) > 0 ) {
+                setInput( 42, INPUT_NUM.CUT_SENSE_3.getValue() );
             }
 
-            if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_4.getName() ) > 0 ) {
-                addInput( 43, INPUT_NUM.CUT_SENSE_4.getValue() );
+            if( getValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_4.getName() ) > 0 ) {
+                setInput( 43, INPUT_NUM.CUT_SENSE_4.getValue() );
             }
         }
 
         // Re-assign Cut Control outputs beginning at output 40
-        if( getParamValue( BLOCK.IO.getName(), OUTPUT_NUM.CUT_CONTROL.getName() ) > 0 ) {
-            addOutput( 40, OUTPUT_NUM.CUT_CONTROL.getValue() );
+        if( getValue( BLOCK.IO.getName(), OUTPUT_NUM.CUT_CONTROL.getName() ) > 0 ) {
+            setOutput( 40, OUTPUT_NUM.CUT_CONTROL.getValue() );
         }
-        else if( getParamValue( BLOCK.IO.getName(), OUTPUT_NUM.CUT_CONTROL.getName() ) > 0 ) {
-            addOutput( 40, OUTPUT_NUM.CUT_CONTROL_1.getValue() );
+        else if( getValue( BLOCK.IO.getName(), OUTPUT_NUM.CUT_CONTROL.getName() ) > 0 ) {
+            setOutput( 40, OUTPUT_NUM.CUT_CONTROL_1.getValue() );
 
-            if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_2.getName() ) > 0 ) {
-                addOutput( 41, OUTPUT_NUM.CUT_CONTROL_2.getValue() );
+            if( getValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_2.getName() ) > 0 ) {
+                setOutput( 41, OUTPUT_NUM.CUT_CONTROL_2.getValue() );
             }
 
-            if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_3.getName() ) > 0 ) {
-                addOutput( 42, OUTPUT_NUM.CUT_CONTROL_3.getValue() );
+            if( getValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_3.getName() ) > 0 ) {
+                setOutput( 42, OUTPUT_NUM.CUT_CONTROL_3.getValue() );
             }
 
-            if( getParamValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_4.getName() ) > 0 ) {
-                addOutput( 43, OUTPUT_NUM.CUT_CONTROL_4.getValue() );
+            if( getValue( BLOCK.IO.getName(), INPUT_NUM.CUT_SENSE_4.getName() ) > 0 ) {
+                setOutput( 43, OUTPUT_NUM.CUT_CONTROL_4.getValue() );
             }
         }
 
 
         // Re-assign Drive Enable output
-        addOutput( 25, OUTPUT_NUM.DRIVE_ENABLE.getValue() );
+        setOutput( 25, OUTPUT_NUM.DRIVE_ENABLE.getValue() );
 
 
         // Merge in IO settings into parameter file
-        addParamsToMap( BLOCK.IO.getName(), m_IOParamMap );
+        add( BLOCK.IO.getName(), m_IOParamMap );
         shuffleIO();
         replaceAllParams( BLOCK.IO.getName(), m_IOParamMap );
 
 
         // Set all port settings to none and merge changes into parameter file
-        addParamsToMap( BLOCK.LINK.getName(), m_LinkParamMap );
-        resetLinkSettings();
-        replaceAllParams( BLOCK.LINK.getName(), m_LinkParamMap );
+        add( BLOCK.LINK.getName(), m_linkParamMap );
+        resetPorts();
+        replaceAllParams( BLOCK.LINK.getName(), m_linkParamMap );
     }
 
 
@@ -600,7 +647,7 @@ public class ConvertLogic implements IProcess {
      * @param typeIndex - The physical input to be assigned to an input device
      * @param numIndex  - The input device to be assign to an input location
      */
-    public void addInput( int typeIndex, int numIndex ) {
+    public void setInput( int typeIndex, int numIndex ) {
         m_inputTypeMap.put( new StringBuilder( INPUT ).append( typeIndex ).append( TYPE ).toString(), numIndex );
         m_inputNumberMap.put( new StringBuilder( INPUT ).append( numIndex ).append( NUMBER   ).toString(), typeIndex );
     }
@@ -612,7 +659,7 @@ public class ConvertLogic implements IProcess {
      * @param typeIndex - The physical output to be assigned to a device
      * @param numIndex  - The output device to be assigned to an output location
      */
-    public void addOutput( int typeIndex, int numIndex ) {
+    public void setOutput( int typeIndex, int numIndex ) {
         m_outputTypeMap.put( new StringBuilder( OUTPUT ).append( typeIndex ).append( TYPE ).toString(), numIndex );
         m_outputNumberMap.put( new StringBuilder( OUTPUT ).append( numIndex ).append( NUMBER ).toString() , typeIndex );
     }
@@ -640,7 +687,7 @@ public class ConvertLogic implements IProcess {
         while( !( entry = iterator.next() ).getKey().startsWith( new StringBuilder( INPUT ).append( 1 ).append( TYPE ).toString() ) && iterator.hasNext() ) {
             String inputType = new StringBuilder( INPUT ).append( entry.getValue() ).append( TYPE ).toString();
             if( !m_inputNumberMap.containsKey( entry.getKey() ) && entry.getValue() > 0 ) {
-                int inValue = getParamValue( BLOCK.IO.getName(), inputType );
+                int inValue = getValue( BLOCK.IO.getName(), inputType );
                 if( m_inputTypeMap.containsKey( inputType )) {
                     m_inputNumberMap.put( entry.getKey(), inTypeLoc );
                     m_inputTypeMap.put( new StringBuilder( INPUT ).append( inTypeLoc++ ).append( TYPE ).toString(), inValue );
@@ -666,7 +713,7 @@ public class ConvertLogic implements IProcess {
         while( !( entry = iterator.next() ).getKey().startsWith( new StringBuilder( OUTPUT ).append( 1 ).append( TYPE ).toString() ) && iterator.hasNext() ) {
             String outputType = new StringBuilder( OUTPUT ).append( entry.getValue() ).append( TYPE ).toString();
             if( !m_outputNumberMap.containsKey( entry.getKey() ) && entry.getValue() > 0 ) {
-                int outValue = getParamValue( BLOCK.IO.getName(), outputType );
+                int outValue = getValue( BLOCK.IO.getName(), outputType );
                 if( m_outputTypeMap.containsKey( outputType )) {
                     m_outputNumberMap.put( entry.getKey(), outTypeLoc );
                     m_outputTypeMap.put( new StringBuilder( OUTPUT ).append( outTypeLoc++ ).append( TYPE ).toString(), outValue );
@@ -709,21 +756,17 @@ public class ConvertLogic implements IProcess {
      * Re-assigns the port settings in the Link parameter map to None.  Sets the
      * serial ports assigned for the HPR to port "None" to allow for simulation. 
      */
-    private void resetLinkSettings() {
-        int numLoc = 1;
+    private void resetPorts() {
+        Iterator< Entry< String, Integer >> iterator = m_linkParamMap.entrySet().iterator();
+        Entry< String, Integer > entry;
         int typeLoc = 1;
 
-        for( Entry< String, Integer > entry : m_LinkParamMap.entrySet() ){
-            if( entry.getKey().contains( new StringBuilder( PORT ).append( typeLoc ).append( TYPE ) )) {
-                if(( entry.getValue() > 2 && entry.getValue() < 5 ) || entry.getValue() > 6 ) {
+        while( !( entry = iterator.next() ).getKey().startsWith( new StringBuilder( PORT ).append( 1 ).append( NUMBER ).toString() ) && iterator.hasNext() ) {
+            if( entry.getKey().contains( new StringBuilder( PORT ).append( typeLoc++ ).append( TYPE ) )) {
+                int value = entry.getValue();
+                if(( value > 2 && value < 5 ) || value > 6 ) {
                     entry.setValue( 0 );
-                }
-                typeLoc++;
-            }
-
-            if( entry.getKey().contains( new StringBuilder( PORT ).append( numLoc ).append( NUMBER ) )) {
-                if(( numLoc > 2 && numLoc < 5 ) || numLoc > 6  ) {
-                    entry.setValue( 0 );
+                    m_linkParamMap.put(new StringBuilder( PORT ).append( value ).append( NUMBER ).toString(), 0 );
                 }
             }
         }
@@ -735,7 +778,7 @@ public class ConvertLogic implements IProcess {
      * @throws IOException
      */
     @ Override
-    public void writeParam( File file ) throws IOException {
+    public void write( File file ) throws IOException {
 
         BufferedWriter buff_writer = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( file ), StandardCharsets.UTF_8 ));
         StringBuilder checksum = new StringBuilder( "Checksum=" ).append( m_checksum ).append( EMPTY_LINE );

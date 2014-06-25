@@ -1,9 +1,9 @@
 /**
- *  ConverterUI
+ *  ConvertUI
  *  Paul Wallace
  *  June 2014
  * 
- *  ConverterUI provides the user interface for the application SetupConverter.
+ *  ConvertUI provides the user interface for the application SetupConverter.
  * 
  *  Main attributes:
  *      *   Allows user to loads a setup file from the Windows file system.
@@ -16,7 +16,7 @@
  *      *   Allows user to save the converted file when the selected processes
  *          is complete.
  * 
- *  Implements:  ActionListener & IConverterComponents
+ *  Implements:  ActionListener & IComponents
  *  Extends: JFrame
  */
 
@@ -58,12 +58,13 @@ import javax.swing.JLabel;
 
 
 /**
- * ConverterUI is a UI that provides an interface for the a user to convert
- * a configuration file or to calculate the files checksum.
+ * ConvertUI is a UI that provides an interface for the a user to convert
+ * a configuration file that can control a selected drive systems and/or re-calculates
+ * a setup files checksum.
  * 
  * @author prwallace
  */
-public class ConverterUI extends JFrame {
+public class ConvertUI extends JFrame {
 
     private ConvertLogic m_process;
 
@@ -109,7 +110,7 @@ public class ConverterUI extends JFrame {
      * Instantiates an OperateConverter object to interact with client and listen
      * for component changes.  Draws and closes UI and its components.
      */
-    public ConverterUI() {
+    public ConvertUI() {
         super( "Convert_INI" );
         m_systems = new String[] { SYSTEM.BENCH.getName(), SYSTEM.HYPATH.getName() };
         m_operate = new OperateConverter();
@@ -246,9 +247,7 @@ public class ConverterUI extends JFrame {
 
 
     /**
-     * Creates a GridBagConstraint object and adds constraints based on argument
-     * values and returns the object.
-     * 
+     * Add/return a GridBagConstraint object based on argument values.
      * @param xPos          - Components row location in pane
      * @param yPos          - Components column location in pane
      * @param width         - Spans across columns
@@ -278,18 +277,15 @@ public class ConverterUI extends JFrame {
         return gbc;
     }
 
-
     /**
-     * class OperateConverter is an inner class for class ConverterUI.   The
-     * class provides an action listener method for the UI components.  The class
-     * implements the interface IComponents, which allows the client to load an
-     * ini file to convert and provides a method for displaying status messages.
+     * Inner class for ConvertUI.  Provides action listener for UI components, 
+     * and methods to handle user selected system, status messages to the apt,
+     * and file read/write operations.
      */
     public class OperateConverter implements ActionListener, IComponents {
 
         /**
-         * Override action listener method for the UI components of class ConverterUI.java
-         * 
+         * Action listener method for the UI components of class ConverterUI.java
          * @param evt   - Action event of the UI components
          */
         @ Override
@@ -337,7 +333,7 @@ public class ConverterUI extends JFrame {
 
                     if( m_convertRadioBtn.isSelected() && m_convertRadioBtn.isEnabled() && m_fileIsLoaded ) {
                         try {
-                            m_process.convertFile();
+                            m_process.convert();
                             m_process.setChecksum();
                         }
                         catch( IOException | ArrayIndexOutOfBoundsException | NumberFormatException e ) {
@@ -363,7 +359,7 @@ public class ConverterUI extends JFrame {
                         m_savedFile.setWritable( true );
 
                         try {
-                            m_process.writeParam( m_savedFile );
+                            m_process.write( m_savedFile );
                         }
                         catch( IOException e ) {
                             this.setStatus( Color.RED, "Exception while saving file", e.getMessage() );
@@ -421,10 +417,6 @@ public class ConverterUI extends JFrame {
         }
 
 
-        /**
-         * (non-Javadoc)
-         * @see convert_ini_files.IConverterComponents#File getFile( int dialogType, String ext )
-         */
         @ Override
         public File getFile( int dialogType, String ext ) {
             JFileChooser fileChooser = new JFileChooser();
@@ -440,10 +432,10 @@ public class ConverterUI extends JFrame {
             }
 
             if( dialogType == JFileChooser.OPEN_DIALOG ) {
-                fileReturned = fileChooser.showOpenDialog( ConverterUI.this );
+                fileReturned = fileChooser.showOpenDialog( ConvertUI.this );
             }
             else if( dialogType == JFileChooser.SAVE_DIALOG ) {
-                fileReturned = fileChooser.showSaveDialog( ConverterUI.this );
+                fileReturned = fileChooser.showSaveDialog( ConvertUI.this );
             }
 
             if ( fileReturned == JFileChooser.APPROVE_OPTION ) {
@@ -498,7 +490,7 @@ public class ConverterUI extends JFrame {
      * @param args - no command line arguments used
      */
     public static void main( String[] args ) {
-        new ConverterUI().setVisible( true );
+        new ConvertUI().setVisible( true );
         //ConverterUI convert = new ConverterUI();
         //convert.setVisible( true );
     }

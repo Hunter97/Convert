@@ -1,5 +1,11 @@
 /**
+ * IComponents
+ * Paul Wallace
+ * June 2014
  * 
+ * Main interface for ConvertUI.  Provides enumeration constants for the buttons
+ * used in a UI and the selectable system types as well as establishes the minimum
+ * features of the UI.
  */
 package com.setupconverter.ui;
 
@@ -75,28 +81,24 @@ public interface IComponents {
 
 
     /**
-     * Displays a message in the status JTextField of the UI.  The message represents
+     * Displays a message in the status area of the UI.  The message represents
      * the state of the current process(Load, Run, or Save), and/or state of the
      * selected radio button (Checksum or Convert).
-     * A tool tip is set to the status JTextField that provides the name of the current
-     * File.
-     * 
-     * @param color - Black text used for status messages; Red text used for exceptions.
-     * @param message - Reports the status of the process or reports an exception.
+     * @param color - Black text = successful process; Red text = an error
+     * @param message - The status message to be displayed
      * @param tip - Displays the loaded or saved File object to the user.
      */
     public void setStatus( Color color, String message, String tip );
 
 
     /**
-     * Gets the desired file to load or save from the user.  Uses a JFileChooser and
-     * a FileNameExtensionFilter to generate a Windows dialog to allow user to
-     * browse to a file.  Files are filtered by the argument extension.  Gets/Returns
+     * Gets/returns a File object to the selected file.  Generates a Windows
+     * dialog that allows user to browse the Windows File system to load or save 
+     * a file.  Files are filtered by the argument extension.  Gets/Returns
      * a File object from the selected file.
-     * 
-     * @param dialogType    - indicates file type; 0 = FileChooser.OPEN_DIALOG, 1 = FileChooser.SAVE_DIALOG
-     * @param ext           - String; extension used to filter file dialog
-     * @return File         - returns File object of selected file
+     * @param dialogType    - Indicates file type; 0 = OPEN_DIALOG, 1 = SAVE_DIALOG
+     * @param ext           - File extension of file
+     * @return File         - File object of selected file
      */
     public File getFile( int dialogType, String ext );
 
