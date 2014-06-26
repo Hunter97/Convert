@@ -1,24 +1,18 @@
 /*
- *  ICNCTypes.java
+ *  IDataAccess.java
  *  Paul Wallace
- *  May 2014
+ *  June 2014
  * 
- *  ICNCTypes is an interface that acts like a data transfer object when implemented
- *  by a parent class.  The interface includes the default settings for a group of
- *  drive types, contained in individual enum's, one for each test stand or motion 
- *  diagnostic kit or force simulation.  ICNCTypes implementation, by a parent object,
- *  will add all the required default settings into individual EnumMap's, thus providing
- *  the API's logic access to these settings.
- * 
+ *  IDataAccess is an interface that acts like a container object when implemented
+ *  by a parent class.  The interface includes several enum's that hold a set of
+ *  default parameters based on drive type (like Hypath drive type) or specifi 
+ *  parameters based on a specific setup screen (like Speed or Machine).  
+ *  
  *  Main attributes:
- *      *   To provides the minimum gain and I/O settings to control motion and I/O
- *          on each test stand and/or each motion diagnostic kit
+ *      *   Provides Gain and I/O settings to control motion and I/O
  *      *   Different drive types are:
  *          * Hypath Diagnostic kits
- *          * Hypath Diagnostic kits
- *          * Sercos III 6 axis test stand
  *          * Pico-path (analog) 6 axis test stand
- *          * Simulation
  *
  */
 
@@ -28,14 +22,14 @@ import java.util.Map;
 
 
 /**
- * Interface ICNCTypes
- * @author Hunter97
+ * Interface IDataAccess; Container for the SetupConverter API. 
+ * @author prwallace
  */
 public interface IDataAcess {
 
 
     /**
-     * Enumeration constants containing titles to several blocks within the parameter list.
+     * Enumeration constants containing titles to several blocks within the parameter file.
      * Each constant represents a string in the form of "[Title]\r\n".
      */
     public enum BLOCK {
@@ -45,16 +39,38 @@ public interface IDataAcess {
 
         private final String m_name;
 
+        /**
+         * Constructor for enum BLOCK
+         * @param name  - String value assigned to this enum type
+         */
         private BLOCK( String name ) {
             this.m_name = name;
         }
 
         /**
-         * Get/return the String value of the enum type
-         * @return  String of enum type
+         * Get/return the String for this enum type
+         * @return  - String value assigned to this enum type
          */
         public String getName() {
             return m_name;
+        }
+
+        /**
+         * Gets/return the enum type that matches the String argument.
+         * @param name  - String representation of the enum type
+         * @return      - This enum type
+         */
+        public static BLOCK getType( String name ) {
+            BLOCK temp = null;
+
+            for( BLOCK type : BLOCK.values() ) {
+                if( type.getName().equals( name ) ) {
+                    temp = type;
+                    break;
+                }
+            }
+
+            return temp;
         }
     }
 
@@ -65,7 +81,7 @@ public interface IDataAcess {
      * parameter is represented within the parameter file.  
      * In the parameter file: Input#Number is equal to a physical input, where #
      * is the integer value of the input device.
-     * i.e. Input47Number=1, where device #47 is assigned to Input 1
+     * i.e. Input47Number=1, where device 47 is assigned to Input 1
      */
     public enum INPUT_NUM {
         CUT_MARK_SENSE( "Input4Number=", 4 ), DRIVE_DISABLED( "Input10Number=", 10 ), X_NEG_OT( "Input11Number=", 11 ), X_POS_OT( "Input12Number=", 12 ), Y_NEG_OT( "Input13Number=", 13 ),
@@ -92,37 +108,41 @@ public interface IDataAcess {
         private final int m_value;
         private final String m_name;
 
+        /**
+         * Constructor for enum INPUT_NUM
+         * @param name  - String value assigned to this enum type
+         * @param value - Ordinal value assigned to this enum type
+         */
         private INPUT_NUM( String name, int value ) {
             this.m_value = value;
             this.m_name = name;
         }
 
         /**
-         * Get/return the integer value for this input device
-         * @return  - The input device as an integer
+         * Get/return the integer value of this enum
+         * @return  - The ordinal value of this enum type
          */
         public int getValue() {
             return m_value;
         }
 
         /**
-         * Get/return the String representation of this input device
-         * @return  - The input device as a String
+         * Get/return the String for this enum type
+         * @return  - String representation of this enum type
          */
         public String getName() {
             return m_name;
         }
 
         /**
-         * Gets/returns the enum type that matches the String argument.
-         * @param name  - The String value of this enum
+         * Gets/return the enum type that matches the String argument.
+         * @param name  - String representation the enum type
          * @return      - This enum type
          */
         public static INPUT_NUM getType( String name ) {
             INPUT_NUM temp = null;
 
             for( INPUT_NUM type : INPUT_NUM.values() ) {
-                System.out.println(type.getName());
                 if( type.getName().equals( name ) ) {
                     temp = type;
                     break;
@@ -151,22 +171,27 @@ public interface IDataAcess {
         private final int m_value;
         private final String m_name;
 
+        /**
+         * Constructor for enum OUTPUT_NUM
+         * @param name  - String value assigned to this enum type
+         * @param value - Ordinal value assigned to this enum type
+         */
         private OUTPUT_NUM( String name, int value ) {
             this.m_value = value;
             this.m_name = name;
         }
 
         /**
-         * Get/return the integer value for this output device
-         * @return  - The output device as an integer
+         * Get/return the integer value of this enum
+         * @return  - The ordinal value of this enum type
          */
         public int getValue() {
             return m_value;
         }
 
         /**
-         * Get/return the String representation of this output device
-         * @return  - The output device as a String
+         * Get/return the String for this enum type
+         * @return  - String representation of this enum type
          */
         public String getName() {
             return m_name;
@@ -174,14 +199,13 @@ public interface IDataAcess {
 
         /**
          * Gets/returns the enum type that matches the String argument.
-         * @param name  - The String value of this enum
+         * @param name  - The String representation of the enum type
          * @return      - This enum type
          */
         public static OUTPUT_NUM getType( String name ) {
             OUTPUT_NUM temp = null;
 
             for( OUTPUT_NUM type : OUTPUT_NUM.values() ) {
-                System.out.println(type.getName());
                 if( type.getName().equals( name ) ) {
                     temp = type;
                     break;
@@ -207,25 +231,48 @@ public interface IDataAcess {
         private final int m_value;
         private final String m_name;
 
+        /**
+         * Constructor for enum SPEED
+         * @param name  - String value assigned to this enum type
+         * @param value - Ordinal value assigned to this enum type
+         */
         private SPEED( String name, int value ) {
             this.m_value = value;
             this.m_name = name;
         }
 
         /**
-         * Get/return the integer value of the enum type
-         * @return  value of enum type
+         * Get/return the integer value of this enum
+         * @return  - The ordinal value of this enum type
          */
         public int getValue() {
             return m_value;
         }
 
         /**
-         * Get/return the String value of the enum type
-         * @return  String of enum type
+         * Get/return the String for this enum type
+         * @return  - String representation of this enum type
          */
         public String getName() {
             return m_name;
+        }
+
+        /**
+         * Gets/returns the enum type that matches the String argument.
+         * @param name  - The String representation of the enum type
+         * @return      - This enum type
+         */
+        public static SPEED getType( String name ) {
+            SPEED temp = null;
+
+            for( SPEED type : SPEED.values() ) {
+                if( type.getName().equals( name ) ) {
+                    temp = type;
+                    break;
+                }
+            }
+
+            return temp;
         }
     }
 
@@ -238,20 +285,43 @@ public interface IDataAcess {
         DUAL_GANTRY( "DualGantryInstalled=" ), FP( "FrontPanelInstalled=" ), SERCOS( "SercosSensorUtility=" ), AG( "ArcGlideTHCInstalled=" ), PSCOMM_HYPERNET( "PSCommOverHypNetEn" ),
         STHC( "SensorTHCInstalled=" ), BEVEL_AXES( "SkewRotatorInstalled=" ), DUAL_BEVEL( "DualSkewRotatorInstalled=" ), AUTO_HOME( "AutoHome=" ),
         DUAL_TRANS( "DualTransverseInstalled=" ), NO_ROTATE_TILT( "NoRotateTilt=" ), ONE_ROTATE_TILT( "OneRotateTilt=" ), ROTATING_TRANS( "RotatingTransverse=" ),
-        X_AXIS_ORIENTATION( "XAxisOrientation=" ), DUAL_TILTING( "DualTiltMode=" ), CHECK_SUM( "Checksum=" );
+        X_AXIS_ORIENTATION( "XAxisOrientation=" ), DUAL_TILTING( "DualTiltMode=" ), CHECK_SUM( "Checksum=" ), SERVO_ERROR_EN( "ServoErrTolerance(english)=" ),
+        SERVO_ERROR_M( "ServoErrTolerance(metric)=" ), ENCODER_CNTS_EN( "EncoderCounts(english)=" ), ENCODER_CNTS_M( "EncoderCounts(metric)=" );
 
         private final String m_name;
 
+        /**
+         * Constructor for enum PARAMETER
+         * @param name  - String value assigned to this enum type
+         */
         private PARAMETER( String name ) {
             this.m_name = name;
         }
 
         /**
-         * Get/return the String value of the enum type
-         * @return  String of enum type
+         * Get/return the String for this enum type
+         * @return  - String representation of this enum type
          */
         public String getName() {
             return m_name;
+        }
+
+        /**
+         * Gets/returns the enum type that matches the String argument.
+         * @param name  - The String representation of the enum type
+         * @return      - This enum type
+         */
+        public static PARAMETER getType( String name ) {
+            PARAMETER temp = null;
+
+            for( PARAMETER type : PARAMETER.values() ) {
+                if( type.getName().equals( name ) ) {
+                    temp = type;
+                    break;
+                }
+            }
+
+            return temp;
         }
     }
 
@@ -273,7 +343,8 @@ public interface IDataAcess {
 
         /**
          * Constructor for enum HYPATH
-         * @param param default value for parameters in the axes screen
+         * @param name  - String value assigned to this enum type
+         * @param value - Ordinal value assigned to this enum type
          */
         private HYPATH( String name, int value ) {
             this.m_value = value;
@@ -281,19 +352,37 @@ public interface IDataAcess {
         }
 
         /**
-         * Get/return the integer value of the enum type
-         * @return  value of enum
+         * Get/return the integer value of this enum
+         * @return  - The ordinal value of this enum type
          */
         public int getValue() {
             return m_value;
         }
  
         /**
-         * Get/return the String value of the enum type
-         * @return  String of enum
+         * Get/return the String for this enum type
+         * @return  - String representation of this enum type
          */
         public String getName() {
             return m_name;
+        }
+
+        /**
+         * Gets/returns the enum type that matches the String argument.
+         * @param name  - The String representation of the enum type
+         * @return      - This enum type
+         */
+        public static HYPATH getType( String name ) {
+            HYPATH temp = null;
+
+            for( HYPATH type : HYPATH.values() ) {
+                if( type.getName().equals( name ) ) {
+                    temp = type;
+                    break;
+                }
+            }
+
+            return temp;
         }
     }
 
@@ -314,8 +403,9 @@ public interface IDataAcess {
         private final String m_name;
 
         /**
-         * Constructor for enum HYPATH
-         * @param param default value for parameters in the axes screen
+         * Constructor for enum PICO_PATH
+         * @param name  - String value of this enum type
+         * @param value - Ordinal value of this enum type
          */
         private PICO_PATH( String name, int value ) {
             this.m_value = value;
@@ -323,19 +413,37 @@ public interface IDataAcess {
         }
 
         /**
-         * Get/return the integer value of the enum type
-         * @return  value of enum
+         * Get/return the integer value of this enum
+         * @return  - The ordinal value of this enum type
          */
         public int getValue() {
             return m_value;
         }
  
         /**
-         * Get/return the String value of the enum type
-         * @return  String of enum
+         * Get/return the String for this enum type
+         * @return  - String representation of this enum type
          */
         public String getName() {
             return m_name;
+        }
+
+        /**
+         * Gets/returns the enum type that matches the String argument.
+         * @param name  - The String representation of the enum type
+         * @return      - This enum type
+         */
+        public static PICO_PATH getType( String name ) {
+            PICO_PATH temp = null;
+
+            for( PICO_PATH type : PICO_PATH.values() ) {
+                if( type.getName().equals( name ) ) {
+                    temp = type;
+                    break;
+                }
+            }
+
+            return temp;
         }
     }
 
@@ -350,25 +458,48 @@ public interface IDataAcess {
         private final int m_value;
         private final String m_name;
 
+        /**
+         * Constructor for enum THC
+         * @param name  - String value of this enum type
+         * @param value - Ordinal value of this enum type
+         */
         private THC( String name, int value ) {
             this.m_value = value;
             this.m_name = name;
         }
 
         /**
-         * Get/return the integer value of the enum type
-         * @return  value of enum type
+         * Get/return the integer value of this enum
+         * @return  - The ordinal value of this enum type
          */
         public int getValue() {
             return m_value;
         }
 
         /**
-         * Get/return the String value of the enum type
-         * @return  String of enum type
+         * Get/return the String for this enum type
+         * @return  - String representation of this enum type
          */
         public String getName() {
             return m_name;
+        }
+
+        /**
+         * Gets/returns the enum type that matches the String argument.
+         * @param name  - The String representation of the enum type
+         * @return      - This enum type
+         */
+        public static THC getType( String name ) {
+            THC temp = null;
+
+            for( THC type : THC.values() ) {
+                if( type.getName().equals( name ) ) {
+                    temp = type;
+                    break;
+                }
+            }
+
+            return temp;
         }
     }
 
@@ -382,25 +513,48 @@ public interface IDataAcess {
         private final int m_value;
         private final String m_name;
 
+        /**
+         * Constructor for enum DUAL_GANTRY
+         * @param name  - String value for this enum type
+         * @param value - Ordinal value for this enum type
+         */
         private DUAL_GANTRY( String name, int value ) {
             this.m_value = value;
             this.m_name = name;
         }
 
         /**
-         * Get/return the integer value of the enum type
-         * @return  value of enum type
+         * Get/return the integer value of this enum
+         * @return  - The ordinal value of this enum type
          */
         public int getValue() {
             return m_value;
         }
 
         /**
-         * Get/return the String value of the enum type
-         * @return  String of enum type
+         * Get/return the String for this enum type
+         * @return  - String representation of this enum type
          */
         public String getName() {
             return m_name;
+        }
+
+        /**
+         * Gets/returns the enum type that matches the String argument.
+         * @param name  - The String representation of the enum type
+         * @return      - This enum type
+         */
+        public static THC getType( String name ) {
+            THC temp = null;
+
+            for( THC type : THC.values() ) {
+                if( type.getName().equals( name ) ) {
+                    temp = type;
+                    break;
+                }
+            }
+
+            return temp;
         }
     }
 
@@ -414,25 +568,48 @@ public interface IDataAcess {
         private final int m_value;
         private final String m_name;
 
+        /**
+         * Constructor for the enum BEVEL
+         * @param name  - String value of this enum type
+         * @param value - Ordinal value of this enum type
+         */
         private BEVEL( String name, int value ) {
             this.m_value = value;
             this.m_name = name;
         }
 
         /**
-         * Get/return the integer value of the enum type
-         * @return  value of enum type
+         * Get/return the integer value of this enum
+         * @return  - The ordinal value of this enum type
          */
         public int getValue() {
             return m_value;
         }
 
         /**
-         * Get/return the String value of the enum type
-         * @return  String of enum type
+         * Get/return the String for this enum type
+         * @return  - String representation of this enum type
          */
         public String getName() {
             return m_name;
+        }
+
+        /**
+         * Gets/returns the enum type that matches the String argument.
+         * @param name  - The String representation of the enum type
+         * @return      - This enum type
+         */
+        public static BEVEL getType( String name ) {
+            BEVEL temp = null;
+
+            for( BEVEL type : BEVEL.values() ) {
+                if( type.getName().equals( name ) ) {
+                    temp = type;
+                    break;
+                }
+            }
+
+            return temp;
         }
     }
 
@@ -449,24 +626,6 @@ public interface IDataAcess {
      * and one for the Machine parameters.
      */
     public void addTHCDefaults();
-
-
-    /**
-     * Adds the default Input settings from the enum INPUT into an EnumMap.
-     */
-    public void addInputDefaults();
-
-
-    /**
-     * Adds the default Output settings from the enum OUTPUT into an EnumMap.
-     */
-    public void addOutputDefaults();
-
-
-    /**
-     * Adds the default Bevel Axes settings from the enum BEV_AXES into an EnumMap.
-     */
-    public void addBevelAxesDefaults();
 
 
     /**
@@ -522,5 +681,4 @@ public interface IDataAcess {
      * @return  - The Dual Gantry parameter Map
      */
     public Map< String, Integer > getDualGantryParams();
-
 }

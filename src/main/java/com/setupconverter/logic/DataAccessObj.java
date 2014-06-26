@@ -57,6 +57,7 @@ public class DataAccessObj implements IDataAcess {
 
         addAxesDefaults( type );
         addSpeedDefaults();
+        addDualGantryDefaults();
     }
 
 
@@ -200,24 +201,6 @@ public class DataAccessObj implements IDataAcess {
 
 
     @Override
-    public void addInputDefaults() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-
-    @Override
-    public void addOutputDefaults() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-
-    @Override
-    public void addBevelAxesDefaults() {
-        //m_bevelDefaults.put( BEVEL.)
-    }
-
-
-    @Override
     public final void addAxesDefaults( String type ) {      
         if( SYSTEM.BENCH.getName().equals( type )) {
             m_axesDefaults = addPicoPathDefaults();
@@ -229,7 +212,7 @@ public class DataAccessObj implements IDataAcess {
 
 
     @Override
-    public void addDualGantryDefaults() {
+    public final void addDualGantryDefaults() {
         m_dualGantryDefaults.put( DUAL_GANTRY.SKEW_ERROR_EN.getName(), 1 );
         m_dualGantryDefaults.put( DUAL_GANTRY.SKEW_ERROR_M.getName(), 25 );
     }
