@@ -59,7 +59,7 @@
     <target name="jar" depends="compile" description="generates the jar file" >
         <mkdir dir="META-INF"/>
         <manifest file="${basedir}/META-INF/MANIFEST.MF" mode="replace">
-            <attribute name="Main-Class" value="com.setupconverter.ui.ConverterUI"/>
+            <attribute name="Main-Class" value="com.setupconverter.ui.ConvertUI"/>
         </manifest>
         <jar manifest="${basedir}/META-INF/MANIFEST.MF" destfile="setupconverter.jar" basedir="${classes.dir}" excludes="">
             <fileset dir="${basedir}">

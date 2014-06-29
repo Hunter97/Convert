@@ -51,12 +51,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
+import javax.swing.ImageIcon;
 
 
 /**
@@ -87,6 +89,9 @@ public class ConvertUI extends JFrame {
     private final Toolkit toolKit = Toolkit.getDefaultToolkit();
     private final Dimension screenSize = toolKit.getScreenSize();
 
+    private final Image m_titleIcon;
+    private final String m_icon = "./image/convert-icon.png";
+
     private File m_currentDir = null;
     private File m_loadedFile = null;
     private File m_savedFile = null;
@@ -111,11 +116,13 @@ public class ConvertUI extends JFrame {
      * Constructs the UI and instantiates an OperateConverter object.
      */
     public ConvertUI() {
-        super( "Convert_INI" );
+        super( "SetupConverter" );
         m_systems = new String[] { SYSTEM.BENCH.getName(), SYSTEM.HYPATH.getName() };
         m_operate = new OperateConverter();
 
         // Set frame properties
+        m_titleIcon = new ImageIcon(toolKit.getImage(m_icon)).getImage();
+        setIconImage(m_titleIcon);
         JFrame.setDefaultLookAndFeelDecorated( true );
         setPreferredSize( new Dimension( 400, 300 ));
         setLocation( screenSize.width / 3, screenSize.height / 4);

@@ -277,7 +277,7 @@ public interface IDataAcess {
 
 
     /**
-     * Group of specific machine parameters that signify the type of application setup file
+     * Group of specific machine parameters that signify the type of application the setup file
      * is configured to be.
      */
     public enum PARAMETER {
