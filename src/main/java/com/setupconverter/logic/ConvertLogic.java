@@ -1,28 +1,23 @@
 /**
- *  ConverterLogic
- *  Paul Wallace
- *  June 2014
+ * ConverterLogic
+ * Paul Wallace
+ * June 2014
  * 
- *  ConverterLogic provides the logic for the SetupConverter API.  The purpose of 
- *  the API is to convert the axes parameters and arrange the I/O from a customers
- *  setup file so one can load the parameter file into a specific piece of test
- *  equipment and operate the motors, satisfy homing, and control cutting.
- * 
- *  The ConverterLogic object uses the DataAccessObject to retrieve data specific
- *  to each servo system that is selectable from the UI.  The axes, speed, and I/O 
- *  parameters from the DataAcessObj over-write the same parameters found in the
- *  parameter file.  When the file is saved, the checksum is recalculated and the
- *  converted parameter file is saved to the file system.
- * 
- *  Main attributes:
+ * ConverterLogic provides the logic for the SetupConverter Application.  The 
+ * class converts the Gain parameters from a configuration file to match a 
+ * select drive type.  The class also determines the type of application and
+ * configures the I/O to allow homing of that application and control over 
+ * the stations if needed.
+ *          
+ * Main attributes:
  *      *   Accesses the data stored in the DAO interface through the DAO class.
  *      *   Finds the matching parameters within the parameter file and replaces
- *          with the data from the DAO interface.
+ *              with the data from the DAO interface.
  *      *   Determines the application type and configures I/O appropriately so
- *          user can satisfy homing and control the cutting.
+ *              user can satisfy homing and control the cutting.
  *      *   Recalculates the checksum and saves the file to the file system.
  *      *   Implements the IProcess interface, which defines the capabilities of 
- *          of this class.
+ *              of this class.
  * 
  *  Implements:  IProcess
  * 
@@ -53,8 +48,7 @@ import java.awt.Color;
 
 
 /**
- * Logic class for SetupConverter API.  Implements IProcess and retrieves/manipulates
- * data from IDAO.
+ * ConvertLogic retrieves/manipulates the data from IDataAccess interface
  * @author prwallace
  */
 public class ConvertLogic implements IProcess {
@@ -152,22 +146,13 @@ public class ConvertLogic implements IProcess {
      */
     public ConvertLogic( File file, OperateConverter operate ) throws IOException {//
         m_configFile = file;
-        load( m_configFile );
+        read( m_configFile );
         m_operate = operate;
     }
 
 
-    /**
-     * Loads each line of a configuration file into a a List< String >.  Each
-     * line is delimited by a carriage return/line feed combination (\r\n}.
-     * The File argument is loaded into a BufferedReader that is wrapped by a
-     * FileInputStream that uses the standard character set UTF_8.
-     * @param file  - File reference to the configuration file
-     * @category StandardCharsets.UTF_8
-     * @throws IOException
-     */
     @ Override
-    public final void load( File file ) throws IOException {
+    public final void read( File file ) throws IOException {
         try (BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( file ), StandardCharsets.UTF_8 ))) {
             StringBuilder sb = new StringBuilder();
             int thisChar;
@@ -222,10 +207,10 @@ public class ConvertLogic implements IProcess {
 
 
     /**
-     * Changes the value of a parameter from the parameter list to the argument value.
-     * Parses the parameter list, starting after the argument block title, for a
-     * match to the String argument.  If a match is found, the argument value is
-     * set to the parameter, in place of the original value.
+     * Sets the value of the argument parameter within the parameter list.  Parses
+     * the parameter list, starting after the argument block title, for a match
+     * to the String argument.  If a match is found, the argument value is set to
+     * the parameter in place of the original value.
      * @param blockTitle    - Title of parameter block in list (i.e. [Machine]) 
      * @param paramName     - Parameter setting to be searched/changed in parameter list
      * @param value         - Value to replace in parameter list
@@ -248,11 +233,6 @@ public class ConvertLogic implements IProcess {
     }
 
 
-    /**
-     * Calculates the checksum of a configuration file.  Each character in the
-     * List< String >(), beginning at the 2nd index, is summed together.
-     * @throws IOException
-     */
     @ Override
     public void setChecksum() throws IOException {
         m_checksum = 0;
@@ -264,10 +244,6 @@ public class ConvertLogic implements IProcess {
     }
 
 
-    /**
-     * Gets/returns the checksum of the configuration file.
-     * @return an integer equal to sum of characters in List< String >
-     */
     @ Override
     public int getChecksum() {
         return m_checksum;
@@ -275,7 +251,7 @@ public class ConvertLogic implements IProcess {
 
 
     /**
-     * Gets/returns the value of the argument parameter from within the parameter
+     * Get/return the value of the argument parameter from within the parameter
      * List. Parses the m_paramList List, starting after the argument block title,
      * for a match to the String argument.  If a match is found, the value of that
      * parameter is returned, otherwise a -1 is returned.
@@ -330,14 +306,6 @@ public class ConvertLogic implements IProcess {
     }
 
 
-    /**  
-     * Converts the original parameter file to control the user specified drive 
-     * system.  Replaces Axes, I/O, Speed, and Machine settings based on the selected
-     * drive type.  I/O is re-arranges to allow user to satisfy homing and simulate
-     * cutting, by use of a switch box and loop-back jumper CPC.  Instantiates the
-     * DataAccessObj which provides access to the specific drive system type.
-     * @throws IOException  Is this needed?
-     */
     @ Override
     public void convert() throws IOException {
         String system = m_operate.getSelectedSystem();
@@ -756,7 +724,8 @@ public class ConvertLogic implements IProcess {
 
     /**
      * Re-assigns the port settings in the Link parameter map to None.  Sets the
-     * serial ports assigned for the HPR to port "None" to allow for simulation. 
+     * serial ports assigned for the HPR, the PMX, or the MaxPro to port "None"
+     * to disable serial communications and allow for simulation. 
      */
     private void resetPorts() {
         Iterator< Entry< String, Integer >> iterator = m_linkParamMap.entrySet().iterator();
@@ -775,14 +744,6 @@ public class ConvertLogic implements IProcess {
     }
 
 
-    /**
-     * Saves the contents of the parameter list to the argument File.  Adds the
-     * new checksum back to the parameter list prior to saving the file.  Each
-     * String in the parameter list is written to buffer via an OutputStreamWriter
-     * whose location is referenced by the argument File object.
-     * @param file  - File object containing reference to location of file
-     * @throws IOException
-     */
     @ Override
     public void write( File file ) throws IOException {
         try (BufferedWriter buff_writer = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( file ), StandardCharsets.UTF_8 ))) {

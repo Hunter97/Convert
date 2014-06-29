@@ -1,14 +1,13 @@
 /**
- * CNCType.java
+ * DataAcessObj.java
  * 
- *  Container class for ConvertLogic.java
+ *  Data access object for the SetupConverter Application
  * 
- *  The Class provides a class that:
- *      *   Holds standard parameters in an EnumMap
- *      *   Holds specific CNC type parameters in an EnumMap
- *      *   Provides access to EnumMap's through get calls
+ *  The class provides access to data contained in the IDataAccess interface:
+ *      *   Adds/Initializes Maps for each container type present in IDataAcess
+ *      *   Provides access to the Map's
  * 
- *  Implements:  ICNCTypes
+ *  Implements:  IDataAccess
  */
 package com.setupconverter.logic;
 
@@ -17,7 +16,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- *
+ * DataAccessObj provides data access to the data contained in IDataAccess in the 
+ * form of Map's.
  * @author prwallace
  */
 public class DataAccessObj implements IDataAcess {
@@ -45,7 +45,7 @@ public class DataAccessObj implements IDataAcess {
     /**
      * Single argument constructor.  Initializes all Maps and add's parameters 
      * to Map's based on the system type (Hypath, Pico-path, and so on).
-     * @param type
+     * @param type  - The selected system type
      */
     public DataAccessObj( String type ) {
         this.m_thcMachineDefaults = new LinkedHashMap<>();

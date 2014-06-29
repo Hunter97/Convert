@@ -1,19 +1,18 @@
-/*
- *  IDataAccess.java
- *  Paul Wallace
- *  June 2014
+/**
+ * IDataAccess.java
+ * Paul Wallace
+ * June 2014
  * 
- *  IDataAccess is an interface that acts like a container object when implemented
- *  by a parent class.  The interface includes several enum's that hold a set of
- *  default parameters based on drive type (like Hypath drive type) or specifi 
- *  parameters based on a specific setup screen (like Speed or Machine).  
+ * IDataAccess is a container object for the SetupConverter Application.
+ * The interface includes several enum's that contain the default parameters
+ * for the selectable drive types (i.e. Hypath, Pico-path).
  *  
- *  Main attributes:
- *      *   Provides Gain and I/O settings to control motion and I/O
- *      *   Different drive types are:
+ * Main attributes:
+ *      * Provides the Gain, Speed, Machine, Port, and I/O settings to be applied
+ *          to the selected drive type.
+ *      * Selectable drive types are:
  *          * Hypath Diagnostic kits
  *          * Pico-path (analog) 6 axis test stand
- *
  */
 
 package com.setupconverter.logic;
@@ -22,7 +21,7 @@ import java.util.Map;
 
 
 /**
- * Interface IDataAccess; Container for the SetupConverter API. 
+ * Interface IDataAccess; Container for the SetupConverter Application. 
  * @author prwallace
  */
 public interface IDataAcess {

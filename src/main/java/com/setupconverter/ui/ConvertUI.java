@@ -1,22 +1,24 @@
 /**
- *  ConvertUI
+ *  ConvertUI.java
  *  Paul Wallace
  *  June 2014
  * 
  *  ConvertUI provides the user interface for the application SetupConverter.
  * 
  *  Main attributes:
- *      *   Allows user to loads a setup file from the Windows file system.
- *      *   Allows user to re-calculate checksum of loaded setup file.
+ *      *   Allows user to load a setup file from the Windows file system.
+ *      *   Allows user to re-calculate checksum of loaded setup file and then
+ *              save that file with new checksum applied.
  *      *   Allows user to convert the gains and I/O of a setup file which then 
- *          can then be used to operate a specific test stand or cutting machine.
- *          The original I/O is relocated to I/O 49 and higher, so not to loose
- *          integrity of file.  Gain and Speed settings are modified from original
- *          file.
+ *              can then be used to operate a specific test stand or cutting machine.
+ *              The original I/O is relocated to I/O 49 and higher, so not to loose
+ *              integrity of file.  Gain and Speed settings are modified from original
+ *              file.
  *      *   Allows user to save the converted file when the selected processes
- *          is complete.
+ *              is complete.
  * 
- *  Implements:  ActionListener & IComponents
+ *  Innerclass: implements ActionListener & IComponents, handles action events
+ *      and file handling between UI and logic class.
  *  Extends: JFrame
  */
 
@@ -37,6 +39,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 
 import static java.awt.Component.LEFT_ALIGNMENT;
 import java.awt.Dimension;
@@ -53,15 +57,10 @@ import java.awt.event.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
 
 
 /**
- * ConvertUI is a UI that provides an interface for the a user to convert
- * a configuration file that can control a selected drive systems and/or re-calculates
- * a setup files checksum.
- * 
+ * ConvertUI provides the UI for the SetupConverter application.
  * @author prwallace
  */
 public class ConvertUI extends JFrame {
@@ -95,34 +94,35 @@ public class ConvertUI extends JFrame {
     private final static String INI = "ini";
     private final String[] m_systems;
     private String m_selection;
-    //private int m_index;
 
     public boolean m_fileIsLoaded;
     public boolean m_fileIsSaved;
     public boolean m_fileIsConverted;
 
+    /**
+     * Handles action events from the UI, displays status messages, and interfaces
+     * with logic class.
+     */
     public OperateConverter m_operate;
 
 
     /**
      * Default constructor for class ConverterUI.  
-     * Adds JPanel's and all UI components to the JFrame. 
-     * Instantiates an OperateConverter object to interact with client and listen
-     * for component changes.  Draws and closes UI and its components.
+     * Constructs the UI and instantiates an OperateConverter object.
      */
     public ConvertUI() {
         super( "Convert_INI" );
         m_systems = new String[] { SYSTEM.BENCH.getName(), SYSTEM.HYPATH.getName() };
         m_operate = new OperateConverter();
 
-        // Frame settings
+        // Set frame properties
         JFrame.setDefaultLookAndFeelDecorated( true );
         setPreferredSize( new Dimension( 400, 300 ));
         setLocation( screenSize.width / 3, screenSize.height / 4);
         pack();
 
 
-        // Disposes and Closes UI
+        // Free all resources and then close UI
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
@@ -132,7 +132,7 @@ public class ConvertUI extends JFrame {
         });
 
 
-        // Add button panel and button components
+        // Add button panel and control buttons
         m_mainPanel = new JPanel( new GridBagLayout());
         m_mainPanel.setBorder( BorderFactory.createCompoundBorder( BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder() ) );
 
@@ -158,7 +158,7 @@ public class ConvertUI extends JFrame {
         m_buttonPanel.add( m_closeButton, addConstraints( 0, 4, 0, 0, 0, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, new Insets( 5, 3, 3, 3 )));
 
 
-        // Add radio panel and radio group
+        // Add radio panel and radio buttons
         m_radioPanel = new JPanel( new GridBagLayout());
         m_mainPanel.add( m_radioPanel, addConstraints( 0, 0, 1, 1, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(  5, 3, 3, 3 )));
         createRadioGroup();
@@ -171,7 +171,6 @@ public class ConvertUI extends JFrame {
         createComboBox();
         
 
-
         // Add status panel and status text field
         m_statusPanel = new JPanel( new GridBagLayout());
         m_mainPanel.add( m_statusPanel, addConstraints( 0, 3, 1, 1, 0, 1, GridBagConstraints.SOUTH, GridBagConstraints.NONE, new Insets( 1, 1, 1, 1 )));
@@ -183,26 +182,21 @@ public class ConvertUI extends JFrame {
         m_statusPanel.add( m_statusTextField, addConstraints( 0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets( 1, 1, 1, 1 )));
 
 
-        // Add listeners to each JPanel
+        // Add action listeners to control buttons
         m_loadButton.addActionListener( m_operate );
         m_runButton.addActionListener( m_operate );
         m_saveButton.addActionListener( m_operate );
         m_closeButton.addActionListener( m_operate );
 
 
-        // Add Panels with layouts to the JFrame
+        // Add panels to the frame
         getContentPane().add( m_buttonPanel, BorderLayout.WEST );
         getContentPane().add( m_mainPanel, BorderLayout.CENTER );
-        
-        /*m_radioPanel.setBackground(Color.red);
-        m_selectionPanel.setBackground(Color.yellow);
-        m_statusPanel.setBackground(Color.blue);*/
     }
 
 
     /**
-     * Creates the checksum and convert radio buttons and adds them to a the
-     * m_radioPanel JPanel.  Adds an action listener to both radio buttons.
+     *  Add radio buttons and attach an action listener to radio buttons
      */
     private void createRadioGroup() {
         m_cksumRadioBtn = new JRadioButton( CHECKSUM.getName() );
@@ -228,6 +222,9 @@ public class ConvertUI extends JFrame {
     }
 
 
+    /**
+     * Add combo box and attach an action listener to combo box
+     */
     private void createComboBox() {
         m_comboBoxLabel = new JLabel( "Convertion Type:" );
         m_selectionPanel.add( m_comboBoxLabel, addConstraints( 0, 0, 1, 1, 0, 0.5, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets( 1, 1, 1, 25 )));
@@ -260,8 +257,7 @@ public class ConvertUI extends JFrame {
      * @param gbc_prop      - GridBagConstraints object
      * @return              - GridBagConstraints object with constraints set
      */
-    private GridBagConstraints addConstraints( int xPos, int yPos, int width, int height, double weight_X, double weight_Y, int anchor,
-        int fill, Insets pad_cells ) {
+    private GridBagConstraints addConstraints( int xPos, int yPos, int width, int height, double weight_X, double weight_Y, int anchor, int fill, Insets pad_cells ) {
         GridBagConstraints gbc = new GridBagConstraints();
 
         gbc.gridx = xPos;
@@ -277,24 +273,23 @@ public class ConvertUI extends JFrame {
         return gbc;
     }
 
+
     /**
-     * Inner class for ConvertUI.  Provides action listener for UI components, 
-     * and methods to handle user selected system, status messages to the apt,
-     * and file read/write operations.
+     * Implement action events for UI control and radio buttons, displays status
+     * messages in UI, instantiates logic object, and allows user access to Windows
+     * file system to load/save setup file.
      */
     public class OperateConverter implements ActionListener, IComponents {
 
         /**
-         * Action listener method for the UI components of class ConverterUI.java
-         * @param evt   - Action event of the UI components
+         * Listen for action events and perform functions based on event.
+         * @param evt   - Action event of the UI component
          */
         @ Override
         public void actionPerformed( ActionEvent evt ) {
             UI selection = UI.getType( evt.getActionCommand() );
-            StringBuilder buildString = null;
 
             switch ( selection ) {
-
                 case LOAD :
                     m_loadedFile = this.getFile( JFileChooser.OPEN_DIALOG, INI );
 
@@ -327,8 +322,7 @@ public class ConvertUI extends JFrame {
                             this.setStatus( Color.RED, "IOException while calculating checksum", e.getMessage() );
                         }
 
-                        buildString = new StringBuilder( "Checksum = " ).append( m_process.getChecksum() );
-                        this.setStatus( Color.BLACK, buildString.toString(), m_loadedFile.getName() );
+                        this.setStatus( Color.BLACK, new StringBuilder( "Checksum = " ).append( m_process.getChecksum() ).toString(), m_loadedFile.getName() );
                     }
 
                     if( m_convertRadioBtn.isSelected() && m_convertRadioBtn.isEnabled() && m_fileIsLoaded ) {
@@ -341,8 +335,7 @@ public class ConvertUI extends JFrame {
                         }
 
                         m_fileIsConverted = true;
-                        buildString = new StringBuilder( "New checksum = " ).append( m_process.getChecksum() );
-                        this.setStatus( Color.BLACK, "File converted, ready to save", buildString.toString() );// Should be using a StringBuilder here?
+                        this.setStatus( Color.BLACK, "File converted, ready to save", new StringBuilder( "New checksum = " ).append( m_process.getChecksum() ).toString() );
                     }
 
                     m_saveButton.setEnabled( m_fileIsLoaded );
@@ -369,12 +362,10 @@ public class ConvertUI extends JFrame {
                             m_runButton.setEnabled( false );
                             m_fileIsLoaded = false;
                             m_fileIsConverted = false;
-                            buildString = new StringBuilder( "File saved as " ).append( m_savedFile.getName() );
-                            this.setStatus( Color.BLACK, "File saved, process complete, load new file", buildString.toString() );
+                            this.setStatus( Color.BLACK, "File saved, process complete, load new file", new StringBuilder( "File saved as " ).append( m_savedFile.getName()).toString() );
                         }
                         else {
-                            buildString = new StringBuilder( "File saved as " ).append( m_savedFile.getName() );
-                            this.setStatus( Color.BLACK, "Save Complete", buildString.toString() );
+                            this.setStatus( Color.BLACK, "Save Complete", new StringBuilder( "File saved as " ).append( m_savedFile.getName() ).toString() );
                         }
 
                         m_fileIsSaved = true;
@@ -386,8 +377,7 @@ public class ConvertUI extends JFrame {
 
                 case CHECKSUM :
                     if( m_fileIsLoaded ) {
-                        buildString = new StringBuilder( "Checksum = " ).append( m_process.getChecksum() );
-                        this.setStatus( Color.BLACK, buildString.toString(), m_loadedFile.getName() );
+                        this.setStatus( Color.BLACK, new StringBuilder( "Checksum = " ).append( m_process.getChecksum() ).toString(), m_loadedFile.getName() );
                     }
                     else {
                         this.setStatus( Color.BLACK, "Checksum = 0", "No file loaded" );
@@ -410,6 +400,7 @@ public class ConvertUI extends JFrame {
                 case CLOSE :
 
                 default:
+                    this.setStatus( Color.RED, "Unknown event occured, UI will shut down", null );
                     dispose();
                     System.exit( 0 );
                     break;
@@ -455,14 +446,6 @@ public class ConvertUI extends JFrame {
             return file;
         }
 
-        /**
-         * Gets/Returns combo box selected index
-         * @return  - index selection from combo box
-         */
-        /*public int getSelectedIndex() {
-            return m_index;
-        }*/
-
 
         @Override
         public String getSelectedSystem() {
@@ -470,9 +453,6 @@ public class ConvertUI extends JFrame {
         }
 
 
-        /* (non-Javadoc)
-         * @see convert_ini_files.IConverterComponents#setStatus(java.awt.Color, java.lang.String, java.lang.String)
-         */
         @ Override
         public void setStatus( Color color, String message, String tip ) {
             m_statusTextField.setForeground( color );
@@ -487,11 +467,9 @@ public class ConvertUI extends JFrame {
 
     /**
      * main class, instantiates the UI object.
-     * @param args - no command line arguments used
+     * @param args - Command line argument
      */
     public static void main( String[] args ) {
         new ConvertUI().setVisible( true );
-        //ConverterUI convert = new ConverterUI();
-        //convert.setVisible( true );
     }
 }

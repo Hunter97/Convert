@@ -1,37 +1,27 @@
 /**
- * IComponents
+ * IComponents.java
  * Paul Wallace
  * June 2014
  * 
- * Main interface for ConvertUI.  Provides enumeration constants for the buttons
- * used in a UI and the selectable system types as well as establishes the minimum
- * features of the UI.
+ * Main interface for ConvertUI.  Provides enumeration constants for the UI components
+ * and the selectable system types.  Defines base features of the UI, which are
+ * display status messages, allows user to select system types, and provide
+ * access to the Windows file system.
  */
 package com.setupconverter.ui;
 
 import java.awt.*;
 import java.io.File;
 
-
 /**
- * IConversionComponents - UI Interface for manipulating configuration files
- * @version 1.00.0
- * @category Interface
+ * IComponents is an interface the defines functionality of class ConvertUI and its
+ * enumeration constants.
  * @author prwallace
- *
  */
 public interface IComponents {
 
     /**
-     * Enumeration constants representing the buttons within the UI.  Provides a
-     * public getName method that returns the String value of this constant and
-     * a getType( String name) method that iterates over all enumeration constants
-     * for a match to the String argument and returns the matched UIButton.
-     * 
-     * @see
-     *  getName() - returns String value of this UIButton.
-     *  getType( String name ) - returns the UIButton whose String value matches the argument String
-     *
+     * Enumeration constants for the components of the UI.
      */
     public enum  UI {
 
@@ -39,14 +29,27 @@ public interface IComponents {
 
         private final String m_btnName;
 
+        /**
+         * Constructor for enum UI
+         * @param name  - String value assigned to this enum type
+         */
         private UI( String name ) {
             m_btnName = name;
         }
 
+        /**
+         * Get/return the String value of this UI component
+         * @return  - String value of this UI component
+         */
         public String getName() {
             return m_btnName;
         }
 
+        /**
+         * Get/return the enum type that matches the String argument.
+         * @param name  - String representation of this UI component
+         * @return      - This enum type     
+         */
         public static UI getType( String name ) {
             UI temp = DEFAULT;
 
@@ -61,42 +64,66 @@ public interface IComponents {
         }
     }
 
+
     /**
-     * Enumeration constants representing the available drive system types that a
-     * setup file can be converted to operate.
+     * Enumeration constants representing the available drive system types
      */
     public enum SYSTEM {
         BENCH( "6 Axis Yaskawa" ), HYPATH( "Hypath" );
 
         private final String m_system;
 
+        /**
+         * Constructor for enum SYSTEM
+         * @param system - String value of this SYSTEM type
+         */
         private SYSTEM( String system ) {
             m_system = system;
         }
 
+        /**
+         * Get/return the String value of this SYSTEM type
+         * @return - String value assigned to this SYSTEM type
+         */
         public String getName() {
             return m_system;
+        }
+
+        /**
+         * Get/return the enum type that matches the String argument.
+         * @param name  - String representation of this SYSTEM type
+         * @return      - This enum type     
+         */
+        public static SYSTEM getType( String name ) {
+            SYSTEM temp = null;
+
+            for( SYSTEM sys : SYSTEM.values() ) {
+                if( sys.m_system.equals( name ) ){
+                    temp = sys;
+                    break;
+                }
+            }
+
+            return temp;
         }
     }
 
 
     /**
      * Displays a message in the status area of the UI.  The message represents
-     * the state of the current process(Load, Run, or Save), and/or state of the
-     * selected radio button (Checksum or Convert).
-     * @param color - Black text = successful process; Red text = an error
-     * @param message - The status message to be displayed
-     * @param tip - Displays the loaded or saved File object to the user.
+     * the current process, like load or run, and any error messages.
+     * @param color     - Black text = process; Red text = error
+     * @param message   - The status message to be displayed
+     * @param tip       - Tip about the current process or error
      */
     public void setStatus( Color color, String message, String tip );
 
 
     /**
-     * Gets/returns a File object to the selected file.  Generates a Windows
+     * Get/return a File object to the selected file.  Generates a Windows
      * dialog that allows user to browse the Windows File system to load or save 
-     * a file.  Files are filtered by the argument extension.  Gets/Returns
-     * a File object from the selected file.
-     * @param dialogType    - Indicates file type; 0 = OPEN_DIALOG, 1 = SAVE_DIALOG
+     * a file.  Files are filtered by the argument extension.
+     * @param dialogType    - Indicates dialog type; 0 = OPEN_DIALOG, 1 = SAVE_DIALOG
      * @param ext           - File extension of file
      * @return File         - File object of selected file
      */
