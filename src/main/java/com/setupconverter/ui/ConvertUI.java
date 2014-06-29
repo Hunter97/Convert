@@ -100,8 +100,19 @@ public class ConvertUI extends JFrame {
     private final String[] m_systems;
     private String m_selection;
 
+    /**
+     * File has been read from disk
+     */
     public boolean m_fileIsLoaded;
+
+    /**
+     * File has been saved to disk
+     */
     public boolean m_fileIsSaved;
+
+    /**
+     * File has been converted
+     */
     public boolean m_fileIsConverted;
 
     /**
