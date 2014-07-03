@@ -3,7 +3,7 @@
  * Paul Wallace
  * June 2014
  * 
- * ConverterLogic provides the logic for the SetupConverter Application.  The 
+ * ConverterLogic provides the logic for the SetupConverter application.  The 
  * class converts the Gain parameters from a configuration file to match a 
  * select drive type.  The class also determines the type of application and
  * configures the I/O to allow homing of that application and control over 
@@ -144,7 +144,7 @@ public class ConvertLogic implements IProcess {
      * @param operate   - UI Inner Class object
      * @throws IOException
      */
-    public ConvertLogic( File file, OperateConverter operate ) throws IOException {//
+    public ConvertLogic( File file, OperateConverter operate ) throws IOException {
         m_configFile = file;
         read( m_configFile );
         m_operate = operate;
@@ -153,7 +153,7 @@ public class ConvertLogic implements IProcess {
 
     @ Override
     public final void read( File file ) throws IOException {
-        try (BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( file ), StandardCharsets.UTF_8 ))) {
+        try ( BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( file ), StandardCharsets.UTF_8 ))) {
             StringBuilder sb = new StringBuilder();
             int thisChar;
             int lineFeed = 10;

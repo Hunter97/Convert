@@ -1,11 +1,11 @@
 /**
  * DataAcessObj.java
  * 
- *  Data access object for the SetupConverter Application
+ *  Data access object for the SetupConverter application
  * 
  *  The class provides access to data contained in the IDataAccess interface:
  *      *   Adds/Initializes Maps for each container type present in IDataAcess
- *      *   Provides access to the Map's
+ *      *   Provides access to the Map variables
  * 
  *  Implements:  IDataAccess
  */

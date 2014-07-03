@@ -3,7 +3,7 @@
  * Paul Wallace
  * June 2014
  * 
- * IDataAccess is a container object for the SetupConverter Application.
+ * IDataAccess is a container object for the SetupConverter application.
  * The interface includes several enum's that contain the default parameters
  * for the selectable drive types (i.e. Hypath, Pico-path).
  *  
