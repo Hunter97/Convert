@@ -51,7 +51,7 @@ import java.awt.Color;
  * ConvertLogic retrieves/manipulates the data from IDataAccess interface
  * @author prwallace
  */
-public class ConvertLogic implements IProcess {
+public class ConvertLogic implements IProcessParameters {
     private static final String REG_EXP = "[=\\s\\.]+";
     private static final String EMPTY_LINE = "\r\n";
     private static final String INPUT = "Input";
@@ -169,17 +169,8 @@ public class ConvertLogic implements IProcess {
     }
 
 
-    /**
-     * Adds a block of parameters from the parameter List to a Map< String, Integer >
-     * and returns the resultant Map.  The block is specified by the argument block
-     * title.
-     * @param blockTitle    - Title of parameter block (i.e. [Machine])
-     * @param map           - Map to store a block of parameters from parameter List
-     * @return              - Argument Map, containing added parameters
-     * @throws ArrayIndexOutOfBoundsException
-     * @throws NumberFormatException
-     */
-    public Map< String, Integer > add( String blockTitle, Map< String, Integer > map  ) throws ArrayIndexOutOfBoundsException, NumberFormatException {
+    @Override
+    public Map< String, Integer > add( String blockTitle, Map< String, Integer > map  ) throws NumberFormatException {
         String param;
         int index;
 
@@ -187,16 +178,16 @@ public class ConvertLogic implements IProcess {
             ListIterator< String > listIterator = m_paramList.listIterator( index +1 );
             while( !( param = listIterator.next() ).startsWith( EMPTY_LINE )  && listIterator.hasNext() ) {
                 if( !param.equals( EMPTY_LINE )) {
-                    String[] key = param.split( REG_EXP );
-                    StringBuilder sb = new StringBuilder( key[0] ).append( "=" );
+                    String[] set = param.split( REG_EXP );
+                    StringBuilder key = new StringBuilder( set[0] ).append( "=" );
 
                     try {
-                        map.put( sb.toString(), Integer.parseInt( key[ 1 ] ));
+                        map.put( key.toString(), Integer.parseInt( set[ 1 ] ));
                     }
                     catch( NumberFormatException e ) {
-                        m_operate.setStatus( Color.RED, new StringBuilder( "Exception converting " ).append( sb.toString() ).toString(), 
-                                                        new StringBuilder( "Key = " ).append( key[ 1 ] ).append( " , set value to 0" ).toString() );
-                        map.put( sb.toString(), 0 );
+                        m_operate.setStatus( Color.RED, new StringBuilder( "Exception converting " ).append( key.toString() ).toString(), 
+                                                        new StringBuilder( "Key = " ).append( set[ 1 ] ).append( " , set value to 0" ).toString() );
+                        map.put( key.toString(), 0 );
                     }
                 }
             }
@@ -206,15 +197,7 @@ public class ConvertLogic implements IProcess {
     }
 
 
-    /**
-     * Sets the value of the argument parameter within the parameter list.  Parses
-     * the parameter list, starting after the argument block title, for a match
-     * to the String argument.  If a match is found, the argument value is set to
-     * the parameter in place of the original value.
-     * @param blockTitle    - Title of parameter block in list (i.e. [Machine]) 
-     * @param paramName     - Parameter setting to be searched/changed in parameter list
-     * @param value         - Value to replace in parameter list
-     */
+    @Override
     public void setParameter( String blockTitle, String paramName, int value ) {
         String param;
         int index;
@@ -224,8 +207,8 @@ public class ConvertLogic implements IProcess {
             while( !( param = listIterator.next() ).startsWith( EMPTY_LINE ) && listIterator.hasNext() ) {
                 if( param.startsWith( paramName )) {
                     int replaceIndex = listIterator.previousIndex();
-                    String[] key = param.split( REG_EXP );
-                    m_paramList.set(replaceIndex, new StringBuilder( key[0] ).append( "=" ).append( value ).append( EMPTY_LINE ).toString() );
+                    String[] set = param.split( REG_EXP );
+                    m_paramList.set(replaceIndex, new StringBuilder( set[0] ).append( "=" ).append( value ).append( EMPTY_LINE ).toString() );
                     break;
                 }
             }
@@ -250,15 +233,7 @@ public class ConvertLogic implements IProcess {
     }
 
 
-    /**
-     * Get/return the value of the argument parameter from within the parameter
-     * List. Parses the m_paramList List, starting after the argument block title,
-     * for a match to the String argument.  If a match is found, the value of that
-     * parameter is returned, otherwise a -1 is returned.
-     * @param blockTitle    - Title of parameter block in list (i.e. [Machine])
-     * @param paramName     - Parameter setting to be searched for within parameter List
-     * @return              - The value of the parameter
-     */
+    @Override
     public int getValue( String blockTitle, String paramName ) {
         String param;
         int index;
@@ -279,14 +254,8 @@ public class ConvertLogic implements IProcess {
     }
 
 
-    /**
-     * Find/replace the parameters within the parameter list with the
-     * parameters contained within the argument Map.  Starts searching the parameter 
-     * list after the argument block title.
-     * @param blockTitle    - Title of the parameter block in list (i.e. [Machine])
-     * @param map           - Map containing the set of parameters to replace
-     */
-    private void replaceAllParams( String blockTitle, Map< String, Integer > map ) throws ArrayIndexOutOfBoundsException, NullPointerException {
+    @Override
+    public void replaceAllParams( String blockTitle, Map< String, Integer > map ) {
         String param;
         int startIndex;
 
@@ -306,8 +275,14 @@ public class ConvertLogic implements IProcess {
     }
 
 
-    @ Override
-    public void convert() throws IOException {
+    /**
+     * Converts the original parameter file to control the user specified drive 
+     * system.  Replaces Axes, I/O, Speed, and Machine settings based on the selected
+     * drive type.  I/O is re-arranged to allow user to satisfy homing and simulate
+     * cutting by use of a switch box and loop-back jumper CPC.  Instantiates the
+     * DataAccessObj which provides access to the specific drive system type.
+     */
+    public void convert()  {
         String system = m_operate.getSelectedSystem();
         m_dataAccess = new DataAccessObj( system );
         int sthcTotal;
