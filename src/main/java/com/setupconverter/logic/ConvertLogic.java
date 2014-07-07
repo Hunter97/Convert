@@ -243,8 +243,8 @@ public class ConvertLogic implements IProcessParameters {
             ListIterator< String > listIterator = m_paramList.listIterator( index +1 );
             while( !( param = listIterator.next() ).startsWith( EMPTY_LINE ) &&  listIterator.hasNext() ) {
                 if( param.startsWith( paramName )) {
-                    String[] key = param.split( REG_EXP );
-                    value = Integer.parseInt( key[ 1 ] );
+                    String[] set = param.split( REG_EXP );
+                    value = Integer.parseInt( set[ 1 ] );
                     break;
                 }
             }
@@ -266,7 +266,6 @@ public class ConvertLogic implements IProcessParameters {
                     if( param.startsWith( key )) {
                         int replaceIndex = listIterator.previousIndex();
                         m_paramList.set( replaceIndex, new StringBuilder( key ).append( map.get( key ) ).append( EMPTY_LINE ).toString() );
-                        System.out.format( m_paramList.get( replaceIndex ));
                         break;
                     }
                 }

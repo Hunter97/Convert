@@ -41,6 +41,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.ImageIcon;
 
 import static java.awt.Component.LEFT_ALIGNMENT;
 import java.awt.Dimension;
@@ -58,7 +59,6 @@ import java.awt.event.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
-import javax.swing.ImageIcon;
 
 
 /**
@@ -451,9 +451,7 @@ public class ConvertUI extends JFrame {
                 File userFile;
                 userFile = fileChooser.getSelectedFile();
                 if( !userFile.getName().toLowerCase().endsWith( ".ini" ) ) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append( userFile.getPath() ).append( ".ini" );
-                    file = new File( sb.toString() );
+                    file = new File( new StringBuilder( userFile.getPath() ).append( ".ini" ).toString() );
                 }
                 else {
                     file = userFile;
