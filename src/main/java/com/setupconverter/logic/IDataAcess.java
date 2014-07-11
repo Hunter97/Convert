@@ -17,6 +17,7 @@
 
 package com.setupconverter.logic;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 
@@ -335,10 +336,11 @@ public interface IDataAcess {
         IGAIN_5( "IGain5=", 0 ), DGAIN_5( "DGain5=", 0 ), FGAIN_5( "FGain5=", 0 ), VGAIN_5( "VGain5=", 0 ), SERVO_ERROR_EN( "ServoErrTolerance(english)=", 1 ),
         SERVO_ERROR_M( "ServoErrTolerance(metric)=", 25 ), ENCODER_CNTS_EN( "EncoderCounts(english)=", 1000 ), ENCODER_CNTS_M( "EncoderCounts(metric)=", 39 ),
         DRIVE_TYPE( "DriveType=", 0 ), DAC( "DACPolarity=", 0 ), ENCODER_POLARITY( "EncoderPolarity=", 0 ), ENCODER_MODE( "EncoderMode=", 2 ), USE_HW_OT( "UseHWOvertravelSwitches=", 1 ),
-        HOME_SW( "UseHomeSwitch=", 1 ), HOME_OT( "HomeToOvertravel=", 1 ), DUALTRANS_CNTS_EN( "EncoderCounts(english)=", 6000 ), DUALTRANS_CNTS_M( "EncoderCounts(metric)=", 236 );
+        HOME_SW( "UseHomeSwitch=", 1 ), HOME_OT( "HomeToOvertravel=", 1 ), MARKER_PULSE( "UseMarker=", 0 );
 
         private final int m_value;
         private final String m_name;
+        private static Map< String, Integer > map = new LinkedHashMap<>();
 
         /**
          * Constructor for enum HYPATH
@@ -383,6 +385,18 @@ public interface IDataAcess {
 
             return temp;
         }
+
+        /**
+         * Add all enum constants to a Map< String, Integer > and return the Map.
+         * @return  - A Map of the enum HYPATH.
+         */
+        public static Map< String, Integer > toMap() {
+            for( HYPATH param : HYPATH.values() ) {
+                map.put( param.getName(), param.getValue() );
+            }
+
+            return map;
+        }
     }
 
 
@@ -396,10 +410,11 @@ public interface IDataAcess {
         IGAIN_5( "IGain5=", 0 ), DGAIN_5( "DGain5=", 20 ), FGAIN_5( "FGain5=", 100 ), VGAIN_5( "VGain5=", 0 ), SERVO_ERROR_EN( "ServoErrTolerance(english)=", 1 ),
         SERVO_ERROR_M( "ServoErrTolerance(metric)=", 25 ), ENCODER_CNTS_EN( "EncoderCounts(english)=", 8192 ), ENCODER_CNTS_M( "EncoderCounts(metric)=", 323 ),
         DRIVE_TYPE( "DriveType=", 0 ), DAC( "DACPolarity=", 0 ), ENCODER_POLARITY( "EncoderPolarity=", 1 ), ENCODER_MODE( "EncoderMode=", 2 ), USE_HW_OT( "UseHWOvertravelSwitches=", 1 ),
-        HOME_SW( "UseHomeSwitch=", 1 ), HOME_OT( "HomeToOvertravel=", 1 );
+        HOME_SW( "UseHomeSwitch=", 1 ), HOME_OT( "HomeToOvertravel=", 1 ), MARKER_PULSE( "UseMarker=", 0 );
 
         private final int m_value;
         private final String m_name;
+        private static Map< String, Integer > map = new LinkedHashMap<>();
 
         /**
          * Constructor for enum PICO_PATH
@@ -443,6 +458,18 @@ public interface IDataAcess {
             }
 
             return temp;
+        }
+
+        /**
+         * Add all enum constants to a Map< String, Integer > and return the Map.
+         * @return  - A Map of the enum PICO_PATH.
+         */
+        public static Map< String, Integer > toMap() {
+            for( PICO_PATH param : PICO_PATH.values() ) {
+                map.put( param.getName(), param.getValue() );
+            }
+            
+            return map;
         }
     }
 

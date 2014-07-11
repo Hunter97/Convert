@@ -45,6 +45,7 @@ import com.setupconverter.ui.ConvertUI.OperateConverter;
 
 import java.nio.charset.StandardCharsets;
 import java.awt.Color;
+import java.util.Set;
 
 
 /**
@@ -305,7 +306,8 @@ public class ConvertLogic implements IProcessParameters {
             m_dualBevelInstalled = true;
         }
 
-        if( getValue( BLOCK.MACHINE.getName(), PARAMETER.DUAL_TRANS.getName() ) > 0 ) {
+        if( getValue( BLOCK.MACHINE.getName(), PARAMETER.DUAL_TRANS.getName() ) > 0 && 
+                getValue( BLOCK.MACHINE.getName(), PARAMETER.DUAL_BEVEL.getName() ) > 0 ) {
             m_dualTransInstalled = true;
         }
 
@@ -569,11 +571,12 @@ public class ConvertLogic implements IProcessParameters {
 
 
         // Re-assign Drive Enable output
-        setOutput( 25, OUTPUT_NUM.DRIVE_ENABLE.getValue() );
+        setOutput( 24, OUTPUT_NUM.DRIVE_ENABLE.getValue() );
 
 
         // Merge in IO settings into parameter file
         add( BLOCK.IO.getName(), m_IOParamMap );
+        printIOMaps();
         shuffleIO();
         replaceAllParams( BLOCK.IO.getName(), m_IOParamMap );
 
@@ -729,6 +732,26 @@ public class ConvertLogic implements IProcessParameters {
             }
 
             buff_writer.close();
+        }
+    }
+
+
+    private void printIOMaps() {
+        Iterator< Entry< String, Integer >> iterator;
+        Entry< String, Integer > entry;
+
+        // Print Input Type Map
+        iterator = m_inputTypeMap.entrySet().iterator();
+        while( iterator.hasNext() ) {
+            entry = iterator.next();
+            System.out.format( "%s\t%d\n", entry.getKey(), entry.getValue() );
+        }
+
+        // Print Ouptut Type Map
+        iterator = m_outputTypeMap.entrySet().iterator();
+        while( iterator.hasNext() ) {
+            entry = iterator.next();
+            System.out.format("%s\t%d\n", entry.getKey(), entry.getValue() );
         }
     }
 }
