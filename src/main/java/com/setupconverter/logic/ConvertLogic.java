@@ -1,20 +1,27 @@
 /**
- * ConverterLogic
+ * ConvertLogic
  * Paul Wallace
  * June 2014
+ * Rev 1.01
  * 
- * ConverterLogic provides the logic for the SetupConverter application.  The 
- * class converts the Gain parameters from a configuration file to match a 
- * select drive type.  The class also determines the type of application and
- * configures the I/O to allow homing of that application and control over 
- * the stations if needed.
+ * ConvertLogic is the logic class for the SetupConverter application.  The 
+ * class converts the Gain parameters and re-arranges I/O from a configuration file
+ * based on a selected drive type and re-configures the I/O to simplify homing
+ * and to simulate cutting.  The class creates a new configuration file, with an
+ * updated checksum, that can be saved through the Windows file system.  The new
+ * configuration file can be used to control a CNC based on the selected drive
+ * type.
+ * Assumes CNC can activate the first 16 inputs and has a I/O loop back connector
+ * installed to the back of CNC.  The class also determines the application type
+ * from the configuration file.
  *          
  * Main attributes:
- *      *   Accesses the data stored in the DAO interface through the DAO class.
- *      *   Finds the matching parameters within the parameter file and replaces
- *              with the data from the DAO interface.
+ *      *   Accesses data stored within the DAO interface; either through the DAO
+ *              class or directly from the enum's in the DAO interface.
+ *      *   Finds/replace parameters within the loaded parameter file with the
+ *              data stored in the DAO interface.
  *      *   Determines the application type and configures I/O appropriately so
- *              user can satisfy homing and control the cutting.
+ *              user can satisfy homing and simulate cutting.
  *      *   Recalculates the checksum and saves the file to the file system.
  *      *   Implements the IProcess interface, which defines the capabilities of 
  *              of this class.
@@ -45,7 +52,6 @@ import com.setupconverter.ui.ConvertUI.OperateConverter;
 
 import java.nio.charset.StandardCharsets;
 import java.awt.Color;
-import java.util.Set;
 
 
 /**
@@ -72,6 +78,7 @@ public class ConvertLogic implements IProcessParameters {
     private File m_configFile = null;
     private int m_checksum = 0;
     private DataAccessObj m_dataAccess;
+    private final OperateConverter m_operate;
 
     /**
      * EDGE Pro Front Panel Installed
@@ -132,11 +139,6 @@ public class ConvertLogic implements IProcessParameters {
      * X axis installed on Rail axis
      */
     public boolean m_xOnRail = false;
-
-    /**
-     * UI inner class variable
-     */
-    public OperateConverter m_operate;
 
 
     /**
@@ -337,7 +339,7 @@ public class ConvertLogic implements IProcessParameters {
 
 
         // Convert Speed parameters
-        replaceAllParams( BLOCK.SPEEDS.getName(), m_dataAccess.getSpeedParams() );
+        replaceAllParams( BLOCK.SPEEDS.getName(), SPEED.toMap() );
 
 
         // Convert THC parameters
@@ -367,7 +369,7 @@ public class ConvertLogic implements IProcessParameters {
                 }
             }
         }
-        else if(( agTHCTotal = getValue( BLOCK.MACHINE.getName(), PARAMETER.AG.getName() )) > 0 ) {
+        else if(( agTHCTotal = getValue( BLOCK.MACHINE.getName(), PARAMETER.ARC_GLIDE.getName() )) > 0 ) {
             m_arcGlideInstalled = true;
             setInput( row1_NextIndex++, INPUT_NUM.RDY_TO_FIRE_1.getValue() );
 
@@ -388,7 +390,7 @@ public class ConvertLogic implements IProcessParameters {
         // Convert Dual Gantry Axis parameters
         if( m_dualGantryInstalled ) {
             replaceAllParams( BLOCK.DUAL_GANTRY.getName(), m_dataAccess.getAxesParams() );
-            replaceAllParams( BLOCK.DUAL_GANTRY.getName(), m_dataAccess.getDualGantryParams() );
+            replaceAllParams( BLOCK.DUAL_GANTRY.getName(), DUAL_GANTRY.toMap() );
         }
 
 
@@ -576,7 +578,6 @@ public class ConvertLogic implements IProcessParameters {
 
         // Merge in IO settings into parameter file
         add( BLOCK.IO.getName(), m_IOParamMap );
-        printIOMaps();
         shuffleIO();
         replaceAllParams( BLOCK.IO.getName(), m_IOParamMap );
 
@@ -736,24 +737,20 @@ public class ConvertLogic implements IProcessParameters {
     }
 
 
-    private void printIOMaps() {
+    /**
+     * For Debug use, prints the argument Map
+     * @param map   - Map to print
+     */
+    /*private void printMap( Map< String, Integer > map ) {
         Iterator< Entry< String, Integer >> iterator;
         Entry< String, Integer > entry;
 
-        // Print Input Type Map
-        iterator = m_inputTypeMap.entrySet().iterator();
+        iterator = map.entrySet().iterator();
         while( iterator.hasNext() ) {
             entry = iterator.next();
             System.out.format( "%s\t%d\n", entry.getKey(), entry.getValue() );
         }
-
-        // Print Ouptut Type Map
-        iterator = m_outputTypeMap.entrySet().iterator();
-        while( iterator.hasNext() ) {
-            entry = iterator.next();
-            System.out.format("%s\t%d\n", entry.getKey(), entry.getValue() );
-        }
-    }
+    }*/
 }
 
 

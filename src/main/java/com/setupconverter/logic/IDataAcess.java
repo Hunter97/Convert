@@ -54,24 +54,6 @@ public interface IDataAcess {
         public String getName() {
             return m_name;
         }
-
-        /**
-         * Gets/return the enum type that matches the String argument.
-         * @param name  - String representation of the enum type
-         * @return      - This enum type
-         */
-        public static BLOCK getType( String name ) {
-            BLOCK temp = null;
-
-            for( BLOCK type : BLOCK.values() ) {
-                if( type.getName().equals( name ) ) {
-                    temp = type;
-                    break;
-                }
-            }
-
-            return temp;
-        }
     }
 
 
@@ -133,24 +115,6 @@ public interface IDataAcess {
         public String getName() {
             return m_name;
         }
-
-        /**
-         * Gets/return the enum type that matches the String argument.
-         * @param name  - String representation the enum type
-         * @return      - This enum type
-         */
-        public static INPUT_NUM getType( String name ) {
-            INPUT_NUM temp = null;
-
-            for( INPUT_NUM type : INPUT_NUM.values() ) {
-                if( type.getName().equals( name ) ) {
-                    temp = type;
-                    break;
-                }
-            }
-
-            return temp;
-        }
     }
 
 
@@ -196,24 +160,6 @@ public interface IDataAcess {
         public String getName() {
             return m_name;
         }
-
-        /**
-         * Gets/returns the enum type that matches the String argument.
-         * @param name  - The String representation of the enum type
-         * @return      - This enum type
-         */
-        public static OUTPUT_NUM getType( String name ) {
-            OUTPUT_NUM temp = null;
-
-            for( OUTPUT_NUM type : OUTPUT_NUM.values() ) {
-                if( type.getName().equals( name ) ) {
-                    temp = type;
-                    break;
-                }
-            }
-
-            return temp;
-        }
     }
 
 
@@ -230,6 +176,7 @@ public interface IDataAcess {
 
         private final int m_value;
         private final String m_name;
+        private static final Map< String, Integer > map = new LinkedHashMap<>();
 
         /**
          * Constructor for enum SPEED
@@ -258,21 +205,15 @@ public interface IDataAcess {
         }
 
         /**
-         * Gets/returns the enum type that matches the String argument.
-         * @param name  - The String representation of the enum type
-         * @return      - This enum type
+         * Add all enum constants to a Map< String, Integer > and return the Map.
+         * @return  - enum constants as a Map
          */
-        public static SPEED getType( String name ) {
-            SPEED temp = null;
-
-            for( SPEED type : SPEED.values() ) {
-                if( type.getName().equals( name ) ) {
-                    temp = type;
-                    break;
-                }
+        public static Map< String, Integer > toMap() {
+            for( SPEED param : SPEED.values() ) {
+                map.put( param.getName(), param.getValue() );
             }
 
-            return temp;
+            return map;
         }
     }
 
@@ -282,11 +223,12 @@ public interface IDataAcess {
      * is configured to be.
      */
     public enum PARAMETER {
-        DUAL_GANTRY( "DualGantryInstalled=" ), FP( "FrontPanelInstalled=" ), SERCOS( "SercosSensorUtility=" ), AG( "ArcGlideTHCInstalled=" ), PSCOMM_HYPERNET( "PSCommOverHypNetEn" ),
-        STHC( "SensorTHCInstalled=" ), BEVEL_AXES( "SkewRotatorInstalled=" ), DUAL_BEVEL( "DualSkewRotatorInstalled=" ), AUTO_HOME( "AutoHome=" ),
-        DUAL_TRANS( "DualTransverseInstalled=" ), NO_ROTATE_TILT( "NoRotateTilt=" ), ONE_ROTATE_TILT( "OneRotateTilt=" ), ROTATING_TRANS( "RotatingTransverse=" ),
-        X_AXIS_ORIENTATION( "XAxisOrientation=" ), DUAL_TILTING( "DualTiltMode=" ), CHECK_SUM( "Checksum=" ), SERVO_ERROR_EN( "ServoErrTolerance(english)=" ),
-        SERVO_ERROR_M( "ServoErrTolerance(metric)=" ), ENCODER_CNTS_EN( "EncoderCounts(english)=" ), ENCODER_CNTS_M( "EncoderCounts(metric)=" );
+        DUAL_GANTRY( "DualGantryInstalled=" ), FP( "FrontPanelInstalled=" ), SERCOS( "SercosSensorUtility=" ), ARC_GLIDE( "ArcGlideTHCInstalled=" ),
+        PSCOMM_HYPERNET( "PSCommOverHypNetEn" ), STHC( "SensorTHCInstalled=" ), BEVEL_AXES( "SkewRotatorInstalled=" ), DUAL_BEVEL( "DualSkewRotatorInstalled=" ),
+        AUTO_HOME( "AutoHome=" ), DUAL_TRANS( "DualTransverseInstalled=" ), NO_ROTATE_TILT( "NoRotateTilt=" ), ONE_ROTATE_TILT( "OneRotateTilt=" ),
+        ROTATING_TRANS( "RotatingTransverse=" ), X_AXIS_ORIENTATION( "XAxisOrientation=" ), DUAL_TILTING( "DualTiltMode=" ), CHECK_SUM( "Checksum=" ),
+        SERVO_ERROR_EN( "ServoErrTolerance(english)=" ), SERVO_ERROR_M( "ServoErrTolerance(metric)=" ), ENCODER_CNTS_EN( "EncoderCounts(english)=" ),
+        ENCODER_CNTS_M( "EncoderCounts(metric)=" );
 
         private final String m_name;
 
@@ -305,24 +247,6 @@ public interface IDataAcess {
         public String getName() {
             return m_name;
         }
-
-        /**
-         * Gets/returns the enum type that matches the String argument.
-         * @param name  - The String representation of the enum type
-         * @return      - This enum type
-         */
-        public static PARAMETER getType( String name ) {
-            PARAMETER temp = null;
-
-            for( PARAMETER type : PARAMETER.values() ) {
-                if( type.getName().equals( name ) ) {
-                    temp = type;
-                    break;
-                }
-            }
-
-            return temp;
-        }
     }
 
 
@@ -331,16 +255,17 @@ public interface IDataAcess {
      */
     public enum HYPATH {
         PGAIN( "PGain=", 2000 ), IGAIN( "IGain=", 0 ), DGAIN( "DGain=", 0 ), FGAIN( "FGain=", 0 ), VGAIN( "VGain=", 0 ), PGAIN_2( "PGain2=", 2000 ), IGAIN_2( "IGain2=", 0 ),
-        DGAIN_2( "DGain2=", 0 ), FGAIN_2( "FGain2=", 0 ), VGAIN_2( "VGain2=", 0 ), PGAIN_3( "PGain3=", 2000 ), IGAIN_3( "IGain3=", 0 ), DGAIN_3( "DGain3=", 0 ),FGAIN_3( "FGain3=", 0 ),
-        VGAIN_3( "VGain3=", 0 ), PGAIN_4( "PGain4=", 2000 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 0 ), FGAIN_4( "FGain4=", 0 ), VGAIN_4( "VGain4=", 0 ), PGAIN_5( "PGain5=", 2000 ),
-        IGAIN_5( "IGain5=", 0 ), DGAIN_5( "DGain5=", 0 ), FGAIN_5( "FGain5=", 0 ), VGAIN_5( "VGain5=", 0 ), SERVO_ERROR_EN( "ServoErrTolerance(english)=", 1 ),
-        SERVO_ERROR_M( "ServoErrTolerance(metric)=", 25 ), ENCODER_CNTS_EN( "EncoderCounts(english)=", 1000 ), ENCODER_CNTS_M( "EncoderCounts(metric)=", 39 ),
-        DRIVE_TYPE( "DriveType=", 0 ), DAC( "DACPolarity=", 0 ), ENCODER_POLARITY( "EncoderPolarity=", 0 ), ENCODER_MODE( "EncoderMode=", 2 ), USE_HW_OT( "UseHWOvertravelSwitches=", 1 ),
-        HOME_SW( "UseHomeSwitch=", 1 ), HOME_OT( "HomeToOvertravel=", 1 ), MARKER_PULSE( "UseMarker=", 0 );
+        DGAIN_2( "DGain2=", 0 ), FGAIN_2( "FGain2=", 0 ), VGAIN_2( "VGain2=", 0 ), PGAIN_3( "PGain3=", 2000 ), IGAIN_3( "IGain3=", 0 ), DGAIN_3( "DGain3=", 0 ),
+        FGAIN_3( "FGain3=", 0 ), VGAIN_3( "VGain3=", 0 ), PGAIN_4( "PGain4=", 2000 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 0 ), FGAIN_4( "FGain4=", 0 ),
+        VGAIN_4( "VGain4=", 0 ), PGAIN_5( "PGain5=", 2000 ), IGAIN_5( "IGain5=", 0 ), DGAIN_5( "DGain5=", 0 ), FGAIN_5( "FGain5=", 0 ), VGAIN_5( "VGain5=", 0 ),
+        SERVO_ERROR_EN( "ServoErrTolerance(english)=", 1 ), SERVO_ERROR_M( "ServoErrTolerance(metric)=", 25 ), ENCODER_CNTS_EN( "EncoderCounts(english)=", 1000 ),
+        ENCODER_CNTS_M( "EncoderCounts(metric)=", 39 ), DRIVE_TYPE( "DriveType=", 0 ), DAC( "DACPolarity=", 0 ), ENCODER_POLARITY( "EncoderPolarity=", 0 ),
+        ENCODER_MODE( "EncoderMode=", 2 ), USE_HW_OT( "UseHWOvertravelSwitches=", 1 ), HOME_SW( "UseHomeSwitch=", 1 ), HOME_OT( "HomeToOvertravel=", 1 ),
+        MARKER_PULSE( "UseMarker=", 0 );
 
         private final int m_value;
         private final String m_name;
-        private static Map< String, Integer > map = new LinkedHashMap<>();
+        private static final Map< String, Integer > map = new LinkedHashMap<>();
 
         /**
          * Constructor for enum HYPATH
@@ -369,26 +294,8 @@ public interface IDataAcess {
         }
 
         /**
-         * Gets/returns the enum type that matches the String argument.
-         * @param name  - The String representation of the enum type
-         * @return      - This enum type
-         */
-        public static HYPATH getType( String name ) {
-            HYPATH temp = null;
-
-            for( HYPATH type : HYPATH.values() ) {
-                if( type.getName().equals( name ) ) {
-                    temp = type;
-                    break;
-                }
-            }
-
-            return temp;
-        }
-
-        /**
          * Add all enum constants to a Map< String, Integer > and return the Map.
-         * @return  - A Map of the enum HYPATH.
+         * @return  - enum constants as a Map
          */
         public static Map< String, Integer > toMap() {
             for( HYPATH param : HYPATH.values() ) {
@@ -405,16 +312,17 @@ public interface IDataAcess {
      */
     public enum PICO_PATH {
         PGAIN( "PGain=", 20 ), IGAIN( "IGain=", 0 ), DGAIN( "DGain=", 20 ), FGAIN( "FGain=", 100 ), VGAIN( "VGain=", 0 ), PGAIN_2( "PGain2=", 20 ), IGAIN_2( "IGain2=", 0 ),
-        DGAIN_2( "DGain2=", 20 ), FGAIN_2( "FGain2=", 100 ), VGAIN_2( "VGain2=", 0 ), PGAIN_3( "PGain3=", 20 ), IGAIN_3( "IGain3=", 0 ), DGAIN_3( "DGain3=", 20 ),FGAIN_3( "FGain3=", 100 ),
-        VGAIN_3( "VGain3=", 0 ), PGAIN_4( "PGain4=", 20 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 20 ), FGAIN_4( "FGain4=", 100 ), VGAIN_4( "VGain4=", 0 ), PGAIN_5( "PGain5=", 20 ),
-        IGAIN_5( "IGain5=", 0 ), DGAIN_5( "DGain5=", 20 ), FGAIN_5( "FGain5=", 100 ), VGAIN_5( "VGain5=", 0 ), SERVO_ERROR_EN( "ServoErrTolerance(english)=", 1 ),
-        SERVO_ERROR_M( "ServoErrTolerance(metric)=", 25 ), ENCODER_CNTS_EN( "EncoderCounts(english)=", 8192 ), ENCODER_CNTS_M( "EncoderCounts(metric)=", 323 ),
-        DRIVE_TYPE( "DriveType=", 0 ), DAC( "DACPolarity=", 0 ), ENCODER_POLARITY( "EncoderPolarity=", 1 ), ENCODER_MODE( "EncoderMode=", 2 ), USE_HW_OT( "UseHWOvertravelSwitches=", 1 ),
-        HOME_SW( "UseHomeSwitch=", 1 ), HOME_OT( "HomeToOvertravel=", 1 ), MARKER_PULSE( "UseMarker=", 0 );
+        DGAIN_2( "DGain2=", 20 ), FGAIN_2( "FGain2=", 100 ), VGAIN_2( "VGain2=", 0 ), PGAIN_3( "PGain3=", 20 ), IGAIN_3( "IGain3=", 0 ), DGAIN_3( "DGain3=", 20 ),
+        FGAIN_3( "FGain3=", 100 ), VGAIN_3( "VGain3=", 0 ), PGAIN_4( "PGain4=", 20 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 20 ), FGAIN_4( "FGain4=", 100 ),
+        VGAIN_4( "VGain4=", 0 ), PGAIN_5( "PGain5=", 20 ), IGAIN_5( "IGain5=", 0 ), DGAIN_5( "DGain5=", 20 ), FGAIN_5( "FGain5=", 100 ), VGAIN_5( "VGain5=", 0 ),
+        SERVO_ERROR_EN( "ServoErrTolerance(english)=", 1 ), SERVO_ERROR_M( "ServoErrTolerance(metric)=", 25 ), ENCODER_CNTS_EN( "EncoderCounts(english)=", 8192 ),
+        ENCODER_CNTS_M( "EncoderCounts(metric)=", 323 ), DRIVE_TYPE( "DriveType=", 0 ), DAC( "DACPolarity=", 0 ), ENCODER_POLARITY( "EncoderPolarity=", 1 ),
+        ENCODER_MODE( "EncoderMode=", 2 ), USE_HW_OT( "UseHWOvertravelSwitches=", 1 ), HOME_SW( "UseHomeSwitch=", 1 ), HOME_OT( "HomeToOvertravel=", 1 ),
+        MARKER_PULSE( "UseMarker=", 0 );
 
         private final int m_value;
         private final String m_name;
-        private static Map< String, Integer > map = new LinkedHashMap<>();
+        private static final Map< String, Integer > map = new LinkedHashMap<>();
 
         /**
          * Constructor for enum PICO_PATH
@@ -443,26 +351,8 @@ public interface IDataAcess {
         }
 
         /**
-         * Gets/returns the enum type that matches the String argument.
-         * @param name  - The String representation of the enum type
-         * @return      - This enum type
-         */
-        public static PICO_PATH getType( String name ) {
-            PICO_PATH temp = null;
-
-            for( PICO_PATH type : PICO_PATH.values() ) {
-                if( type.getName().equals( name ) ) {
-                    temp = type;
-                    break;
-                }
-            }
-
-            return temp;
-        }
-
-        /**
          * Add all enum constants to a Map< String, Integer > and return the Map.
-         * @return  - A Map of the enum PICO_PATH.
+         * @return  - enum constants as a Map
          */
         public static Map< String, Integer > toMap() {
             for( PICO_PATH param : PICO_PATH.values() ) {
@@ -478,11 +368,13 @@ public interface IDataAcess {
      * Default settings for a CNC containing one or more SensorTHC's.
      */
     public enum THC {
-        SLIDE_EN( "SlideLength(english)=", 10 ), SLIDE_M( "SlideLength(metric)=", 254 ), HARD_STOP( "UseHardStop=", 0 ), HOME_SWITCH( "UseHomeSwitch=", 1 ), ANALOG_1( "THCAnalog1=", 0 ),
-        ANALOG_2( "THCAnalog2=", 2 ), SPEEDPOT_1_INSTALLED( "SpeedPotInstalled=", 1 ), SPEEDPOT_1_ANALOG_1( "SpeedPotAnalog1=", 1 ), SPEEDPOT_1_ANALOG_2( "SpeedPotAnalog2=", 1 );
+        SLIDE_EN( "SlideLength(english)=", 10 ), SLIDE_M( "SlideLength(metric)=", 254 ), HARD_STOP( "UseHardStop=", 0 ), HOME_SWITCH( "UseHomeSwitch=", 1 ),
+        ANALOG_1( "THCAnalog1=", 0 ), ANALOG_2( "THCAnalog2=", 2 ), SPEEDPOT_1_INSTALLED( "SpeedPotInstalled=", 1 ), SPEEDPOT_1_ANALOG_1( "SpeedPotAnalog1=", 1 ),
+        SPEEDPOT_1_ANALOG_2( "SpeedPotAnalog2=", 1 );
 
         private final int m_value;
         private final String m_name;
+        private static final Map< String, Integer > map = new LinkedHashMap<>();
 
         /**
          * Constructor for enum THC
@@ -511,21 +403,15 @@ public interface IDataAcess {
         }
 
         /**
-         * Gets/returns the enum type that matches the String argument.
-         * @param name  - The String representation of the enum type
-         * @return      - This enum type
+         * Add all enum constants to a Map< String, Integer > and return the Map.
+         * @return  - enum constants as a Map
          */
-        public static THC getType( String name ) {
-            THC temp = null;
-
-            for( THC type : THC.values() ) {
-                if( type.getName().equals( name ) ) {
-                    temp = type;
-                    break;
-                }
+        public static Map< String, Integer > toMap() {
+            for( THC param : THC.values() ) {
+                map.put( param.getName(), param.getValue() );
             }
-
-            return temp;
+            
+            return map;
         }
     }
 
@@ -538,6 +424,7 @@ public interface IDataAcess {
 
         private final int m_value;
         private final String m_name;
+        private static final Map< String, Integer > map = new LinkedHashMap<>();
 
         /**
          * Constructor for enum DUAL_GANTRY
@@ -566,21 +453,15 @@ public interface IDataAcess {
         }
 
         /**
-         * Gets/returns the enum type that matches the String argument.
-         * @param name  - The String representation of the enum type
-         * @return      - This enum type
+         * Add all enum constants to a Map< String, Integer > and return the Map.
+         * @return  - enum constants as a Map
          */
-        public static THC getType( String name ) {
-            THC temp = null;
-
-            for( THC type : THC.values() ) {
-                if( type.getName().equals( name ) ) {
-                    temp = type;
-                    break;
-                }
+        public static Map< String, Integer > toMap() {
+            for( DUAL_GANTRY param : DUAL_GANTRY.values() ) {
+                map.put( param.getName(), param.getValue() );
             }
-
-            return temp;
+            
+            return map;
         }
     }
 
@@ -619,92 +500,47 @@ public interface IDataAcess {
         public String getName() {
             return m_name;
         }
-
-        /**
-         * Gets/returns the enum type that matches the String argument.
-         * @param name  - The String representation of the enum type
-         * @return      - This enum type
-         */
-        public static BEVEL getType( String name ) {
-            BEVEL temp = null;
-
-            for( BEVEL type : BEVEL.values() ) {
-                if( type.getName().equals( name ) ) {
-                    temp = type;
-                    break;
-                }
-            }
-
-            return temp;
-        }
     }
 
 
     /**
-     * Adds the default speed settings from the enum SPEED into a EnumMap.
-     */
-    public void addSpeedDefaults();
-    
-
-    /**
-     * Adds the default SensorTHC parameters from the enum THC into 3 separate Map
-     * containers. One for the THC Axes parameters, one for the Speed parameters,
-     * and one for the Machine parameters.
+     * Adds the enum THC into 3 separate Map's. One for the THC Axes parameters,
+     * one for the THC Speed parameters, and one for the THC Machine parameters.
      */
     public void addTHCDefaults();
 
 
     /**
-     * Adds the default Axis settings for Axis 1, 2, and 6 from the enum AXES into an EnumMap.
-     * @param type  - The system type to be used with converted setup file
+     * Adds the enum parameters, based on the system type, to a Map. 
+     * @param type  - The system type to convert configuration file
      */
     public void addAxesDefaults( String type );
 
 
     /**
-     * Adds the default settings for the Dual Gantry axis.
-     */
-    public void addDualGantryDefaults();
-
-
-    /**
-     * Get/return the specific SensorTHC parameters for the THC Axes screen
-     * @return - The SensorTHC THC Axes parameter map
+     * Get/return the SensorTHC Axis Map
+     * @return - The SensorTHC THC Axes parameter Map
      */
     public Map< String, Integer > getTHCAxisParams();
 
 
     /**
-     * Get/return the specific SensorTHC parameters within the Machine screen
+     * Get/return the SensorTHC Machine Map
      * @return  - The SensorTHC Machine parameter Map
      */
     public Map< String, Integer > getTHCMachineParams();
 
 
     /**
-     * Get/return the specific SensorTHC analog parameters within the Speed screen
+     * Get/return the SensorTHC Analog Map
      * @return  -   The SensorTHC Analog parameter Map
      */
     public Map< String, Integer > getTHCAnalogParams();
 
 
     /**
-     * Get/return the specific Axes parameters within the Axes setup screens
+     * Get/return the Axes parameters Map
      * @return  - The Axes parameter Map
      */
     public Map< String, Integer > getAxesParams();
-
-
-    /**
-     * Get/return the specific Speed parameters within the Speed's setup screen
-     * @return  - The Speed parameter Map
-     */
-    public Map< String, Integer > getSpeedParams();
-
-
-    /**
-     * Get/return the specific Dual Gantry axis parameters
-     * @return  - The Dual Gantry parameter Map
-     */
-    public Map< String, Integer > getDualGantryParams();
 }
