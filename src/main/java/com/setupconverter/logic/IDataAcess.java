@@ -32,7 +32,7 @@ public interface IDataAcess {
      * Enumeration constants containing titles to several blocks within the parameter file.
      * Each constant represents a string in the form of "[Title]\r\n".
      */
-    public enum BLOCK {
+    public enum Block {
         MACHINE( "[Machine]\r\n" ), SPEEDS( "[Speeds]\r\n" ), AIC( "[AnalogInputCard]\r\n" ), LINK( "[Link]\r\n" ), IO( "[I/O]\r\n" ), ROTATE( "[Rotate]\r\n" ),
         TILT( "[Tilt]\r\n" ), DUAL_ROTATE( "[DualRotate]\r\n" ), DUAL_TILT( "[DualTilt]\r\n" ), DUAL_GANTRY( "[DualGantry]\r\n" ), THC_1( "[THC1]\r\n" ),
         THC_2( "[THC2]\r\n" ), THC_3( "[THC3]\r\n" ), THC_4( "[THC4]\r\n" ), AXIS_1( "[Axis0]\r\n" ), AXIS_2( "[Axis1]\r\n" ), AXIS_7( "[Axis6]\r\n" );
@@ -43,7 +43,7 @@ public interface IDataAcess {
          * Constructor for enum BLOCK
          * @param name  - String value assigned to this enum type
          */
-        private BLOCK( String name ) {
+        private Block( String name ) {
             this.m_name = name;
         }
 
@@ -65,7 +65,7 @@ public interface IDataAcess {
      * is the integer value of the input device.
      * i.e. Input47Number=1, where device 47 is assigned to Input 1
      */
-    public enum INPUT_NUM {
+    public enum Input {
         CUT_MARK_SENSE( "Input4Number=", 4 ), DRIVE_DISABLED( "Input10Number=", 10 ), X_NEG_OT( "Input11Number=", 11 ), X_POS_OT( "Input12Number=", 12 ), Y_NEG_OT( "Input13Number=", 13 ),
         Y_POS_OT( "Input14Number=", 14 ), TILT_POS_OT( "Input35Number=", 35 ), TILT_NEG_OT( "Input36Number=", 36 ), ROTATE_HOME( "Input37Number=", 37 ),
         THC_AUTO_1( "Input46Number=", 46 ), NCS_1( "Input47Number=", 47 ), THC_AUTO_2( "Input51Number=", 51 ), NCS_2( "Input52Number=", 52 ),
@@ -95,7 +95,7 @@ public interface IDataAcess {
          * @param name  - String value assigned to this enum type
          * @param value - Ordinal value assigned to this enum type
          */
-        private INPUT_NUM( String name, int value ) {
+        private Input( String name, int value ) {
             this.m_value = value;
             this.m_name = name;
         }
@@ -126,7 +126,7 @@ public interface IDataAcess {
      * is the integer value of the output device.
      * i.e. Output8Number=1, where device #8 is assigned to Output 1
      */
-    public enum OUTPUT_NUM {
+    public enum Output {
         THD( "Output4Number=", 4 ), CUT_CONTROL( "Output8Number=", 8 ), DRIVE_ENABLE( "Output55Number=", 55 ), NCE_1( "Output57Number=", 57 ), HOLD_IGN1( "Output58Number=", 58 ),
         CUT_CONTROL_1( "Output197Number=", 197 ), CUT_CONTROL_2( "Output198Number=", 198 ), CUT_CONTROL_3( "Output198Number=", 198 ), CUT_CONTROL_4( "Output198Number=", 198 ),
         STATION_ENABLE_LED_1( "Output217Number=", 217 ), STATION_ENABLE_LED_2( "Output218Number=", 218 ), VENT_1( "Output472Number=", 472 ), VENT_2( "Output473Number=", 473 ),
@@ -140,7 +140,7 @@ public interface IDataAcess {
          * @param name  - String value assigned to this enum type
          * @param value - Ordinal value assigned to this enum type
          */
-        private OUTPUT_NUM( String name, int value ) {
+        private Output( String name, int value ) {
             this.m_value = value;
             this.m_name = name;
         }
@@ -166,7 +166,7 @@ public interface IDataAcess {
     /**
      * Contains default Speed settings for all drive types
      */
-    public enum SPEED {
+    public enum Speed {
         MAX_SPEED_EN( "MaxSpeed(english)=", 1000 ), MAX_SPEED_M( "MaxSpeed(metric)=", 25400 ), SPEED_RANGE_1_EN( "GainSpeed1(english)=", 100 ),
         SPEED_RANGE_1_M( "GainSpeed1(metric)=", 2540 ), SPEED_RANGE_2_EN( "GainSpeed2(english)=", 300 ), SPEED_RANGE_2_M( "GainSpeed2(metric)=", 7620 ),
         SPEED_RANGE_3_EN( "GainSpeed3(english)=", 500 ), SPEED_RANGE_3_M( "GainSpeed3(metric)=", 12700 ), SPEED_RANGE_4_EN( "GainSpeed4(english)=", 1000 ),
@@ -183,7 +183,7 @@ public interface IDataAcess {
          * @param name  - String value assigned to this enum type
          * @param value - Ordinal value assigned to this enum type
          */
-        private SPEED( String name, int value ) {
+        private Speed( String name, int value ) {
             this.m_value = value;
             this.m_name = name;
         }
@@ -209,7 +209,7 @@ public interface IDataAcess {
          * @return  - enum constants as a Map
          */
         public static Map< String, Integer > toMap() {
-            for( SPEED param : SPEED.values() ) {
+            for( Speed param : Speed.values() ) {
                 map.put( param.getName(), param.getValue() );
             }
 
@@ -222,7 +222,7 @@ public interface IDataAcess {
      * Group of specific machine parameters that signify the type of application the setup file
      * is configured to be.
      */
-    public enum PARAMETER {
+    public enum Parameter {
         DUAL_GANTRY( "DualGantryInstalled=" ), FP( "FrontPanelInstalled=" ), SERCOS( "SercosSensorUtility=" ), ARC_GLIDE( "ArcGlideTHCInstalled=" ),
         PSCOMM_HYPERNET( "PSCommOverHypNetEn" ), STHC( "SensorTHCInstalled=" ), BEVEL_AXES( "SkewRotatorInstalled=" ), DUAL_BEVEL( "DualSkewRotatorInstalled=" ),
         AUTO_HOME( "AutoHome=" ), DUAL_TRANS( "DualTransverseInstalled=" ), NO_ROTATE_TILT( "NoRotateTilt=" ), ONE_ROTATE_TILT( "OneRotateTilt=" ),
@@ -236,7 +236,7 @@ public interface IDataAcess {
          * Constructor for enum PARAMETER
          * @param name  - String value assigned to this enum type
          */
-        private PARAMETER( String name ) {
+        private Parameter( String name ) {
             this.m_name = name;
         }
 
@@ -253,7 +253,7 @@ public interface IDataAcess {
     /**
      * Default Axes settings for a CNC using the Hypath diagnostic boards
      */
-    public enum HYPATH {
+    public enum Hypath {
         PGAIN( "PGain=", 2000 ), IGAIN( "IGain=", 0 ), DGAIN( "DGain=", 0 ), FGAIN( "FGain=", 0 ), VGAIN( "VGain=", 0 ), PGAIN_2( "PGain2=", 2000 ), IGAIN_2( "IGain2=", 0 ),
         DGAIN_2( "DGain2=", 0 ), FGAIN_2( "FGain2=", 0 ), VGAIN_2( "VGain2=", 0 ), PGAIN_3( "PGain3=", 2000 ), IGAIN_3( "IGain3=", 0 ), DGAIN_3( "DGain3=", 0 ),
         FGAIN_3( "FGain3=", 0 ), VGAIN_3( "VGain3=", 0 ), PGAIN_4( "PGain4=", 2000 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 0 ), FGAIN_4( "FGain4=", 0 ),
@@ -272,7 +272,7 @@ public interface IDataAcess {
          * @param name  - String value assigned to this enum type
          * @param value - Ordinal value assigned to this enum type
          */
-        private HYPATH( String name, int value ) {
+        private Hypath( String name, int value ) {
             this.m_value = value;
             this.m_name = name;
         }
@@ -298,7 +298,7 @@ public interface IDataAcess {
          * @return  - enum constants as a Map
          */
         public static Map< String, Integer > toMap() {
-            for( HYPATH param : HYPATH.values() ) {
+            for( Hypath param : Hypath.values() ) {
                 map.put( param.getName(), param.getValue() );
             }
 
@@ -310,7 +310,7 @@ public interface IDataAcess {
     /**
      * Default Axes settings for a CNC using the Picopath diagnostic boards.
      */
-    public enum PICO_PATH {
+    public enum PicoPath {
         PGAIN( "PGain=", 20 ), IGAIN( "IGain=", 0 ), DGAIN( "DGain=", 20 ), FGAIN( "FGain=", 100 ), VGAIN( "VGain=", 0 ), PGAIN_2( "PGain2=", 20 ), IGAIN_2( "IGain2=", 0 ),
         DGAIN_2( "DGain2=", 20 ), FGAIN_2( "FGain2=", 100 ), VGAIN_2( "VGain2=", 0 ), PGAIN_3( "PGain3=", 20 ), IGAIN_3( "IGain3=", 0 ), DGAIN_3( "DGain3=", 20 ),
         FGAIN_3( "FGain3=", 100 ), VGAIN_3( "VGain3=", 0 ), PGAIN_4( "PGain4=", 20 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 20 ), FGAIN_4( "FGain4=", 100 ),
@@ -329,7 +329,7 @@ public interface IDataAcess {
          * @param name  - String value of this enum type
          * @param value - Ordinal value of this enum type
          */
-        private PICO_PATH( String name, int value ) {
+        private PicoPath( String name, int value ) {
             this.m_value = value;
             this.m_name = name;
         }
@@ -355,7 +355,7 @@ public interface IDataAcess {
          * @return  - enum constants as a Map
          */
         public static Map< String, Integer > toMap() {
-            for( PICO_PATH param : PICO_PATH.values() ) {
+            for( PicoPath param : PicoPath.values() ) {
                 map.put( param.getName(), param.getValue() );
             }
             
@@ -419,7 +419,7 @@ public interface IDataAcess {
     /**
      * Default settings for a CNC containing a Dual Gantry Axis.
      */
-    public enum DUAL_GANTRY {
+    public enum DualGantry {
         SKEW_ERROR_EN( "SkewErrTolerance(english)=", 1 ), SKEW_ERROR_M( "SkewErrTolerance(metric)=", 25 );
 
         private final int m_value;
@@ -431,7 +431,7 @@ public interface IDataAcess {
          * @param name  - String value for this enum type
          * @param value - Ordinal value for this enum type
          */
-        private DUAL_GANTRY( String name, int value ) {
+        private DualGantry( String name, int value ) {
             this.m_value = value;
             this.m_name = name;
         }
@@ -457,7 +457,7 @@ public interface IDataAcess {
          * @return  - enum constants as a Map
          */
         public static Map< String, Integer > toMap() {
-            for( DUAL_GANTRY param : DUAL_GANTRY.values() ) {
+            for( DualGantry param : DualGantry.values() ) {
                 map.put( param.getName(), param.getValue() );
             }
             
@@ -469,7 +469,7 @@ public interface IDataAcess {
     /**
      * Default settings for a CNC containing one or more Bevel axis
      */
-    public enum BEVEL {
+    public enum Bevel {
         SERVO_ERROR( "ServoErrTolerance(degrees)=", 90 ), ENCODER_CNTS( "EncoderCounts(revs)=", 6000 ), AUTO_HOME( "AutoHome=", 1 );
 
         private final int m_value;
@@ -480,7 +480,7 @@ public interface IDataAcess {
          * @param name  - String value of this enum type
          * @param value - Ordinal value of this enum type
          */
-        private BEVEL( String name, int value ) {
+        private Bevel( String name, int value ) {
             this.m_value = value;
             this.m_name = name;
         }
