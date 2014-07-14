@@ -127,7 +127,7 @@ public class ConvertUI extends JFrame {
      * Constructs the UI and instantiates an OperateConverter object.
      */
     public ConvertUI() {
-        super( "SetupConverter" );
+        super( "SetupConvert" );
         m_systems = new String[] { SYSTEM.BENCH.getName(), SYSTEM.HYPATH.getName() };
         m_operate = new OperateConverter();
 

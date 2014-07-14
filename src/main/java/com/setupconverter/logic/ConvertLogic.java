@@ -140,6 +140,21 @@ public class ConvertLogic implements IProcessParameters {
      */
     public boolean m_xOnRail = false;
 
+    /**
+     * CBH installed
+     */
+    public boolean m_cbhInstalled = false;
+
+    /**
+     * X Negative OT is assigned to Input11Number verses Input19Number
+     */
+    public boolean m_xHomeNegOT = false;
+
+    /**
+     * Y Negative OT is assigned to Input13Number verses Input20Number
+     */
+    public boolean m_yHomeNegOT = false;
+
 
     /**
      * Constructor for class ConvertLogic
@@ -337,6 +352,18 @@ public class ConvertLogic implements IProcessParameters {
             m_dualTiltInstalled = true;
         }
 
+        if( getValue( Block.MACHINE.getName(), Parameter.CBH.getName() ) > 0 ) {
+            m_cbhInstalled = true;
+        }
+
+        if( getValue( Block.IO.getName(), Input.X_HOME_NEG_OT.getName() ) > 0 ) {
+            m_xHomeNegOT = true;
+        }
+
+        if( getValue( Block.IO.getName(), Input.Y_HOME_NEG_OT.getName() ) > 0 ) {
+            m_yHomeNegOT = true;
+        }
+
 
         // Convert Speed parameters
         replaceAllParams( Block.SPEEDS.getName(), Speed.toMap() );
@@ -385,6 +412,9 @@ public class ConvertLogic implements IProcessParameters {
                 }
             }
         }
+        else {
+            row1_NextIndex++;  // Shift to 2nd input if no THC's installed
+        }
 
 
         // Convert Dual Gantry Axis parameters
@@ -403,10 +433,23 @@ public class ConvertLogic implements IProcessParameters {
         replaceAllParams( Block.AXIS_2.getName(), m_dataAccess.getAxesParams() );
 
         if( m_xOnRail ) {
-            setInput( row1_NextIndex++, Input.X_NEG_OT.getValue() );
+            if( m_xHomeNegOT ) {
+                setInput( row1_NextIndex++, Input.X_HOME_NEG_OT.getValue() );
+            }
+            else {
+                setInput( row1_NextIndex++, Input.X_NEG_OT.getValue() );
+            }
+
+            if( m_yHomeNegOT ) {
+                setInput( row1_NextIndex++, Input.Y_HOME_NEG_OT.getValue() );
+            }
+            else {
+                setInput( row1_NextIndex++, Input.Y_NEG_OT.getValue() );
+            }
+
             setInput( row2_NextIndex++, Input.X_POS_OT.getValue() );
-            setInput( row1_NextIndex++, Input.Y_NEG_OT.getValue() );
             setInput( row2_NextIndex++, Input.Y_POS_OT.getValue() );
+
         }
         else {
             setInput( row1_NextIndex++, Input.Y_NEG_OT.getValue() );
@@ -415,6 +458,15 @@ public class ConvertLogic implements IProcessParameters {
             setInput( row2_NextIndex++, Input.X_POS_OT.getValue() );
         }
 
+
+        if( m_cbhInstalled ) {
+            setParameter( Block.CBH.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
+            replaceAllParams( Block.CBH.getName(), m_dataAccess.getAxesParams() );
+            setParameter( Block.CBH.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
+            setParameter( Block.CBH.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
+            setParameter( Block.CBH.getName(), Parameter.HOME_DIRECTION.getName(), 0 );
+            setInput( row1_NextIndex++, Input.CBH_HOME.getValue() );
+        }
 
         // Convert Dual Transverse parameters and add its inputs
         if( m_dualTransInstalled ) {

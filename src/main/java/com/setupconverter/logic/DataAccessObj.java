@@ -72,7 +72,7 @@ public class DataAccessObj implements IDataAcess {
     @Override
     public final void addAxesDefaults( String type ) {      
         if( SYSTEM.BENCH.getName().equals( type )) {
-             m_axesParamMap = PicoPath.toMap();
+             m_axesParamMap = Bench.toMap();
         }
         else if( SYSTEM.HYPATH.getName().equals( type )) {
             m_axesParamMap = Hypath.toMap();
