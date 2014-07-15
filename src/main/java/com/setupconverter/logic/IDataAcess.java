@@ -68,7 +68,7 @@ public interface IDataAcess {
      */
     public enum Input implements IRetrieveParameters {
         CUT_MARK_SENSE( "Input4Number=", 4 ), DRIVE_DISABLED( "Input10Number=", 10 ), X_HOME_NEG_OT( "Input11Number=", 11 ), X_POS_OT( "Input12Number=", 12 ),
-        Y_HOME_NEG_OT( "Input20Number=", 13 ), Y_POS_OT( "Input14Number=", 14 ), CBH_HOME( "Input17Number=", 17 ), X_NEG_OT( "Input19Number=", 19 ), Y_NEG_OT( "Input20Number=", 20 ),
+        Y_HOME_NEG_OT( "Input13Number=", 13 ), Y_POS_OT( "Input14Number=", 14 ), CBH_HOME( "Input17Number=", 17 ), X_NEG_OT( "Input19Number=", 19 ), Y_NEG_OT( "Input20Number=", 20 ),
         TILT_POS_OT( "Input35Number=", 35 ), TILT_NEG_OT( "Input36Number=", 36 ), ROTATE_HOME( "Input37Number=", 37 ), THC_AUTO_1( "Input46Number=", 46 ), NCS_1( "Input47Number=", 47 ),
         THC_AUTO_2( "Input51Number=", 51 ), NCS_2( "Input52Number=", 52 ), THC_AUTO_3( "Input56Number=", 56 ), NCS_3( "Input57Number=", 57 ), 
         THC_AUTO_4( "Input61Number=", 61 ), NCS_4( "Input62Number=", 62 ), FUME_SELECT( "Input83Number=", 83 ), TORCH_COLLISION( "Input100Number=", 100 ),
@@ -240,7 +240,7 @@ public interface IDataAcess {
         AUTO_HOME( "AutoHome=" ), DUAL_TRANS( "DualTransverseInstalled=" ), NO_ROTATE_TILT( "NoRotateTilt=" ), ONE_ROTATE_TILT( "OneRotateTilt=" ),
         ROTATING_TRANS( "RotatingTransverse=" ), X_AXIS_ORIENTATION( "XAxisOrientation=" ), DUAL_TILTING( "DualTiltMode=" ), CHECK_SUM( "Checksum=" ),
         SERVO_ERROR_EN( "ServoErrTolerance(english)=" ), SERVO_ERROR_M( "ServoErrTolerance(metric)=" ), ENCODER_CNTS_EN( "EncoderCounts(english)=" ),
-        ENCODER_CNTS_M( "EncoderCounts(metric)=" ), CBH( "CBHInstalled=" ), HOME_DIRECTION( "HomeDirection=" );
+        ENCODER_CNTS_M( "EncoderCounts(metric)=" ), CBH( "CBHInstalled=" ), HOME_DIRECTION( "HomeDirection=" ), HOME_TO_OT( "HomeToOvertravel=" );
 
         private final String m_name;
 

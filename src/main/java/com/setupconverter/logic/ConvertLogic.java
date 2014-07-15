@@ -145,16 +145,6 @@ public class ConvertLogic implements IProcessParameters {
      */
     public boolean m_cbhInstalled = false;
 
-    /**
-     * X Negative OT is assigned to Input11Number verses Input19Number
-     */
-    public boolean m_xHomeNegOT = false;
-
-    /**
-     * Y Negative OT is assigned to Input13Number verses Input20Number
-     */
-    public boolean m_yHomeNegOT = false;
-
 
     /**
      * Constructor for class ConvertLogic
@@ -304,8 +294,8 @@ public class ConvertLogic implements IProcessParameters {
         m_dataAccess = new DataAccessObj( system );
         int sthcTotal;
         int agTHCTotal;
-        int row1_NextIndex = 1;
-        int row2_NextIndex = 9;
+        int row1NextIndex = 1;
+        int row2NextIndex = 10;
         int row3_NextIndex = 17;
         int torchCollisionLoc = 16;
 
@@ -356,14 +346,6 @@ public class ConvertLogic implements IProcessParameters {
             m_cbhInstalled = true;
         }
 
-        if( getValue( Block.IO.getName(), Input.X_HOME_NEG_OT.getName() ) > 0 ) {
-            m_xHomeNegOT = true;
-        }
-
-        if( getValue( Block.IO.getName(), Input.Y_HOME_NEG_OT.getName() ) > 0 ) {
-            m_yHomeNegOT = true;
-        }
-
 
         // Convert Speed parameters
         replaceAllParams( Block.SPEEDS.getName(), Speed.toMap() );
@@ -382,38 +364,41 @@ public class ConvertLogic implements IProcessParameters {
             replaceAllParams( Block.AIC.getName(), m_dataAccess.getTHCAnalogParams() );
             replaceAllParams( Block.MACHINE.getName(), m_dataAccess.getTHCMachineParams() );
 
-            setInput( row1_NextIndex++, Input.NCS_1.getValue() );
+            setInput( row1NextIndex++, Input.NCS_1.getValue() );
 
             if( sthcTotal >= 2 ) {
-                setInput( row1_NextIndex++, Input.NCS_2.getValue() );
+                setInput( row1NextIndex++, Input.NCS_2.getValue() );
+                row2NextIndex++;
 
                 if( sthcTotal >= 3 ) {
-                    setInput( row1_NextIndex++, Input.NCS_3.getValue() );
+                    setInput( row1NextIndex++, Input.NCS_3.getValue() );
+                    row2NextIndex++;
 
                     if( sthcTotal >= 4 ) {  // Only supporting 4 STHC's at this time.
-                        setInput( row1_NextIndex++, Input.NCS_4.getValue() );
+                        setInput( row1NextIndex++, Input.NCS_4.getValue() );
+                        row2NextIndex++;
                     }
                 }
             }
         }
         else if(( agTHCTotal = getValue( Block.MACHINE.getName(), Parameter.ARC_GLIDE.getName() )) > 0 ) {
             m_arcGlideInstalled = true;
-            setInput( row1_NextIndex++, Input.RDY_TO_FIRE_1.getValue() );
+            setInput( row1NextIndex++, Input.RDY_TO_FIRE_1.getValue() );
 
             if( agTHCTotal >= 2 ) {
-                setInput( row1_NextIndex++, Input.RDY_TO_FIRE_2.getValue() );
+                setInput( row1NextIndex++, Input.RDY_TO_FIRE_2.getValue() );
 
                 if( agTHCTotal >= 3 ) {
-                    setInput( row1_NextIndex++, Input.RDY_TO_FIRE_3.getValue() );
+                    setInput( row1NextIndex++, Input.RDY_TO_FIRE_3.getValue() );
 
                     if( agTHCTotal == 4 ) {
-                        setInput( row1_NextIndex++, Input.RDY_TO_FIRE_4.getValue() );
+                        setInput( row1NextIndex++, Input.RDY_TO_FIRE_4.getValue() );
                     }
                 }
             }
         }
         else {
-            row1_NextIndex++;  // Shift to 2nd input if no THC's installed
+            row1NextIndex++;  // Shift to 2nd input if no THC's installed
         }
 
 
@@ -424,49 +409,58 @@ public class ConvertLogic implements IProcessParameters {
         }
 
 
-        // Add Drive Disabled Input
-        setInput( row2_NextIndex++, Input.DRIVE_DISABLED.getValue() );
+        // Add Drive Disabled to Input 9
+        setInput( 9, Input.DRIVE_DISABLED.getValue() );
 
 
         // Convert X & Y Axes parameters and homing inputs
         replaceAllParams( Block.AXIS_1.getName(), m_dataAccess.getAxesParams() );
         replaceAllParams( Block.AXIS_2.getName(), m_dataAccess.getAxesParams() );
 
+
+        // X/Y Negative OT's can be assigned as home switch or OT, resulting is
+        // 2 possible Input#Number assignments.  For simplicity, set 2nd possible
+        // assignment to 0(Input19Number=0, Input20Number=0)
+        int homeValue = getValue( Block.IO.getName(), Input.X_NEG_OT.getName() );
+        if( homeValue > 0 ) {
+            setParameter( Block.IO.getName(), Input.X_NEG_OT.getName(), 0 );
+            setParameter( Block.IO.getName(), new StringBuilder( INPUT ).append( homeValue ).append( TYPE).toString(), 0 );
+        }
+
+        homeValue = getValue ( Block.IO.getName(), Input.Y_NEG_OT.getName() );
+        if( homeValue > 0 ) {
+            setParameter( Block.IO.getName(), Input.Y_NEG_OT.getName(), 0 );
+            setParameter( Block.IO.getName(), new StringBuilder( INPUT ).append( homeValue ).append( TYPE).toString(), 0 );
+        }
+
+
+        // Set homing of X/Y axes, either to OT's or Home switches.
         if( m_xOnRail ) {
-            if( m_xHomeNegOT ) {
-                setInput( row1_NextIndex++, Input.X_HOME_NEG_OT.getValue() );
-            }
-            else {
-                setInput( row1_NextIndex++, Input.X_NEG_OT.getValue() );
-            }
+            setInput( row1NextIndex++, Input.X_HOME_NEG_OT.getValue() );
+            setInput( row1NextIndex++, Input.Y_HOME_NEG_OT.getValue() );
 
-            if( m_yHomeNegOT ) {
-                setInput( row1_NextIndex++, Input.Y_HOME_NEG_OT.getValue() );
-            }
-            else {
-                setInput( row1_NextIndex++, Input.Y_NEG_OT.getValue() );
-            }
-
-            setInput( row2_NextIndex++, Input.X_POS_OT.getValue() );
-            setInput( row2_NextIndex++, Input.Y_POS_OT.getValue() );
-
+            setInput( row2NextIndex++, Input.X_POS_OT.getValue() );
+            setInput( row2NextIndex++, Input.Y_POS_OT.getValue() );
         }
         else {
-            setInput( row1_NextIndex++, Input.Y_NEG_OT.getValue() );
-            setInput( row2_NextIndex++, Input.Y_POS_OT.getValue() );
-            setInput( row1_NextIndex++, Input.X_NEG_OT.getValue() );
-            setInput( row2_NextIndex++, Input.X_POS_OT.getValue() );
+            setInput( row1NextIndex++, Input.Y_HOME_NEG_OT.getValue() );
+            setInput( row1NextIndex++, Input.X_HOME_NEG_OT.getValue() );
+            
+            setInput( row2NextIndex++, Input.Y_POS_OT.getValue() );
+            setInput( row2NextIndex++, Input.X_POS_OT.getValue() );
         }
 
 
+        // Convert CBH parameters
         if( m_cbhInstalled ) {
             setParameter( Block.CBH.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
             replaceAllParams( Block.CBH.getName(), m_dataAccess.getAxesParams() );
             setParameter( Block.CBH.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
             setParameter( Block.CBH.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
             setParameter( Block.CBH.getName(), Parameter.HOME_DIRECTION.getName(), 0 );
-            setInput( row1_NextIndex++, Input.CBH_HOME.getValue() );
+            setInput( row1NextIndex++, Input.CBH_HOME.getValue() );
         }
+
 
         // Convert Dual Transverse parameters and add its inputs
         if( m_dualTransInstalled ) {
@@ -477,25 +471,25 @@ public class ConvertLogic implements IProcessParameters {
                 setParameter( Block.AXIS_7.getName(),  Parameter.SERVO_ERROR_EN.getName(), Bevel.SERVO_ERROR.getValue() );
                 setParameter( Block.AXIS_7.getName(), Parameter.ENCODER_CNTS_EN.getName(), Bevel.ENCODER_CNTS.getValue() );
                 setParameter( Block.AXIS_7.getName(), Parameter.ENCODER_CNTS_M.getName(), Bevel.ENCODER_CNTS.getValue() );
-                setInput( row1_NextIndex++, Input.ROT_2_HOME.getValue() );
-                setInput( row2_NextIndex++, Input.DUAL_HEAD_COLLISION.getValue() );
+                setInput( row1NextIndex++, Input.ROT_2_HOME.getValue() );
+                setInput( row2NextIndex++, Input.DUAL_HEAD_COLLISION.getValue() );
             }
             else {             
                 if( m_xOnRail ) {
-                    setInput( row1_NextIndex++, Input.Y_POS_OT.getValue() );
+                    setInput( row1NextIndex++, Input.Y_POS_OT.getValue() );
                 }
                 else {
-                    setInput( row1_NextIndex++, Input.X_POS_OT.getValue() );
+                    setInput( row1NextIndex++, Input.X_POS_OT.getValue() );
                 }
 
-                setInput( row1_NextIndex - 3, Input.DUAL_HEAD_COLLISION.getValue() );
-                torchCollisionLoc = row2_NextIndex++;
+                setInput( row2NextIndex - 1, Input.DUAL_HEAD_COLLISION.getValue() );
+                torchCollisionLoc = row2NextIndex++;
             }
 
-            if( row1_NextIndex < 8 ) {
+            if( row1NextIndex < 8 ) {
                 
-                setInput( row1_NextIndex++, Input.PARK_HEAD_1.getValue() );
-                setInput( row2_NextIndex++, Input.PARK_HEAD_2.getValue() );
+                setInput( row1NextIndex++, Input.PARK_HEAD_1.getValue() );
+                setInput( row2NextIndex++, Input.PARK_HEAD_2.getValue() );
             }
             else {
                 setInput( row3_NextIndex++, Input.PARK_HEAD_1.getValue() );
@@ -517,11 +511,11 @@ public class ConvertLogic implements IProcessParameters {
             setParameter( Block.TILT.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
 
             if( m_dualTiltInstalled ) {
-                if( row1_NextIndex < 8 ) {
-                    setInput( row1_NextIndex++, Input.TILT_POS_OT.getValue() );
-                    setInput( row2_NextIndex++, Input.TILT_NEG_OT.getValue() );
-                    setInput( row1_NextIndex++, Input.TILT2_POS_OT.getValue() );
-                    setInput( row2_NextIndex++, Input.TILT2_NEG_OT.getValue() );
+                if( row1NextIndex < 8 ) {
+                    setInput( row1NextIndex++, Input.TILT_POS_OT.getValue() );
+                    setInput( row2NextIndex++, Input.TILT_NEG_OT.getValue() );
+                    setInput( row1NextIndex++, Input.TILT2_POS_OT.getValue() );
+                    setInput( row2NextIndex++, Input.TILT2_NEG_OT.getValue() );
                 }
                 else {
                     setInput( row3_NextIndex++, Input.TILT_POS_OT.getValue() );
@@ -529,11 +523,11 @@ public class ConvertLogic implements IProcessParameters {
                 }
             }
             else {
-                if( row1_NextIndex < 8 ) {
-                    setInput( row1_NextIndex++, Input.TILT_POS_OT.getValue() );
-                    setInput( row2_NextIndex++, Input.TILT_NEG_OT.getValue() );
-                    setInput( row1_NextIndex++, Input.ROTATE_HOME.getValue() );
-                    torchCollisionLoc = row2_NextIndex++;
+                if( row1NextIndex < 8 ) {
+                    setInput( row1NextIndex++, Input.TILT_POS_OT.getValue() );
+                    setInput( row2NextIndex++, Input.TILT_NEG_OT.getValue() );
+                    setInput( row1NextIndex++, Input.ROTATE_HOME.getValue() );
+                    torchCollisionLoc = row2NextIndex++;
                 }
                 else {
                     setInput( row3_NextIndex++, Input.TILT_POS_OT.getValue() );
@@ -547,11 +541,11 @@ public class ConvertLogic implements IProcessParameters {
                     setParameter( Block.DUAL_TILT.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
                     setParameter( Block.DUAL_TILT.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
 
-                    if( row1_NextIndex < 8 ) {
-                        setInput( row1_NextIndex++, Input.TILT3_POS_OT.getValue() );
-                        setInput( row2_NextIndex++, Input.TILT3_NEG_OT.getValue() );
-                        setInput( row1_NextIndex++, Input.TILT4_POS_OT.getValue() );
-                        setInput( row2_NextIndex++, Input.TILT4_NEG_OT.getValue() );
+                    if( row1NextIndex < 8 ) {
+                        setInput( row1NextIndex++, Input.TILT3_POS_OT.getValue() );
+                        setInput( row2NextIndex++, Input.TILT3_NEG_OT.getValue() );
+                        setInput( row1NextIndex++, Input.TILT4_POS_OT.getValue() );
+                        setInput( row2NextIndex++, Input.TILT4_NEG_OT.getValue() );
                     }
                     else {
                         setInput( row3_NextIndex++, Input.TILT3_POS_OT.getValue() );
@@ -563,11 +557,11 @@ public class ConvertLogic implements IProcessParameters {
                     setParameter( Block.DUAL_ROTATE.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
                     setParameter( Block.DUAL_ROTATE.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
 
-                    if( row1_NextIndex < 8 ) {
-                        setInput( row1_NextIndex++, Input.TILT3_POS_OT.getValue() );
-                        setInput( row2_NextIndex++, Input.TILT3_NEG_OT.getValue() );
-                        setInput( row1_NextIndex++, Input.ROT_2_HOME.getValue() );
-                        torchCollisionLoc = row2_NextIndex++;
+                    if( row1NextIndex < 8 ) {
+                        setInput( row1NextIndex++, Input.TILT3_POS_OT.getValue() );
+                        setInput( row2NextIndex++, Input.TILT3_NEG_OT.getValue() );
+                        setInput( row1NextIndex++, Input.ROT_2_HOME.getValue() );
+                        torchCollisionLoc = row2NextIndex++;
                     }
                 }
             }
