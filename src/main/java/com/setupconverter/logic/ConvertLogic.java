@@ -73,7 +73,7 @@ public class ConvertLogic implements IProcessParameters {
     private final Map< String, Integer > m_outputTypeMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_outputNumberMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_linkParamMap = new LinkedHashMap<>();
-    private final ArrayList< String > m_paramList = new ArrayList<>();
+    public final ArrayList< String > m_paramList = new ArrayList<>();
 
     private File m_configFile = null;
     private int m_checksum = 0;
