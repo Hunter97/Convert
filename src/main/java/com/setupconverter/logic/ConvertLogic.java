@@ -73,7 +73,7 @@ public class ConvertLogic implements IProcessParameters {
     private final Map< String, Integer > m_outputTypeMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_outputNumberMap = new LinkedHashMap<>();
     private final Map< String, Integer > m_linkParamMap = new LinkedHashMap<>();
-    public final ArrayList< String > m_paramList = new ArrayList<>();
+    private final ArrayList< String > m_paramList = new ArrayList<>();
 
     private File m_configFile = null;
     private int m_checksum = 0;
@@ -162,16 +162,19 @@ public class ConvertLogic implements IProcessParameters {
     @ Override
     public final void read( File file ) throws IOException {
         try ( BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( file ), StandardCharsets.UTF_8 ))) {
-            StringBuilder sb = new StringBuilder();
-            int thisChar;
-            int lineFeed = 10;
+            //StringBuilder sb = new StringBuilder();
+            String line;
+            //int thisChar;
+            //int lineFeed = 10;
 
-            while(( thisChar = buffer.read() ) != -1 ) {
-                sb.append(( char )thisChar );
-                if( thisChar == lineFeed ) {
-                    m_paramList.add( sb.toString() );
-                    sb = new StringBuilder();
-                }
+            //while(( thisChar = buffer.read() ) != -1 ) {
+            while(( line = buffer.readLine() ) != null ) {
+                //sb.append(( char )thisChar );
+                //if( thisChar == lineFeed ) {
+                    //m_paramList.add( sb.toString() );
+                    //sb = new StringBuilder();
+                //}
+                m_paramList.add( new StringBuilder( line ).append( EMPTY_LINE ).toString() );
             }
         }
     }
@@ -238,6 +241,11 @@ public class ConvertLogic implements IProcessParameters {
     @ Override
     public int getChecksum() {
         return m_checksum;
+    }
+
+
+    public ArrayList getParameters() {
+        return m_paramList;
     }
 
 

@@ -11,9 +11,11 @@ import com.setupconverter.ui.ConvertUI.OperateConverter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -36,6 +38,7 @@ public class ConvertLogicTest {
     private File m_file;
     private static final String m_filePathPass = "./Convert/testFiles/PhoenixPass.ini";
     private static final String m_filePathFail = "./Convert/testFiles/PhoenixFail.ini";
+    private static final String LINE_RETURN = "\r\n";
     
     
     /*public ConvertLogicTest() {
@@ -62,37 +65,72 @@ public class ConvertLogicTest {
 
 
     /**
-     * Test of read method, of class ConvertLogic.
-     * @throws java.lang.Exception
+     * Testing the read method of class ConvertLogic.  Opens and reads a known
+     * configuration file and compares the files checksum, date saved, and size
+     * to insure file was properly read and loaded into the ArrayList.  
      */
     @Test
-    public void testRead() throws Exception {
-        System.out.println("read");
-        m_instance = new ConvertLogic( m_file, m_operate );
-        String checksum;
+    public void testRead() {
+        System.out.println( "tetRead" );
+        String line = null;
+        int checksum = 0;
+        ArrayList< String > tmpList = new ArrayList<>();
 
-        try ( BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( m_filePathPass ), StandardCharsets.UTF_8 ))) {
-            checksum = buffer.readLine();          
+        try {
+            m_instance = new ConvertLogic( m_file, m_operate );
+        } catch (IOException e) {
+            fail( new StringBuilder( "read produced an IOException: ").append( e.getMessage() ).toString() );
         }
 
-        assertEquals( "Checksum equal ", m_instance.m_paramList.get( 0 ), new StringBuffer( checksum ).append( "\n" ).toString() );
+        try ( BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( m_filePathPass ), StandardCharsets.UTF_8 ))) {
+            while(( line = buffer.readLine() ) != null ) {
+                tmpList.add( new StringBuilder( line ).append( LINE_RETURN ).toString() );
+            }
+
+        }
+        catch( IOException ex ) {
+            fail( new StringBuilder( "testRead produced an IOException: " ).append( ex.getMessage() ).toString() );
+        }
+
+        for( int i = 1; i < m_instance.getParameters().size(); i++ ) {
+            for( char ch : m_instance.getParameters().get( i ).toString().toCharArray() ) {
+                checksum += ch;
+            }
+        }
+
+        String[] splitChecksum = tmpList.get( 0 ).split( "[=\\r\\n]" );
+
+        assertEquals( "Checksums not equal:", checksum, Integer.parseInt( splitChecksum[ 1 ] ) );
+        assertEquals( "File save date not equal:", m_instance.getParameters().get( 17 ), tmpList.get( 17 ) );
+        assertEquals( "Files size not equal:", m_instance.getParameters().size(), tmpList.size() );
     }
+
 
     /**
      * Test of add method, of class ConvertLogic.
      */
-    /*@Test
+    @Test
     public void testAdd() {
         System.out.println("add");
-        String blockTitle = "";
-        /*Map<String, Integer> map = null;
-        ConvertLogic instance = null;
-        Map<String, Integer> expResult = null;
-        Map<String, Integer> result = instance.add(blockTitle, map);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }*/
+        ArrayList< String > tmpList
+
+        try {
+            m_instance = new ConvertLogic( m_file, m_operate );
+        } catch (IOException e) {
+            fail( new StringBuilder( "read produced an IOException: ").append( e.getMessage() ).toString() );
+        }
+
+        try ( BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( m_filePathPass ), StandardCharsets.UTF_8 ))) {
+            while(( line = buffer.readLine() ) != null ) {
+                tmpList.add( new StringBuilder( line ).append( LINE_RETURN ).toString() );
+            }
+
+        }
+        catch( IOException ex ) {
+            fail( new StringBuilder( "testRead produced an IOException: " ).append( ex.getMessage() ).toString() );
+        }
+
+    }
 
     /**
      * Test of setParameter method, of class ConvertLogic.

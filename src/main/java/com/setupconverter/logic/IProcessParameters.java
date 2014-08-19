@@ -57,11 +57,11 @@ public interface IProcessParameters {
 
 
     /**
-     * Adds a block of parameters from the parameter list to a Map< String, Integer >
-     * and returns the resultant Map.
-     * @param blockTitle    - Title of parameter block in list (i.e. [Machine])
-     * @param map           - Map to store the block of parameters from parameter list
-     * @return              - Map containing added parameters
+     * Adds a block of parameters from the parameter list into a Map and returns
+     * the resultant Map.
+     * @param blockTitle    - Title of parameter block (i.e. [Machine]) to add into the Map
+     * @param map           - Map to hold the block of parameters from parameter list
+     * @return              - Map containing the block of parameters
      * @throws NumberFormatException - Catches invalid parameter values in parameter list
      */
     public Map< String, Integer > add( String blockTitle, Map< String, Integer > map  ) throws NumberFormatException;
