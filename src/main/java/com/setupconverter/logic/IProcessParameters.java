@@ -36,11 +36,10 @@ public interface IProcessParameters {
 
 
     /**
-     * Reads each line of a configuration file and stores the line into a a 
-     * List< String >.  The File argument is loaded into a BufferedReader that
-     * is wrapped by a FileInputStream that uses the standard character set UTF_8.
-     * @param file  - File reference to the configuration file
-     * @throws IOException
+     * Reads in a configuration file, line by line, and stores each line into an
+     * ArrayList.
+     * @param file  - File object of the configuration file
+     * @throws IOException - Thrown when BufferedReader fails to read in the file.
      */
     public void read( File file ) throws IOException;
 
@@ -64,7 +63,7 @@ public interface IProcessParameters {
      * @return              - Map containing the block of parameters
      * @throws NumberFormatException - Catches invalid parameter values in parameter list
      */
-    public Map< String, Integer > add( String blockTitle, Map< String, Integer > map  ) throws NumberFormatException;
+    public void add( String blockTitle, Map< String, Integer > map  ) throws NumberFormatException;
 
 
     /**

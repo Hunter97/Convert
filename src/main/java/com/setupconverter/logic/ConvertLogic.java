@@ -161,27 +161,16 @@ public class ConvertLogic implements IProcessParameters {
 
     @ Override
     public final void read( File file ) throws IOException {
-        try ( BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( file ), StandardCharsets.UTF_8 ))) {
-            //StringBuilder sb = new StringBuilder();
-            String line;
-            //int thisChar;
-            //int lineFeed = 10;
-
-            //while(( thisChar = buffer.read() ) != -1 ) {
-            while(( line = buffer.readLine() ) != null ) {
-                //sb.append(( char )thisChar );
-                //if( thisChar == lineFeed ) {
-                    //m_paramList.add( sb.toString() );
-                    //sb = new StringBuilder();
-                //}
-                m_paramList.add( new StringBuilder( line ).append( EMPTY_LINE ).toString() );
-            }
+        String line;
+        BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( file ), StandardCharsets.UTF_8 ));
+        while(( line = buffer.readLine() ) != null ) {
+            m_paramList.add( new StringBuilder( line ).append( EMPTY_LINE ).toString() );
         }
     }
 
 
     @Override
-    public Map< String, Integer > add( String blockTitle, Map< String, Integer > map  ) throws NumberFormatException {
+    public void add( String blockTitle, Map< String, Integer > map  ) {
         String param;
         int index;
 
@@ -195,16 +184,14 @@ public class ConvertLogic implements IProcessParameters {
                     try {
                         map.put( key.toString(), Integer.parseInt( set[ 1 ] ));
                     }
-                    catch( NumberFormatException e ) {
-                        m_operate.setStatus( Color.RED, new StringBuilder( "Exception converting " ).append( key.toString() ).toString(), 
+                    catch( NumberFormatException | ArrayIndexOutOfBoundsException | NullPointerException e ) {
+                        m_operate.setStatus( Color.RED, new StringBuilder( "Exception in add " ).append( e.getMessage() ).toString(), 
                                                         new StringBuilder( "Key = " ).append( set[ 1 ] ).append( " , set value to 0" ).toString() );
                         map.put( key.toString(), 0 );
                     }
                 }
             }
         }
-
-        return map;
     }
 
 
@@ -795,7 +782,7 @@ public class ConvertLogic implements IProcessParameters {
      * For Debug use, prints the argument Map
      * @param map   - Map to print
      */
-    /*private void printMap( Map< String, Integer > map ) {
+    public void printMap( Map< String, Integer > map ) {
         Iterator< Entry< String, Integer >> iterator;
         Entry< String, Integer > entry;
 
@@ -804,7 +791,7 @@ public class ConvertLogic implements IProcessParameters {
             entry = iterator.next();
             System.out.format( "%s\t%d\n", entry.getKey(), entry.getValue() );
         }
-    }*/
+    }
 }
 
 
