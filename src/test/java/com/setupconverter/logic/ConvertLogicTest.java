@@ -8,6 +8,7 @@ package com.setupconverter.logic;
 
 import com.setupconverter.ui.ConvertUI;
 import com.setupconverter.ui.ConvertUI.OperateConverter;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,7 +16,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import org.junit.After;
@@ -28,8 +31,8 @@ import static org.junit.Assert.*;
  * @author Hunter97
  */
 public class ConvertLogicTest {
-    private static final String m_filePathPass = "./SetupConverter/testFiles/PhoenixPass.ini";
-    private static final String m_filePathFail = "./SetupConverter/testFiles/PhoenixFail.ini";
+    private static final String m_filePathPass = "./Convert/testFiles/PhoenixPass.ini";
+    private static final String m_filePathFail = "./Convert/testFiles/PhoenixFail.ini";
     private static final String LINE_RETURN = "\r\n";
     private static final String REGEX = "[=\\r\\n]";
     private static final String MACHINE = "[Machine]\r\n";
@@ -177,17 +180,27 @@ public class ConvertLogicTest {
 
 
     /**
-     * Test of setParameter method, of class ConvertLogic.
+     * Test the setParameter method of class ConvertLogic.  Changes the value of
+     * a known parameter from a known configuration file and then verifies the
+     * value has been successfully changed.
+     * Test performed:
+     *  * Instantiates a ConvertLogic object.
+     *  * Calls setParameters 3 different times using 3 different block titles
+     *      with 1 parameter from each block, and a different value for each 
+     *      parameter.  The compares the set values against the values sent to
+     *      setParameters for a match.
      */
     @Test
     public void testSetParameter() {
+        List< String > block = Arrays.asList("[Machine]\r\n", "[I/O]\r\n", "[Consumables]\r\n" );
+        List< String > key = Arrays.asList( "FrontPanelInstalled=", "MaxOxyPressure(english)="  , "PlasmaElectrode8Installed=" );
         String param;
         String[] set = null;
         boolean isEqual = false;
-        int value = 0;
+        int[] value = {10, 20, 40};
         int index;
 
-        System.out.println("setParameter...");
+        System.out.println("testSetParameter...");
 
         try {
             m_instance = new ConvertLogic( m_file, m_operate );
@@ -195,26 +208,36 @@ public class ConvertLogicTest {
             fail( new StringBuilder( "setParameter method produced an IOException: " ).append( e.getMessage() ).toString() );
         }
 
-        m_instance.setParameter( MACHINE, "FrontPanelInstalled=", value );
+        for( int i = 0; i < block.size(); i++ ) {
+            m_instance.setParameter( block.get( i ), key.get( i ), value[ i ] );
 
-        if(( index = m_instance.getParameters().indexOf( MACHINE )) != -1 ) {
-            ListIterator< String > listIterator = m_instance.getParameters().listIterator( index +1 );
-            while( !( param = listIterator.next() ).startsWith( LINE_RETURN ) && listIterator.hasNext() ) {
-                if( param.startsWith( "FrontPanelInstalled=" )) {
-                    set = param.split( REGEX );
+            if(( index = m_instance.getParameters().indexOf( block.get( i ) )) != -1 ) {
+                ListIterator< String > listIterator = m_instance.getParameters().listIterator( index +1 );
+
+                while( !( param = listIterator.next() ).startsWith( LINE_RETURN ) && listIterator.hasNext() ) {
+                    if( param.startsWith( key.get( i ) )) {
+                        set = param.split( REGEX );
+                        break;
+                    }
+                }
+            }
+
+            try {
+                if( Integer.parseInt( set[ 1 ] ) == value[ i ] ) {
+                    isEqual = true;
+                }
+                else {
+                    isEqual = false;
                     break;
                 }
             }
+            catch( NumberFormatException | ArrayIndexOutOfBoundsException | NullPointerException e ) {
+                fail( new StringBuilder( "testSetParameter produced an Exception: " ).append( e.getMessage() ).toString());
+            }
         }
 
-        if( Integer.parseInt( set[ 1 ] ) == value ) {
-            isEqual = true;
-        }
 
-        
-
-
-        assertTrue( "Anable to set parameter value:", isEqual );
+        assertTrue( "Unable to set parameter value:", isEqual );
     }
 
     /**
