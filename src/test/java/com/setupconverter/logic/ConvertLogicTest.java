@@ -8,7 +8,6 @@ package com.setupconverter.logic;
 
 import com.setupconverter.ui.ConvertUI;
 import com.setupconverter.ui.ConvertUI.OperateConverter;
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,6 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +59,7 @@ public class ConvertLogicTest {
      * Test the read method of class ConvertLogic.  Uses a known configuration
      * file to verify the file can be properly read from and its contents stored
      * to an ArrayList.  
-     * Test performs:
+     * Test conditions:
      *  * Instantiates a ConvertLogic object,  which in turn calls the read
      *      method which reads/loads the test configuration file into the parameter
      *      List.
@@ -98,6 +99,7 @@ public class ConvertLogicTest {
 
         String[] splitChecksum = tmpList.get( 0 ).split( REGEX );
 
+
         assertEquals( "Checksums not equal:", checksum, Integer.parseInt( splitChecksum[ 1 ] ) );
         assertEquals( "File save date not equal:", m_instance.getParameters().get( 17 ), tmpList.get( 17 ) );
         assertEquals( "File size not equal:", m_instance.getParameters().size(), tmpList.size() );
@@ -108,7 +110,7 @@ public class ConvertLogicTest {
      * Test the add method of class ConvertLogic.  Reads in 2 blocks of a known
      * configuration file and compares the sizes of the blocks.  One should be of
      * equal size and the other should be of unequal size.
-     * Test performs:
+     * Test conditions:
      *  * Instantiates a ConvertLogic object.
      *  * Call add using ConvertLogic object to add Machine block to a map and
      *      add Machine block to local ArrayList; then compare the size of map to
@@ -183,7 +185,7 @@ public class ConvertLogicTest {
      * Test the setParameter method of class ConvertLogic.  Changes the value of
      * a known parameter from a known configuration file and then verifies the
      * value has been successfully changed.
-     * Test performed:
+     * Test conditions:
      *  * Instantiates a ConvertLogic object.
      *  * Calls setParameters 3 different times using 3 different block titles
      *      with 1 parameter from each block, and a different value for each 
@@ -192,7 +194,7 @@ public class ConvertLogicTest {
      */
     @Test
     public void testSetParameter() {
-        List< String > block = Arrays.asList("[Machine]\r\n", "[I/O]\r\n", "[Consumables]\r\n" );
+        List< String > block = Arrays.asList( "[Machine]\r\n", "[I/O]\r\n", "[Consumables]\r\n" );
         List< String > key = Arrays.asList( "FrontPanelInstalled=", "MaxOxyPressure(english)="  , "PlasmaElectrode8Installed=" );
         String param;
         String[] set = null;
@@ -209,7 +211,7 @@ public class ConvertLogicTest {
         }
 
         for( int i = 0; i < block.size(); i++ ) {
-            m_instance.setParameter( block.get( i ), key.get( i ), value[ i ] );
+            m_instance.setValue( block.get( i ), key.get( i ), value[ i ] );
 
             if(( index = m_instance.getParameters().indexOf( block.get( i ) )) != -1 ) {
                 ListIterator< String > listIterator = m_instance.getParameters().listIterator( index +1 );
@@ -240,18 +242,39 @@ public class ConvertLogicTest {
         assertTrue( "Unable to set parameter value:", isEqual );
     }
 
+
     /**
-     * Test of setChecksum method, of class ConvertLogic.
-     * @throws java.lang.Exception
+     * Test the setChecksum method of class ConvertLogic.  Calculates the checksum
+     * from a known configuration file, then checks the calculated value to the 
+     * value stored in the file.
+     * Test conditions:
+     *  * Instantiates a ConvertLogic object.
+     *  * Calculates and sets checksum variable in ConvertLogic object
+     *  * Extracts the checksum line directly from the configuration file and splits
+     *      out the checksum value.
+     *  * Tests the calculated checksum to the checksum from the configuration file.
      */
-    /*@Test
-    public void testSetChecksum() throws Exception {
-        System.out.println("setChecksum");
-        /*ConvertLogic instance = null;
-        instance.setChecksum();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }*/
+    @Test
+    public void testSetChecksum() {
+        System.out.println("testSetChecksum...");
+
+        try {
+            m_instance = new ConvertLogic( m_file, m_operate );
+            m_instance.setChecksum();
+        } catch ( IOException e ) {
+            fail( new StringBuilder( "setParameter method produced an IOException: " ).append( e.getMessage() ).toString() );
+        }
+
+        String[] checksumLine = m_instance.getParameters().get( 0 ).toString().split( REGEX );
+        
+        try {
+            assertEquals( "Checksum are not equal:", m_instance.getChecksum(), Integer.parseInt( checksumLine[ 1 ] ));
+        }
+        catch( NumberFormatException | ArrayIndexOutOfBoundsException | NullPointerException e ) {
+                fail( new StringBuilder( "testSetParameter produced an Exception: " ).append( e.getMessage() ).toString());
+        }
+
+    }
 
     /**
      * Test of getChecksum method, of class ConvertLogic.

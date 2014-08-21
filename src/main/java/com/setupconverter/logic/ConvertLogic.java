@@ -196,7 +196,7 @@ public class ConvertLogic implements IProcessParameters {
 
 
     @Override
-    public void setParameter( String blockTitle, String paramName, int value ) {
+    public void setValue( String blockTitle, String paramName, int value ) {
         String param;
         int index;
 
@@ -258,7 +258,7 @@ public class ConvertLogic implements IProcessParameters {
 
 
     @Override
-    public void replaceAllParams( String blockTitle, Map< String, Integer > map ) {
+    public void replace( String blockTitle, Map< String, Integer > map ) {
         String param;
         int startIndex;
 
@@ -343,7 +343,7 @@ public class ConvertLogic implements IProcessParameters {
 
 
         // Convert Speed parameters
-        replaceAllParams( Block.SPEEDS.getName(), Speed.toMap() );
+        replace( Block.SPEEDS.getName(), Speed.toMap() );
 
 
         // Convert THC parameters
@@ -352,12 +352,12 @@ public class ConvertLogic implements IProcessParameters {
             m_dataAccess.addTHCDefaults();
 
             for( int i = 0; i < sthcTotal; i++ ) {
-                replaceAllParams( new StringBuilder( "[THC" ).append( i + 1 ).append( "]\r\n" ).toString(), m_dataAccess.getTHCAxisParams() );
-                replaceAllParams( new StringBuilder( "[THC" ).append( i + 1 ).append( "]\r\n" ).toString(), m_dataAccess.getAxesParams() );
+                replace( new StringBuilder( "[THC" ).append( i + 1 ).append( "]\r\n" ).toString(), m_dataAccess.getTHCAxisParams() );
+                replace( new StringBuilder( "[THC" ).append( i + 1 ).append( "]\r\n" ).toString(), m_dataAccess.getAxesParams() );
             }
 
-            replaceAllParams( Block.AIC.getName(), m_dataAccess.getTHCAnalogParams() );
-            replaceAllParams( Block.MACHINE.getName(), m_dataAccess.getTHCMachineParams() );
+            replace( Block.AIC.getName(), m_dataAccess.getTHCAnalogParams() );
+            replace( Block.MACHINE.getName(), m_dataAccess.getTHCMachineParams() );
 
             setInput( row1NextIndex++, Input.NCS_1.getValue() );
 
@@ -399,8 +399,8 @@ public class ConvertLogic implements IProcessParameters {
 
         // Convert Dual Gantry Axis parameters
         if( m_dualGantryInstalled ) {
-            replaceAllParams( Block.DUAL_GANTRY.getName(), m_dataAccess.getAxesParams() );
-            replaceAllParams( Block.DUAL_GANTRY.getName(), DualGantry.toMap() );
+            replace( Block.DUAL_GANTRY.getName(), m_dataAccess.getAxesParams() );
+            replace( Block.DUAL_GANTRY.getName(), DualGantry.toMap() );
         }
 
 
@@ -409,8 +409,8 @@ public class ConvertLogic implements IProcessParameters {
 
 
         // Convert X & Y Axes parameters and homing inputs
-        replaceAllParams( Block.AXIS_1.getName(), m_dataAccess.getAxesParams() );
-        replaceAllParams( Block.AXIS_2.getName(), m_dataAccess.getAxesParams() );
+        replace( Block.AXIS_1.getName(), m_dataAccess.getAxesParams() );
+        replace( Block.AXIS_2.getName(), m_dataAccess.getAxesParams() );
 
 
         // X/Y Negative OT's can be assigned as home switch or OT, resulting is
@@ -418,14 +418,14 @@ public class ConvertLogic implements IProcessParameters {
         // assignment to 0(Input19Number=0, Input20Number=0)
         int homeValue = getValue( Block.IO.getName(), Input.X_NEG_OT.getName() );
         if( homeValue > 0 ) {
-            setParameter( Block.IO.getName(), Input.X_NEG_OT.getName(), 0 );
-            setParameter( Block.IO.getName(), new StringBuilder( INPUT ).append( homeValue ).append( TYPE).toString(), 0 );
+            setValue( Block.IO.getName(), Input.X_NEG_OT.getName(), 0 );
+            setValue( Block.IO.getName(), new StringBuilder( INPUT ).append( homeValue ).append( TYPE).toString(), 0 );
         }
 
         homeValue = getValue ( Block.IO.getName(), Input.Y_NEG_OT.getName() );
         if( homeValue > 0 ) {
-            setParameter( Block.IO.getName(), Input.Y_NEG_OT.getName(), 0 );
-            setParameter( Block.IO.getName(), new StringBuilder( INPUT ).append( homeValue ).append( TYPE).toString(), 0 );
+            setValue( Block.IO.getName(), Input.Y_NEG_OT.getName(), 0 );
+            setValue( Block.IO.getName(), new StringBuilder( INPUT ).append( homeValue ).append( TYPE).toString(), 0 );
         }
 
 
@@ -448,24 +448,24 @@ public class ConvertLogic implements IProcessParameters {
 
         // Convert CBH parameters
         if( m_cbhInstalled ) {
-            setParameter( Block.CBH.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
-            replaceAllParams( Block.CBH.getName(), m_dataAccess.getAxesParams() );
-            setParameter( Block.CBH.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
-            setParameter( Block.CBH.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
-            setParameter( Block.CBH.getName(), Parameter.HOME_DIRECTION.getName(), 0 );
+            setValue( Block.CBH.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
+            replace( Block.CBH.getName(), m_dataAccess.getAxesParams() );
+            setValue( Block.CBH.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
+            setValue( Block.CBH.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
+            setValue( Block.CBH.getName(), Parameter.HOME_DIRECTION.getName(), 0 );
             setInput( row1NextIndex++, Input.CBH_HOME.getValue() );
         }
 
 
         // Convert Dual Transverse parameters and add its inputs
         if( m_dualTransInstalled ) {
-            replaceAllParams( Block.AXIS_7.getName(), m_dataAccess.getAxesParams() );
+            replace( Block.AXIS_7.getName(), m_dataAccess.getAxesParams() );
 
             if( m_isRotatingTrans ) {
-                setParameter( Block.MACHINE.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
-                setParameter( Block.AXIS_7.getName(),  Parameter.SERVO_ERROR_EN.getName(), Bevel.SERVO_ERROR.getValue() );
-                setParameter( Block.AXIS_7.getName(), Parameter.ENCODER_CNTS_EN.getName(), Bevel.ENCODER_CNTS.getValue() );
-                setParameter( Block.AXIS_7.getName(), Parameter.ENCODER_CNTS_M.getName(), Bevel.ENCODER_CNTS.getValue() );
+                setValue( Block.MACHINE.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
+                setValue( Block.AXIS_7.getName(),  Parameter.SERVO_ERROR_EN.getName(), Bevel.SERVO_ERROR.getValue() );
+                setValue( Block.AXIS_7.getName(), Parameter.ENCODER_CNTS_EN.getName(), Bevel.ENCODER_CNTS.getValue() );
+                setValue( Block.AXIS_7.getName(), Parameter.ENCODER_CNTS_M.getName(), Bevel.ENCODER_CNTS.getValue() );
                 setInput( row1NextIndex++, Input.ROT_2_HOME.getValue() );
                 setInput( row2NextIndex++, Input.DUAL_HEAD_COLLISION.getValue() );
             }
@@ -495,15 +495,15 @@ public class ConvertLogic implements IProcessParameters {
 
         // Convert Bevel Axes parameters and add homing inputs
         if( m_bevelInstalled && ( m_dualBevelInstalled && !m_noRotateTilt || !m_dualBevelInstalled )) {  // Single bevel head installed
-            setParameter( Block.MACHINE.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
+            setValue( Block.MACHINE.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
 
-            replaceAllParams( Block.ROTATE.getName(), m_dataAccess.getAxesParams() );
-            setParameter( Block.ROTATE.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
-            setParameter( Block.ROTATE.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
+            replace( Block.ROTATE.getName(), m_dataAccess.getAxesParams() );
+            setValue( Block.ROTATE.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
+            setValue( Block.ROTATE.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
 
-            replaceAllParams( Block.TILT.getName(), m_dataAccess.getAxesParams() );
-            setParameter( Block.TILT.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
-            setParameter( Block.TILT.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
+            replace( Block.TILT.getName(), m_dataAccess.getAxesParams() );
+            setValue( Block.TILT.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
+            setValue( Block.TILT.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
 
             if( m_dualTiltInstalled ) {
                 if( row1NextIndex < 8 ) {
@@ -532,9 +532,9 @@ public class ConvertLogic implements IProcessParameters {
 
             if( m_dualBevelInstalled && !m_oneRotateTilt ) { // Dual Bevel heads installed
                 if( m_dualTiltInstalled ) {
-                    replaceAllParams( Block.DUAL_TILT.getName(), m_dataAccess.getAxesParams() );
-                    setParameter( Block.DUAL_TILT.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
-                    setParameter( Block.DUAL_TILT.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
+                    replace( Block.DUAL_TILT.getName(), m_dataAccess.getAxesParams() );
+                    setValue( Block.DUAL_TILT.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
+                    setValue( Block.DUAL_TILT.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
 
                     if( row1NextIndex < 8 ) {
                         setInput( row1NextIndex++, Input.TILT3_POS_OT.getValue() );
@@ -548,9 +548,9 @@ public class ConvertLogic implements IProcessParameters {
                     }
                 }
                 else {
-                    replaceAllParams( Block.DUAL_ROTATE.getName(), m_dataAccess.getAxesParams() );
-                    setParameter( Block.DUAL_ROTATE.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
-                    setParameter( Block.DUAL_ROTATE.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
+                    replace( Block.DUAL_ROTATE.getName(), m_dataAccess.getAxesParams() );
+                    setValue( Block.DUAL_ROTATE.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
+                    setValue( Block.DUAL_ROTATE.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
 
                     if( row1NextIndex < 8 ) {
                         setInput( row1NextIndex++, Input.TILT3_POS_OT.getValue() );
@@ -620,13 +620,13 @@ public class ConvertLogic implements IProcessParameters {
         // Merge in IO settings into parameter file
         add( Block.IO.getName(), m_IOParamMap );
         shuffleIO();
-        replaceAllParams( Block.IO.getName(), m_IOParamMap );
+        replace( Block.IO.getName(), m_IOParamMap );
 
 
         // Set all port settings to none and merge changes into parameter file
         add( Block.LINK.getName(), m_linkParamMap );
         resetPorts();
-        replaceAllParams( Block.LINK.getName(), m_linkParamMap );
+        replace( Block.LINK.getName(), m_linkParamMap );
     }
 
 

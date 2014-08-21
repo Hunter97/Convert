@@ -1,14 +1,18 @@
 /**
- * IProcess.java
+ * IProcessParameters.java
  * Paul Wallace
  * June 2014
  * 
- * IProcess interface defines the base functionality of the logic class.
+ * IProcessParameters interface defines the methods used to manipulate a configuration
+ * file.  The interface allows the client to read/write an entire configuration file,
+ * set/get parameter values, add a block of parameters to a Map, set/get the checksum,
+ * and replace an entire block of parameters.
  *  
  * Main attributes:
  *      * Set/Get the file checksum
  *      * Read/write the parameter file
- *      * Convert the file parameters
+ *      * Set/Get parameter values
+ *      * Replace a block of parameters
  * 
  */
 package com.setupconverter.logic;
@@ -19,68 +23,56 @@ import java.util.Map;
 
 
 /**
- * IProcess defines the base functionality of the logic class.
+ * IProcessParameters interface; provides a set of methods to manipulate a configuration
+ * file.
  * @author prwallace
  */
 public interface IProcessParameters {
 
-    /**
-     * Converts the original parameter file to control the user specified drive 
-     * system.  Replaces Axes, I/O, Speed, and Machine settings based on the selected
-     * drive type.  I/O is re-arranges to allow user to satisfy homing and simulate
-     * cutting by use of a switch box and loop-back jumper CPC.  Instantiates the
-     * DataAccessObj which provides access to the specific drive system type.
-     * @throws IOException
-     */
-    //public void convert() throws IOException;
-
 
     /**
-     * Reads in a configuration file, line by line, and stores each line into an
+     * Reads a configuration file, line by line, and stores each line into an
      * ArrayList.
-     * @param file  - File object of the configuration file
-     * @throws IOException - Thrown when BufferedReader fails to read in the file.
+     * @param file          - File object of the configuration file
+     * @throws IOException  - Thrown when BufferedReader fails to read in the file.
      */
     public void read( File file ) throws IOException;
 
 
     /**
-     * Saves the contents of the parameter list to the argument File.  Adds the
-     * new checksum back to the parameter list prior to saving the file.  Each
-     * String in the parameter list is written to buffer via an OutputStreamWriter
-     * whose location is referenced by the argument File object.
-     * @param file  - File object containing reference to location of file
-     * @throws IOException
+     * Writes the contents of the parameter list to a configuration file.  Opens
+     * a output stream using a BufferedWriter wrapped with an OutputStreamWriter
+     * and passes each element of the parameter list into the file, one element
+     * as a time.  The end result is a new configuration file with a new checksum.
+     * @param file          - File object of new configuration file
+     * @throws IOException  - Thrown when BufferedWriter fails to write to file
      */
     public void write( File file ) throws IOException;
 
 
     /**
-     * Adds a block of parameters from the parameter list into a Map and returns
-     * the resultant Map.
+     * Adds a block of parameters from the parameter list into a Map.
      * @param blockTitle    - Title of parameter block (i.e. [Machine]) to add into the Map
-     * @param map           - Map to hold the block of parameters from parameter list
-     * @return              - Map containing the block of parameters
-     * @throws NumberFormatException - Catches invalid parameter values in parameter list
+     * @param map           - Map to hold the block of parameters from the parameter list
      */
-    public void add( String blockTitle, Map< String, Integer > map  ) throws NumberFormatException;
+    public void add( String blockTitle, Map< String, Integer > map  );
 
 
     /**
      * Set the value of the specified parameter in the parameter list.  Parses the
      * parameter list, starting after the block title, for a match to the argument
-     * parameter and replaces the value with this value.
-     * @param blockTitle    - Title of parameter block in list (i.e. [Machine]) 
-     * @param paramName     - Parameter to be searched for within parameter list
-     * @param value         - Updated parameter value
+     * parameter and set the value with this value.
+     * @param blockTitle    - Title of parameter block (i.e. [Machine]) 
+     * @param paramName     - Parameter whose value is to be set
+     * @param value         - Value set to parameter
      */
-    public void setParameter( String blockTitle, String paramName, int value );
+    public void setValue( String blockTitle, String paramName, int value );
 
 
     /**
      * Calculates the checksum of a configuration file.  Each character in the
-     * List< String >(), beginning at the 2nd index, is summed together.
-     * @throws IOException
+     * parameter list, beginning at the 2nd index, is summed together.
+     * @throws IOException - Thrown if unable to calculate checksum
      */
     public void setChecksum() throws IOException;
 
@@ -89,26 +81,26 @@ public interface IProcessParameters {
      * Get/return the value of the specified parameter from the parameter list.
      * Parses the parameter list, starting after the block title, for a match to
      * the argument parameter and returns its value.
-     * @param blockTitle    - Title of parameter block in list (i.e. [Machine])
-     * @param paramName     - Parameter to be searched for within parameter list
-     * @return              - The value of the parameter
+     * @param blockTitle    - Title of parameter block (i.e. [Machine])
+     * @param paramName     - Parameter whose value is to be returned
+     * @return              - Value of the parameter
      */
     public int getValue( String blockTitle, String paramName );
 
 
     /**
      * Get/return the checksum of the configuration file.
-     * @return an integer equal to sum of characters in List< String >
+     * @return - an integer equal to sum of all characters
      */
     public int getChecksum();
 
 
     /**
-     * Find/replace a group of parameters within the parameter list.  Parse the 
-     * parameter list, starting after the block title, for matches to parameters
-     * contained within the argument Map.
-     * @param blockTitle    - Title of the parameter block in list (i.e. [Machine])
+     * Replaces a set of parameters within the parameter list.  Parses the parameter
+     * list, starting after the block title, for matches to parameters contained
+     * within the argument Map, and replaces those parameters within the list.
+     * @param blockTitle    - Title of the parameter block (i.e. [Machine])
      * @param map           - Map containing the set of parameters to replace
      */
-    public void replaceAllParams( String blockTitle, Map< String, Integer > map );
+    public void replace( String blockTitle, Map< String, Integer > map );
 }
