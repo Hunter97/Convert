@@ -3,8 +3,8 @@
  * Paul Wallace
  * June 2014
  * 
- * IProcessParameters interface defines the methods used to manipulate a configuration
- * file.  The interface allows the client to read/write an entire configuration file,
+ * IParameters interface defines the methods used to manipulate a configuration
+ * file.  The interface allows the client to load/save an entire configuration file,
  * set/get parameter values, add a block of parameters to a Map, set/get the checksum,
  * and replace an entire block of parameters.
  *  
@@ -24,7 +24,7 @@ import java.util.Map;
 
 
 /**
- * IProcessParameters interface; provides a set of methods to manipulate a configuration
+ * IParameters interface; provides a set of methods to manipulate a configuration
  * file.
  * @author prwallace
  */

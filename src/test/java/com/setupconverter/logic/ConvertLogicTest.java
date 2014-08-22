@@ -6,7 +6,6 @@
 
 package com.setupconverter.logic;
 
-import com.setupconverter.ui.ConvertUI;
 import com.setupconverter.ui.ConvertUI.OperateConverter;
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,7 +36,7 @@ public class ConvertLogicTest {
     private static final String PARAMETER = "FrontPanelInstalled=";
     private static final String INVALID_PARAM = "SensorTHCInstalled=-1";
     private OperateConverter m_operate;
-    private ConvertLogic m_instance;
+    private ConvertLogic m_setup;
     private File m_file;
 
     
@@ -74,7 +73,7 @@ public class ConvertLogicTest {
         System.out.println( "tetRead..." );
 
         try {
-            m_instance = new ConvertLogic( m_file, m_operate );
+            m_setup = new ConvertLogic( m_file, m_operate );
         } catch (IOException e) {
             fail( new StringBuilder( "read method produced an IOException: ").append( e.getMessage() ).toString() );
         }
@@ -88,8 +87,8 @@ public class ConvertLogicTest {
             fail( new StringBuilder( "testRead method produced an IOException: " ).append( ex.getMessage() ).toString() );
         }
 
-        for( int i = 1; i < m_instance.getAllParameters().size(); i++ ) {
-            for( char ch : m_instance.getAllParameters().get( i ).toString().toCharArray() ) {
+        for( int i = 1; i < m_setup.getAllParameters().size(); i++ ) {
+            for( char ch : m_setup.getAllParameters().get( i ).toString().toCharArray() ) {
                 checksum += ch;
             }
         }
@@ -98,8 +97,8 @@ public class ConvertLogicTest {
 
 
         assertEquals( "Checksums not equal:", checksum, Integer.parseInt( splitChecksum[ 1 ] ) );
-        assertEquals( "File save date not equal:", m_instance.getAllParameters().get( 17 ), tmpList.get( 17 ) );
-        assertEquals( "File size not equal:", m_instance.getAllParameters().size(), tmpList.size() );
+        assertEquals( "File save date not equal:", m_setup.getAllParameters().get( 17 ), tmpList.get( 17 ) );
+        assertEquals( "File size not equal:", m_setup.getAllParameters().size(), tmpList.size() );
     }
 
 
@@ -130,12 +129,12 @@ public class ConvertLogicTest {
         System.out.println( "testAdd..." );
 
         try {
-            m_instance = new ConvertLogic( m_file, m_operate );
+            m_setup = new ConvertLogic( m_file, m_operate );
         } catch ( IOException e ) {
             fail( new StringBuilder( "read method produced an IOException: " ).append( e.getMessage() ).toString() );
         }
 
-        m_instance.add( MACHINE, map );
+        m_setup.add( MACHINE, map );
 
         try ( BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( m_testFile ), StandardCharsets.UTF_8 ) )) {
             while(( line = buffer.readLine() ) != null ) {
@@ -202,16 +201,16 @@ public class ConvertLogicTest {
         System.out.println("testSetValue...");
 
         try {
-            m_instance = new ConvertLogic( m_file, m_operate );
+            m_setup = new ConvertLogic( m_file, m_operate );
         } catch ( IOException e ) {
             fail( new StringBuilder( "setValue method produced an IOException: " ).append( e.getMessage() ).toString() );
         }
 
         for( int i = 0; i < block.size(); i++ ) {
-            m_instance.setValue( block.get( i ), key.get( i ), value[ i ] );
+            m_setup.setValue( block.get( i ), key.get( i ), value[ i ] );
 
-            if(( index = m_instance.getAllParameters().indexOf( block.get( i ) )) != -1 ) {
-                ListIterator< String > listIterator = m_instance.getAllParameters().listIterator( index +1 );
+            if(( index = m_setup.getAllParameters().indexOf( block.get( i ) )) != -1 ) {
+                ListIterator< String > listIterator = m_setup.getAllParameters().listIterator( index +1 );
 
                 while( !( param = listIterator.next() ).startsWith( LINE_RETURN ) && listIterator.hasNext() ) {
                     if( param.startsWith( key.get( i ) )) {
@@ -257,16 +256,16 @@ public class ConvertLogicTest {
         System.out.println("testSetChecksum...");
 
         try {
-            m_instance = new ConvertLogic( m_file, m_operate );
-            m_instance.setChecksum();
+            m_setup = new ConvertLogic( m_file, m_operate );
+            m_setup.setChecksum();
         } catch ( IOException e ) {
             fail( new StringBuilder( "setParameter method produced an IOException: " ).append( e.getMessage() ).toString() );
         }
 
-        String[] checksumLine = m_instance.getAllParameters().get( 0 ).toString().split( REGEX );
+        String[] checksumLine = m_setup.getAllParameters().get( 0 ).toString().split( REGEX );
         
         try {
-            assertEquals( "Checksum are not equal:", m_instance.getChecksum(), Integer.parseInt( checksumLine[ 1 ] ));
+            assertEquals( "Checksum are not equal:", m_setup.getChecksum(), Integer.parseInt( checksumLine[ 1 ] ));
         }
         catch( NumberFormatException | ArrayIndexOutOfBoundsException | NullPointerException e ) {
                 fail( new StringBuilder( "testSetParameter produced an Exception: " ).append( e.getMessage() ).toString());
@@ -296,15 +295,15 @@ public class ConvertLogicTest {
         System.out.println("getValue...");
 
         try {
-            m_instance = new ConvertLogic( m_file, m_operate );
+            m_setup = new ConvertLogic( m_file, m_operate );
         } catch (IOException e) {
             fail( new StringBuilder( "read method produced an IOException: ").append( e.getMessage() ).toString() );
         }
 
-        result = m_instance.getValue( MACHINE, PARAMETER );
+        result = m_setup.getValue( MACHINE, PARAMETER );
 
-        if(( index = m_instance.getAllParameters().indexOf( MACHINE ) ) != -1 ) {
-                ListIterator< String > listIterator = m_instance.getAllParameters().listIterator( index +1 );
+        if(( index = m_setup.getAllParameters().indexOf( MACHINE ) ) != -1 ) {
+                ListIterator< String > listIterator = m_setup.getAllParameters().listIterator( index +1 );
 
                 while( !( param = listIterator.next() ).startsWith( LINE_RETURN ) && listIterator.hasNext() ) {
                     if( param.startsWith( PARAMETER ) ) {
@@ -329,7 +328,7 @@ public class ConvertLogicTest {
 
 
         boolean isInvalid = false;
-        result = m_instance.getValue( MACHINE, INVALID_PARAM );
+        result = m_setup.getValue( MACHINE, INVALID_PARAM );
 
         if( result == -1 ) {
             isInvalid = true;
