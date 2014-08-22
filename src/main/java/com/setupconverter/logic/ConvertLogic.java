@@ -58,7 +58,7 @@ import java.awt.Color;
  * ConvertLogic retrieves/manipulates the data from IDataAccess interface
  * @author prwallace
  */
-public class ConvertLogic implements IProcessParameters {
+public class ConvertLogic implements IParameters {
     private static final String REG_EXP = "[=\\s\\.]+";
     private static final String EMPTY_LINE = "\r\n";
     private static final String INPUT = "Input";
@@ -154,13 +154,13 @@ public class ConvertLogic implements IProcessParameters {
      */
     public ConvertLogic( File file, OperateConverter operate ) throws IOException {
         m_configFile = file;
-        read( m_configFile );
+        load( m_configFile );
         m_operate = operate;
     }
 
 
     @ Override
-    public final void read( File file ) throws IOException {
+    public final void load( File file ) throws IOException {
         String line;
         BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( file ), StandardCharsets.UTF_8 ));
         while(( line = buffer.readLine() ) != null ) {
@@ -773,7 +773,7 @@ public class ConvertLogic implements IProcessParameters {
 
 
     @ Override
-    public void write( File file ) throws IOException {
+    public void save( File file ) throws IOException {
         try (BufferedWriter buff_writer = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( file ), StandardCharsets.UTF_8 ))) {
             m_paramList.remove( 0 );
             m_paramList.add( 0, new StringBuilder( "Checksum=" ).append( m_checksum ).append( EMPTY_LINE ).toString() );

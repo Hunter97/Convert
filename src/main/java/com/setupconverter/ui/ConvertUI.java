@@ -370,7 +370,7 @@ public class ConvertUI extends JFrame {
                         m_savedFile.setWritable( true );
 
                         try {
-                            m_process.write( m_savedFile );
+                            m_process.save( m_savedFile );
                         }
                         catch( IOException e ) {
                             this.setStatus( Color.RED, "Exception while saving file", e.getMessage() );

@@ -28,27 +28,27 @@ import java.util.Map;
  * file.
  * @author prwallace
  */
-public interface IProcessParameters {
+public interface IParameters {
 
 
     /**
-     * Reads a configuration file, line by line, and stores each line into an
+     * Reads a configuration file, line by line, and loads each line into an
      * ArrayList.
      * @param file          - File object of the configuration file
      * @throws IOException  - Thrown when BufferedReader fails to read in the file.
      */
-    public void read( File file ) throws IOException;
+    public void load( File file ) throws IOException;
 
 
     /**
      * Writes the contents of the parameter list to a configuration file.  Opens
      * a output stream using a BufferedWriter wrapped with an OutputStreamWriter
-     * and passes each element of the parameter list into the file, one element
+     * and saves each element of the parameter list into the file, one element
      * as a time.  The end result is a new configuration file with a new checksum.
      * @param file          - File object of new configuration file
      * @throws IOException  - Thrown when BufferedWriter fails to write to file
      */
-    public void write( File file ) throws IOException;
+    public void save( File file ) throws IOException;
 
 
     /**
