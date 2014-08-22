@@ -19,6 +19,7 @@ package com.setupconverter.logic;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 
@@ -80,10 +81,11 @@ public interface IProcessParameters {
     /**
      * Get/return the value of the specified parameter from the parameter list.
      * Parses the parameter list, starting after the block title, for a match to
-     * the argument parameter and returns its value.
+     * the argument parameter.  Split the parameter and return its value.  Return
+     * a -1 if the parameter is not found or its value is invalid.
      * @param blockTitle    - Title of parameter block (i.e. [Machine])
      * @param paramName     - Parameter whose value is to be returned
-     * @return              - Value of the parameter
+     * @return              - Value of the parameter if found or -1
      */
     public int getValue( String blockTitle, String paramName );
 
@@ -93,6 +95,12 @@ public interface IProcessParameters {
      * @return - an integer equal to sum of all characters
      */
     public int getChecksum();
+
+    /**
+     * Get/return the parameter list.
+     * @return - The list of parameters
+     */
+    public ArrayList getAllParameters();
 
 
     /**

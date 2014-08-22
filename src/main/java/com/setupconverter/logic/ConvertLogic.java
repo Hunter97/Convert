@@ -231,7 +231,8 @@ public class ConvertLogic implements IProcessParameters {
     }
 
 
-    public ArrayList getParameters() {
+    @Override
+    public ArrayList getAllParameters() {
         return m_paramList;
     }
 
@@ -247,7 +248,15 @@ public class ConvertLogic implements IProcessParameters {
             while( !( param = listIterator.next() ).startsWith( EMPTY_LINE ) &&  listIterator.hasNext() ) {
                 if( param.startsWith( paramName )) {
                     String[] set = param.split( REG_EXP );
-                    value = Integer.parseInt( set[ 1 ] );
+
+                    try {
+                        value = Integer.parseInt( set[ 1 ] );
+                    }
+                    catch( NumberFormatException | ArrayIndexOutOfBoundsException | NullPointerException e ) {
+                        m_operate.setStatus( Color.RED, new StringBuilder( "Exception in getValue: " ).append( e.getMessage() ).toString(), 
+                                                        new StringBuilder( "Returned -1" ).toString() );
+                    }
+
                     break;
                 }
             }
