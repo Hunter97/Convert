@@ -52,18 +52,20 @@ public interface IParameters {
 
 
     /**
-     * Adds a block of parameters from the parameter list into a Map.
+     * Puts a block of parameters from the parameter list into a Map.  Iterates
+     * over a block of parameter list, starting after the block title, and puts
+     * each parameter into the argument Map.
      * @param blockTitle    - Title of parameter block (i.e. [Machine]) to add into the Map
      * @param map           - Map to hold the block of parameters from the parameter list
      */
-    public void add( String blockTitle, Map< String, Integer > map  );
+    public void putParameters( String blockTitle, Map< String, Integer > map  );
 
 
     /**
      * Set the value of the specified parameter in the parameter list.  Parses the
      * parameter list, starting after the block title, for a match to the argument
      * parameter and set the value with this value.
-     * @param blockTitle    - Title of parameter block (i.e. [Machine]) 
+     * @param blockTitle    - Tittle of parameter block (i.e. [Machine]) 
      * @param paramName     - Parameter whose value is to be set
      * @param value         - Value set to parameter
      */
@@ -104,11 +106,11 @@ public interface IParameters {
 
 
     /**
-     * Replaces a set of parameters within the parameter list.  Parses the parameter
-     * list, starting after the block title, for matches to parameters contained
-     * within the argument Map, and replaces those parameters within the list.
+     * Replaces a block of parameters within the parameter list.  Iterates over 
+     * the parameter list, starting after the block title, for matches to the
+     * argument Map, and then replaces the parameters with those from the Map.
      * @param blockTitle    - Title of the parameter block (i.e. [Machine])
-     * @param map           - Map containing the set of parameters to replace
+     * @param map           - Map containing the block of parameters to replace
      */
-    public void replace( String blockTitle, Map< String, Integer > map );
+    public void replaceParameters( String blockTitle, Map< String, Integer > map );
 }

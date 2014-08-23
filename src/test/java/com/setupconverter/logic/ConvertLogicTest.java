@@ -52,30 +52,22 @@ public class ConvertLogicTest {
 
 
     /**
-     * Test the read method of class ConvertLogic.  Uses a known configuration
-     * file to verify the file can be properly read from and its contents stored
-     * to an ArrayList.  
-     * Test conditions:
-     *  * Instantiates a ConvertLogic object,  which in turn calls the read
-     *      method which reads/loads the test configuration file into the parameter
-     *      List.
-     *  * Reads the same test configuration file within testRead method and loads
-     *      into a local ArrayList.
-     *  * Compares the checksum, the size of the file, and the date saved,
-     *      between both files.  
+     * Test the load method of class ConvertLogic.  Uses a known configuration
+     * file to verify the file can be properly read from and its contents loaded
+     * to an ArrayList.
      */
     @Test
-    public void testRead() {
+    public void testLoad() {
         ArrayList< String > tmpList = new ArrayList<>();
         String line;
         int checksum = 0;
 
-        System.out.println( "tetRead..." );
+        System.out.println( "testLoad..." );
 
         try {
             m_setup = new ConvertLogic( m_file, m_operate );
         } catch (IOException e) {
-            fail( new StringBuilder( "read method produced an IOException: ").append( e.getMessage() ).toString() );
+            fail( new StringBuilder( "Instantiating ConvertLogic object: ").append( e.getMessage() ).toString() );
         }
 
         try ( BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( m_testFile ), StandardCharsets.UTF_8 ))) {
@@ -84,7 +76,7 @@ public class ConvertLogicTest {
             }
         }
         catch( IOException ex ) {
-            fail( new StringBuilder( "testRead method produced an IOException: " ).append( ex.getMessage() ).toString() );
+            fail( new StringBuilder( "testRead; Failed to open file stream: " ).append( ex.getMessage() ).toString() );
         }
 
         for( int i = 1; i < m_setup.getAllParameters().size(); i++ ) {
@@ -103,21 +95,12 @@ public class ConvertLogicTest {
 
 
     /**
-     * Test the add method of class ConvertLogic.  Reads in 2 blocks of a known
-     * configuration file and compares the sizes of the blocks.  One should be of
-     * equal size and the other should be of unequal size.
-     * Test conditions:
-     *  * Instantiates a ConvertLogic object.
-     *  * Call add using ConvertLogic object to add Machine block to a map and
-     *      add Machine block to local ArrayList; then compare the size of map to
-     *      ArrayList, should be equal.
-     *  * Add AnalogInputCard block to local ArrayList and compare the size of
-     *      map to ArrayList, should not be equal.
-     *  * Verify contents of Map against contents of Machine block ArrayList,
-     *      should be equal.
+     * Tests the putParameters method of class ConvertLogic.  Uses a known
+     * configuration file to tests that a block of parameters can be loaded into
+     * a Map.
      */
     @Test
-    public void testAdd() {
+    public void testPutParameters() {
         ArrayList< String > machineParams = new ArrayList<>();
         ArrayList< String > analogParams = new ArrayList<>();
         Map< String, Integer > map = new LinkedHashMap<>();
@@ -126,15 +109,15 @@ public class ConvertLogicTest {
         boolean notEqual = false;
         int index = 0;
 
-        System.out.println( "testAdd..." );
+        System.out.println( "testPutParameters..." );
 
         try {
             m_setup = new ConvertLogic( m_file, m_operate );
         } catch ( IOException e ) {
-            fail( new StringBuilder( "read method produced an IOException: " ).append( e.getMessage() ).toString() );
+            fail( new StringBuilder( "ConvertLogic object; failed to open file stream: " ).append( e.getMessage() ).toString() );
         }
 
-        m_setup.add( MACHINE, map );
+        m_setup.putParameters( MACHINE, map );
 
         try ( BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( m_testFile ), StandardCharsets.UTF_8 ) )) {
             while(( line = buffer.readLine() ) != null ) {
@@ -154,7 +137,7 @@ public class ConvertLogicTest {
             }
         }
         catch( IOException ex ) {
-            fail( new StringBuilder( "testRead produced an IOException: " ).append( ex.getMessage() ).toString());
+            fail( new StringBuilder( "testPutParameter; failed to open file stream: " ).append( ex.getMessage() ).toString());
         }
 
         if( map.size() != analogParams.size() ) {
@@ -178,15 +161,9 @@ public class ConvertLogicTest {
 
 
     /**
-     * Test the setValue method of class ConvertLogic.  Changes the value of
-     * a known parameter from a known configuration file and then verifies the
-     * value has been successfully changed.
-     * Test conditions:
-     *  * Instantiates a ConvertLogic object.
-     *  * Calls setParameters 3 different times using 3 different block titles
-     *      with 1 parameter from each block, and a different value for each 
-     *      parameter.  The compares the set values against the values sent to
-     *      setParameters for a match.
+     * Test the setValue method of class ConvertLogic.  Changes parameter values
+     * from a known configuration file and verifies the values were properly
+     * changed.
      */
     @Test
     public void testSetValue() {
@@ -203,7 +180,7 @@ public class ConvertLogicTest {
         try {
             m_setup = new ConvertLogic( m_file, m_operate );
         } catch ( IOException e ) {
-            fail( new StringBuilder( "setValue method produced an IOException: " ).append( e.getMessage() ).toString() );
+            fail( new StringBuilder( "ConvertLogic object failed to open file stream: " ).append( e.getMessage() ).toString() );
         }
 
         for( int i = 0; i < block.size(); i++ ) {
@@ -230,7 +207,7 @@ public class ConvertLogicTest {
                 }
             }
             catch( NumberFormatException | ArrayIndexOutOfBoundsException | NullPointerException e ) {
-                fail( new StringBuilder( "testSetValue produced an Exception: " ).append( e.getMessage() ).toString());
+                fail( new StringBuilder( "testSetValue; failure converting to an integer: " ).append( e.getMessage() ).toString());
             }
         }
 
@@ -241,15 +218,8 @@ public class ConvertLogicTest {
 
     /**
      * Test the setChecksum and getChecksum methods of class ConvertLogic.  
-     * Calculates the checksum from a known configuration file, then checks the
-     * calculated value to the value stored in the file, by calling getChecksum.
-     * Test conditions:
-     *  * Instantiates a ConvertLogic object.
-     *  * Calculates and sets checksum variable in ConvertLogic object
-     *  * Extracts the checksum line directly from the configuration file and
-     *      splits out the checksum value.
-     *  * Get and test the calculated checksum to the checksum from the configuration
-     *      file.
+     * Calculates the checksum from a known configuration file and then verifies
+     * the calculated checksum equals the checksum in the file.
      */
     @Test
     public void testChecksum() {
@@ -259,7 +229,7 @@ public class ConvertLogicTest {
             m_setup = new ConvertLogic( m_file, m_operate );
             m_setup.setChecksum();
         } catch ( IOException e ) {
-            fail( new StringBuilder( "setParameter method produced an IOException: " ).append( e.getMessage() ).toString() );
+            fail( new StringBuilder( "ConvertLogic object failed to open file stream: " ).append( e.getMessage() ).toString() );
         }
 
         String[] checksumLine = m_setup.getAllParameters().get( 0 ).toString().split( REGEX );
@@ -268,21 +238,14 @@ public class ConvertLogicTest {
             assertEquals( "Checksum are not equal:", m_setup.getChecksum(), Integer.parseInt( checksumLine[ 1 ] ));
         }
         catch( NumberFormatException | ArrayIndexOutOfBoundsException | NullPointerException e ) {
-                fail( new StringBuilder( "testSetParameter produced an Exception: " ).append( e.getMessage() ).toString());
+                fail( new StringBuilder( "testSetChecksum; failure converting to an integer: " ).append( e.getMessage() ).toString());
         }
     }
 
 
     /**
-     * Test of getValue method, of class ConvertLogic.  Uses a known parameter
-     * from a known configuration file and compares the return value from getValue
-     * to the assigned to the parameter.  
-     * Test conditions:
-     *  * Instantiate a ConvertLogic object
-     *  * Pass a known parameter from the parameter list to getValue and compare
-     *      the return value against the value of the actual parameter.
-     *  * Pass a known parameter with an invalid value to getValue.  The method
-     *      should be unable to find the parameter and return a -1.
+     * Test the getValue method of class ConvertLogic.  Passes a known parameter
+     * to getValue with a known value and tests the return value. 
      */
     @Test
     public void testGetValue() {
@@ -292,12 +255,12 @@ public class ConvertLogicTest {
         int index;
         int value = -1;
 
-        System.out.println("getValue...");
+        System.out.println("testGetValue...");
 
         try {
             m_setup = new ConvertLogic( m_file, m_operate );
         } catch (IOException e) {
-            fail( new StringBuilder( "read method produced an IOException: ").append( e.getMessage() ).toString() );
+            fail( new StringBuilder( "ConvertLogic object failed to open file stream: ").append( e.getMessage() ).toString() );
         }
 
         result = m_setup.getValue( MACHINE, PARAMETER );
@@ -313,14 +276,14 @@ public class ConvertLogicTest {
                 }
         }
         else {
-            fail( new StringBuilder( "testGetValue failed, unable to find ").append( MACHINE ).append( " in parameter list" ).toString() );
+            fail( new StringBuilder( "testGetValue; unable to find ").append( PARAMETER ).append( " in parameter list" ).toString() );
         }
 
         try {
             value = Integer.parseInt( set[ 1 ] );
         }
         catch( NumberFormatException | ArrayIndexOutOfBoundsException | NullPointerException e ) {
-                fail( new StringBuilder( "testGetValue produced an Exception: " ).append( e.getMessage() ).toString());
+                fail( new StringBuilder( "testGetValue; failure converting to an integer: " ).append( e.getMessage() ).toString());
         }
 
 
@@ -341,16 +304,13 @@ public class ConvertLogicTest {
     /**
      * Test of replaceAllParams method, of class ConvertLogic.
      */
-    /*@Test
-    public void testReplaceAllParams() {
-        System.out.println("replaceAllParams");
-        String blockTitle = "";
-        /*Map<String, Integer> map = null;
-        ConvertLogic instance = null;
-        instance.replaceAllParams(blockTitle, map);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }*/
+    @Test
+    public void testReplaceParameters() {
+
+
+        System.out.println("testReplaceParameters...");
+        
+    }
 
     /**
      * Test of convert method, of class ConvertLogic.
