@@ -5,16 +5,13 @@
  * Rev 1.01
  * 
  * ConvertLogic is the logic class for the SetupConverter application.  The 
- * class converts the Gain parameters and re-arranges I/O from a configuration file
- * based on a selected drive type and re-configures the I/O to simplify homing
- * and to simulate cutting.  The class creates a new configuration file, with an
- * updated checksum, that can be saved through the Windows file system.  The new
- * configuration file can be used to control a CNC based on the selected drive
- * type.
+ * class converts the Gain parameters based on a selected drive type and configures
+ * the I/O to simplify homing and to simulate cutting.  The I/O configuration is
+ * based on the application of the configuration file.  The class creates a new
+ * configuration file, with an updated checksum.
  * Assumes CNC can activate the first 16 inputs and has a I/O loop back connector
- * installed to the back of CNC.  The class also determines the application type
- * from the configuration file.
- *          
+ * installed to the back of CNC.
+ *     
  * Main attributes:
  *      *   Accesses data stored within the data access interface or through the
  *              data access class.
@@ -24,7 +21,7 @@
  *              user can satisfy homing and simulate cutting.
  *      *   Recalculates the checksum and saves the converted file to the file system.
  * 
- *  Implements:  IProcess
+ *  Implements:  IParameters
  * 
  */
 package com.setupconverter.logic;
@@ -53,7 +50,10 @@ import java.awt.Color;
 
 
 /**
- * ConvertLogic retrieves/manipulates the data from IDataAccess interface
+ * ConvertLogic retrieves/manipulates the data from IDataAccess interface and
+ * converts parameters within a configuration file based on drive system and
+ * application type.
+ * 
  * @author prwallace
  */
 public class ConvertLogic implements IParameters {
@@ -157,139 +157,11 @@ public class ConvertLogic implements IParameters {
     }
 
 
-    @ Override
-    public final void load( File file ) throws IOException {
-        String line;
-        BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( file ), StandardCharsets.UTF_8 ));
-        while(( line = buffer.readLine() ) != null ) {
-            m_paramList.add( new StringBuilder( line ).append( LINE_RETURN ).toString() );
-        }
-    }
-
-
-    @Override
-    public void putParameters( String blockTitle, Map< String, Integer > map  ) {
-        String param;
-        int index;
-
-        if(( index = m_paramList.indexOf( blockTitle )) != -1 ) {
-            ListIterator< String > listIterator = m_paramList.listIterator( index +1 );
-            while( !( param = listIterator.next() ).startsWith( LINE_RETURN )  && listIterator.hasNext() ) {
-                if( !param.equals( LINE_RETURN )) {
-                    String[] set = param.split( REG_EXP );
-                    StringBuilder key = new StringBuilder( set[0] ).append( "=" );
-
-                    try {
-                        map.put( key.toString(), Integer.parseInt( set[ 1 ] ));
-                    }
-                    catch( NumberFormatException | ArrayIndexOutOfBoundsException | NullPointerException e ) {
-                        m_operate.setStatus( Color.RED, new StringBuilder( "Exception in add " ).append( e.getMessage() ).toString(), 
-                                                        new StringBuilder( "Key = " ).append( set[ 1 ] ).append( " , set value to 0" ).toString() );
-                        map.put( key.toString(), 0 );
-                    }
-                }
-            }
-        }
-    }
-
-
-    @Override
-    public void setValue( String blockTitle, String paramName, int value ) {
-        String param;
-        int index;
-
-        if(( index = m_paramList.indexOf( blockTitle )) != -1 ) {
-            ListIterator< String > listIterator = m_paramList.listIterator( index +1 );
-            while( !( param = listIterator.next() ).startsWith( LINE_RETURN ) && listIterator.hasNext() ) {
-                if( param.startsWith( paramName )) {
-                    int replaceIndex = listIterator.previousIndex();
-                    String[] set = param.split( REG_EXP );
-                    m_paramList.set(replaceIndex, new StringBuilder( set[0] ).append( "=" ).append( value ).append( LINE_RETURN ).toString() );
-                    break;
-                }
-            }
-        }
-    }
-
-
-    @ Override
-    public void setChecksum() throws IOException {
-        m_checksum = 0;
-        for( int i = 1; i < m_paramList.size(); i++ ) {
-            for( char ch : m_paramList.get( i ).toCharArray() ) {
-                m_checksum += ch;
-            }
-        }
-    }
-
-
-    @ Override
-    public int getChecksum() {
-        return m_checksum;
-    }
-
-
-    @Override
-    public ArrayList getAllParameters() {
-        return m_paramList;
-    }
-
-
-    @Override
-    public int getValue( String blockTitle, String paramName ) {
-        String param;
-        int index;
-        int value = -1;
-
-        if(( index = m_paramList.indexOf( blockTitle )) != -1) {
-            ListIterator< String > listIterator = m_paramList.listIterator( index +1 );
-            while( !( param = listIterator.next() ).startsWith( LINE_RETURN ) &&  listIterator.hasNext() ) {
-                if( param.startsWith( paramName )) {
-                    String[] set = param.split( REG_EXP );
-
-                    try {
-                        value = Integer.parseInt( set[ 1 ] );
-                    }
-                    catch( NumberFormatException | ArrayIndexOutOfBoundsException | NullPointerException e ) {
-                        m_operate.setStatus( Color.RED, new StringBuilder( "Exception in getValue: " ).append( e.getMessage() ).toString(), 
-                                                        new StringBuilder( "Returned -1" ).toString() );
-                    }
-
-                    break;
-                }
-            }
-        }
-
-        return value;
-    }
-
-
-    @Override
-    public void replaceParameters( String blockTitle, Map< String, Integer > map ) {
-        String param;
-        int startIndex;
-
-        if(( startIndex = m_paramList.indexOf( blockTitle )) != -1 ) {
-            ListIterator< String > listIterator = m_paramList.listIterator( startIndex +1 );
-            while( !( param = listIterator.next() ).startsWith( LINE_RETURN ) && listIterator.hasNext() ) {
-                for( String key : map.keySet() ) {
-                    if( param.startsWith( key )) {
-                        int replaceIndex = listIterator.previousIndex();
-                        m_paramList.set( replaceIndex, new StringBuilder( key ).append( map.get( key ) ).append( LINE_RETURN ).toString() );
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-
     /**
-     * Converts the original parameter file to control the user specified drive 
-     * system.  Replaces Axes, I/O, Speed, and Machine settings based on the selected
-     * drive type.  I/O is re-arranged to allow user to satisfy homing and simulate
-     * cutting by use of a switch box and loop-back jumper CPC.  Instantiates the
-     * DataAccessObj which provides access to the specific drive system type.
+     * Converts gain, speed, and I/O parameters from the original configuration
+     * file to control the user specified drive system as well as control homing,
+     * cutting, and other I/O operations specific to the configuration files
+     * application.
      */
     public void convert()  {
         String system = m_operate.getSelectedSystem();
@@ -303,48 +175,48 @@ public class ConvertLogic implements IParameters {
 
 
         // Determine specific tools, bevel heads, pipe axes, THC's that are installed in Machine screen
-        if( getValue( Block.MACHINE.getName(), Parameter.FP.getName() ) > 0 ) {
+        if( getParameterValue( Block.MACHINE.getName(), Parameter.FP.getName() ) > 0 ) {
             m_frontPanelInstalled = true;
         }
        
-        if( getValue( Block.MACHINE.getName(), Parameter.BEVEL_AXES.getName() ) > 0 ) {
+        if( getParameterValue( Block.MACHINE.getName(), Parameter.BEVEL_AXES.getName() ) > 0 ) {
             m_bevelInstalled = true;
         }
 
-        if( getValue( Block.MACHINE.getName(), Parameter.DUAL_BEVEL.getName() ) > 0 ) {
+        if( getParameterValue( Block.MACHINE.getName(), Parameter.DUAL_BEVEL.getName() ) > 0 ) {
             m_dualBevelInstalled = true;
         }
 
-        if( getValue( Block.MACHINE.getName(), Parameter.DUAL_TRANS.getName() ) > 0 && 
-                getValue( Block.MACHINE.getName(), Parameter.DUAL_BEVEL.getName() ) > 0 ) {
+        if( getParameterValue( Block.MACHINE.getName(), Parameter.DUAL_TRANS.getName() ) > 0 && 
+                getParameterValue( Block.MACHINE.getName(), Parameter.DUAL_BEVEL.getName() ) > 0 ) {
             m_dualTransInstalled = true;
         }
 
-        if( getValue( Block.MACHINE.getName(), Parameter.NO_ROTATE_TILT.getName() ) > 0 ) {
+        if( getParameterValue( Block.MACHINE.getName(), Parameter.NO_ROTATE_TILT.getName() ) > 0 ) {
             m_noRotateTilt = true;
         }
 
-        if( getValue( Block.MACHINE.getName(), Parameter.ONE_ROTATE_TILT.getName() ) > 0 ) {
+        if( getParameterValue( Block.MACHINE.getName(), Parameter.ONE_ROTATE_TILT.getName() ) > 0 ) {
             m_oneRotateTilt = true;
         }
 
-        if( getValue( Block.MACHINE.getName(), Parameter.DUAL_GANTRY.getName() ) > 0 ) {
+        if( getParameterValue( Block.MACHINE.getName(), Parameter.DUAL_GANTRY.getName() ) > 0 ) {
             m_dualGantryInstalled = true;
         }
 
-        if( getValue( Block.AXIS_7.getName(), Parameter.ROTATING_TRANS.getName() ) > 0 ) {
+        if( getParameterValue( Block.AXIS_7.getName(), Parameter.ROTATING_TRANS.getName() ) > 0 ) {
             m_isRotatingTrans = true;
         }
 
-        if( getValue( Block.MACHINE.getName(), Parameter.X_AXIS_ORIENTATION.getName() ) > 0 ) {
+        if( getParameterValue( Block.MACHINE.getName(), Parameter.X_AXIS_ORIENTATION.getName() ) > 0 ) {
             m_xOnRail = true;
         }
 
-        if( getValue( Block.MACHINE.getName(), Parameter.DUAL_TILTING.getName() ) > 0 ) {
+        if( getParameterValue( Block.MACHINE.getName(), Parameter.DUAL_TILTING.getName() ) > 0 ) {
             m_dualTiltInstalled = true;
         }
 
-        if( getValue( Block.MACHINE.getName(), Parameter.CBH.getName() ) > 0 ) {
+        if( getParameterValue( Block.MACHINE.getName(), Parameter.CBH.getName() ) > 0 ) {
             m_cbhInstalled = true;
         }
 
@@ -354,7 +226,7 @@ public class ConvertLogic implements IParameters {
 
 
         // Convert THC parameters
-        if(( sthcTotal = getValue( Block.MACHINE.getName(), Parameter.STHC.getName() )) > 0 ) {
+        if(( sthcTotal = getParameterValue( Block.MACHINE.getName(), Parameter.STHC.getName() )) > 0 ) {
             m_sthcInstalled = true;
             m_dataAccess.addTHCDefaults();
 
@@ -383,7 +255,7 @@ public class ConvertLogic implements IParameters {
                 }
             }
         }
-        else if(( agTHCTotal = getValue( Block.MACHINE.getName(), Parameter.ARC_GLIDE.getName() )) > 0 ) {
+        else if(( agTHCTotal = getParameterValue( Block.MACHINE.getName(), Parameter.ARC_GLIDE.getName() )) > 0 ) {
             m_arcGlideInstalled = true;
             setInput( row1NextIndex++, Input.RDY_TO_FIRE_1.getValue() );
 
@@ -415,7 +287,7 @@ public class ConvertLogic implements IParameters {
         setInput( 9, Input.DRIVE_DISABLED.getValue() );
 
 
-        // Convert X & Y Axes parameters and homing inputs
+        // Convert X & Y Axes parameters
         replaceParameters( Block.AXIS_1.getName(), m_dataAccess.getAxesParams() );
         replaceParameters( Block.AXIS_2.getName(), m_dataAccess.getAxesParams() );
 
@@ -423,16 +295,16 @@ public class ConvertLogic implements IParameters {
         // X/Y Negative OT's can be assigned as home switch or OT, resulting is
         // 2 possible Input#Number assignments.  For simplicity, set 2nd possible
         // assignment to 0(Input19Number=0, Input20Number=0)
-        int homeValue = getValue( Block.IO.getName(), Input.X_NEG_OT.getName() );
+        int homeValue = getParameterValue( Block.IO.getName(), Input.X_NEG_OT.getName() );
         if( homeValue > 0 ) {
-            setValue( Block.IO.getName(), Input.X_NEG_OT.getName(), 0 );
-            setValue( Block.IO.getName(), new StringBuilder( INPUT ).append( homeValue ).append( TYPE).toString(), 0 );
+            setParameterValue( Block.IO.getName(), Input.X_NEG_OT.getName(), 0 );
+            setParameterValue( Block.IO.getName(), new StringBuilder( INPUT ).append( homeValue ).append( TYPE).toString(), 0 );
         }
 
-        homeValue = getValue ( Block.IO.getName(), Input.Y_NEG_OT.getName() );
+        homeValue = getParameterValue ( Block.IO.getName(), Input.Y_NEG_OT.getName() );
         if( homeValue > 0 ) {
-            setValue( Block.IO.getName(), Input.Y_NEG_OT.getName(), 0 );
-            setValue( Block.IO.getName(), new StringBuilder( INPUT ).append( homeValue ).append( TYPE).toString(), 0 );
+            setParameterValue( Block.IO.getName(), Input.Y_NEG_OT.getName(), 0 );
+            setParameterValue( Block.IO.getName(), new StringBuilder( INPUT ).append( homeValue ).append( TYPE).toString(), 0 );
         }
 
 
@@ -455,11 +327,11 @@ public class ConvertLogic implements IParameters {
 
         // Convert CBH parameters
         if( m_cbhInstalled ) {
-            setValue( Block.CBH.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
+            setParameterValue( Block.CBH.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
             replaceParameters( Block.CBH.getName(), m_dataAccess.getAxesParams() );
-            setValue( Block.CBH.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
-            setValue( Block.CBH.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
-            setValue( Block.CBH.getName(), Parameter.HOME_DIRECTION.getName(), 0 );
+            setParameterValue( Block.CBH.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
+            setParameterValue( Block.CBH.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
+            setParameterValue( Block.CBH.getName(), Parameter.HOME_DIRECTION.getName(), 0 );
             setInput( row1NextIndex++, Input.CBH_HOME.getValue() );
         }
 
@@ -469,10 +341,10 @@ public class ConvertLogic implements IParameters {
             replaceParameters( Block.AXIS_7.getName(), m_dataAccess.getAxesParams() );
 
             if( m_isRotatingTrans ) {
-                setValue( Block.MACHINE.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
-                setValue( Block.AXIS_7.getName(),  Parameter.SERVO_ERROR_EN.getName(), Bevel.SERVO_ERROR.getValue() );
-                setValue( Block.AXIS_7.getName(), Parameter.ENCODER_CNTS_EN.getName(), Bevel.ENCODER_CNTS.getValue() );
-                setValue( Block.AXIS_7.getName(), Parameter.ENCODER_CNTS_M.getName(), Bevel.ENCODER_CNTS.getValue() );
+                setParameterValue( Block.MACHINE.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
+                setParameterValue( Block.AXIS_7.getName(),  Parameter.SERVO_ERROR_EN.getName(), Bevel.SERVO_ERROR.getValue() );
+                setParameterValue( Block.AXIS_7.getName(), Parameter.ENCODER_CNTS_EN.getName(), Bevel.ENCODER_CNTS.getValue() );
+                setParameterValue( Block.AXIS_7.getName(), Parameter.ENCODER_CNTS_M.getName(), Bevel.ENCODER_CNTS.getValue() );
                 setInput( row1NextIndex++, Input.ROT_2_HOME.getValue() );
                 setInput( row2NextIndex++, Input.DUAL_HEAD_COLLISION.getValue() );
             }
@@ -502,15 +374,15 @@ public class ConvertLogic implements IParameters {
 
         // Convert Bevel Axes parameters and add homing inputs
         if( m_bevelInstalled && ( m_dualBevelInstalled && !m_noRotateTilt || !m_dualBevelInstalled )) {  // Single bevel head installed
-            setValue( Block.MACHINE.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
+            setParameterValue( Block.MACHINE.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
 
             replaceParameters( Block.ROTATE.getName(), m_dataAccess.getAxesParams() );
-            setValue( Block.ROTATE.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
-            setValue( Block.ROTATE.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
+            setParameterValue( Block.ROTATE.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
+            setParameterValue( Block.ROTATE.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
 
             replaceParameters( Block.TILT.getName(), m_dataAccess.getAxesParams() );
-            setValue( Block.TILT.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
-            setValue( Block.TILT.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
+            setParameterValue( Block.TILT.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
+            setParameterValue( Block.TILT.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
 
             if( m_dualTiltInstalled ) {
                 if( row1NextIndex < 8 ) {
@@ -540,8 +412,8 @@ public class ConvertLogic implements IParameters {
             if( m_dualBevelInstalled && !m_oneRotateTilt ) { // Dual Bevel heads installed
                 if( m_dualTiltInstalled ) {
                     replaceParameters( Block.DUAL_TILT.getName(), m_dataAccess.getAxesParams() );
-                    setValue( Block.DUAL_TILT.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
-                    setValue( Block.DUAL_TILT.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
+                    setParameterValue( Block.DUAL_TILT.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
+                    setParameterValue( Block.DUAL_TILT.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
 
                     if( row1NextIndex < 8 ) {
                         setInput( row1NextIndex++, Input.TILT3_POS_OT.getValue() );
@@ -556,8 +428,8 @@ public class ConvertLogic implements IParameters {
                 }
                 else {
                     replaceParameters( Block.DUAL_ROTATE.getName(), m_dataAccess.getAxesParams() );
-                    setValue( Block.DUAL_ROTATE.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
-                    setValue( Block.DUAL_ROTATE.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
+                    setParameterValue( Block.DUAL_ROTATE.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
+                    setParameterValue( Block.DUAL_ROTATE.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
 
                     if( row1NextIndex < 8 ) {
                         setInput( row1NextIndex++, Input.TILT3_POS_OT.getValue() );
@@ -580,41 +452,42 @@ public class ConvertLogic implements IParameters {
 
 
         // Re-assign Cut Sense inputs beginning at input 40
-        if( getValue( Block.IO.getName(), Input.CUT_MARK_SENSE.getName() ) > 0 ) {
+        if( getParameterValue( Block.IO.getName(), Input.CUT_MARK_SENSE.getName() ) > 0 ) {
             setInput( 40, Input.CUT_MARK_SENSE.getValue() );
         }
-        else if( getValue( Block.IO.getName(), Input.CUT_SENSE_1.getName() ) > 0 ) {
+        else if( getParameterValue( Block.IO.getName(), Input.CUT_SENSE_1.getName() ) > 0 ) {
             setInput( 40, Input.CUT_SENSE_1.getValue() );
 
-            if( getValue( Block.IO.getName(), Input.CUT_SENSE_2.getName() ) > 0 ) {
+            if( getParameterValue( Block.IO.getName(), Input.CUT_SENSE_2.getName() ) > 0 ) {
                 setInput( 41, Input.CUT_SENSE_2.getValue() );
             }
 
-            if( getValue( Block.IO.getName(), Input.CUT_SENSE_3.getName() ) > 0 ) {
+            if( getParameterValue( Block.IO.getName(), Input.CUT_SENSE_3.getName() ) > 0 ) {
                 setInput( 42, Input.CUT_SENSE_3.getValue() );
             }
 
-            if( getValue( Block.IO.getName(), Input.CUT_SENSE_4.getName() ) > 0 ) {
+            if( getParameterValue( Block.IO.getName(), Input.CUT_SENSE_4.getName() ) > 0 ) {
                 setInput( 43, Input.CUT_SENSE_4.getValue() );
             }
         }
 
+
         // Re-assign Cut Control outputs beginning at output 40
-        if( getValue( Block.IO.getName(), Output.CUT_CONTROL.getName() ) > 0 ) {
+        if( getParameterValue( Block.IO.getName(), Output.CUT_CONTROL.getName() ) > 0 ) {
             setOutput( 40, Output.CUT_CONTROL.getValue() );
         }
-        else if( getValue( Block.IO.getName(), Output.CUT_CONTROL_1.getName() ) > 0 ) {
+        else if( getParameterValue( Block.IO.getName(), Output.CUT_CONTROL_1.getName() ) > 0 ) {
                 setOutput( 40, Output.CUT_CONTROL_1.getValue() );
 
-            if( getValue( Block.IO.getName(), Output.CUT_CONTROL_2.getName() ) > 0 ) {
+            if( getParameterValue( Block.IO.getName(), Output.CUT_CONTROL_2.getName() ) > 0 ) {
                 setOutput( 41, Output.CUT_CONTROL_2.getValue() );
             }
 
-            if( getValue( Block.IO.getName(), Output.CUT_CONTROL_3.getName() ) > 0 ) {
+            if( getParameterValue( Block.IO.getName(), Output.CUT_CONTROL_3.getName() ) > 0 ) {
                 setOutput( 42, Output.CUT_CONTROL_3.getValue() );
             }
 
-            if( getValue( Block.IO.getName(), Output.CUT_CONTROL_4.getName() ) > 0 ) {
+            if( getParameterValue( Block.IO.getName(), Output.CUT_CONTROL_4.getName() ) > 0 ) {
                 setOutput( 43, Output.CUT_CONTROL_4.getValue() );
             }
         }
@@ -683,7 +556,7 @@ public class ConvertLogic implements IParameters {
         while( !( entry = iterator.next() ).getKey().startsWith( new StringBuilder( INPUT ).append( 1 ).append( TYPE ).toString() ) && iterator.hasNext() ) {
             String inputType = new StringBuilder( INPUT ).append( entry.getValue() ).append( TYPE ).toString();
             if( !m_inputNumberMap.containsKey( entry.getKey() ) && entry.getValue() > 0 ) {
-                int inValue = getValue( Block.IO.getName(), inputType );
+                int inValue = getParameterValue( Block.IO.getName(), inputType );
                 if( m_inputTypeMap.containsKey( inputType )) {
                     m_inputNumberMap.put( entry.getKey(), inTypeLoc );
                     m_inputTypeMap.put( new StringBuilder( INPUT ).append( inTypeLoc++ ).append( TYPE ).toString(), inValue );
@@ -709,7 +582,7 @@ public class ConvertLogic implements IParameters {
         while( !( entry = iterator.next() ).getKey().startsWith( new StringBuilder( OUTPUT ).append( 1 ).append( TYPE ).toString() ) && iterator.hasNext() ) {
             String outputType = new StringBuilder( OUTPUT ).append( entry.getValue() ).append( TYPE ).toString();
             if( !m_outputNumberMap.containsKey( entry.getKey() ) && entry.getValue() > 0 ) {
-                int outValue = getValue( Block.IO.getName(), outputType );
+                int outValue = getParameterValue( Block.IO.getName(), outputType );
                 if( m_outputTypeMap.containsKey( outputType )) {
                     m_outputNumberMap.put( entry.getKey(), outTypeLoc );
                     m_outputTypeMap.put( new StringBuilder( OUTPUT ).append( outTypeLoc++ ).append( TYPE ).toString(), outValue );
@@ -764,6 +637,133 @@ public class ConvertLogic implements IParameters {
                 if(( value > 2 && value < 5 ) || value > 6 ) {
                     entry.setValue( 0 );
                     m_linkParamMap.put(new StringBuilder( PORT ).append( value ).append( NUMBER ).toString(), 0 );
+                }
+            }
+        }
+    }
+
+
+    @ Override
+    public final void load( File file ) throws IOException {
+        String line;
+        BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( file ), StandardCharsets.UTF_8 ));
+        while(( line = buffer.readLine() ) != null ) {
+            m_paramList.add( new StringBuilder( line ).append( LINE_RETURN ).toString() );
+        }
+    }
+
+
+    @Override
+    public void putParameters( String blockTitle, Map< String, Integer > map  ) {
+        String param;
+        int index;
+
+        if(( index = m_paramList.indexOf( blockTitle )) != -1 ) {
+            ListIterator< String > listIterator = m_paramList.listIterator( index +1 );
+            while( !( param = listIterator.next() ).startsWith( LINE_RETURN )  && listIterator.hasNext() ) {
+                if( !param.equals( LINE_RETURN )) {
+                    String[] set = param.split( REG_EXP );
+                    StringBuilder key = new StringBuilder( set[0] ).append( "=" );
+
+                    try {
+                        map.put( key.toString(), Integer.parseInt( set[ 1 ] ));
+                    }
+                    catch( NumberFormatException | ArrayIndexOutOfBoundsException | NullPointerException e ) {
+                        m_operate.setStatus( Color.RED, new StringBuilder( "Exception in add " ).append( e.getMessage() ).toString(), 
+                                                        new StringBuilder( "Key = " ).append( set[ 1 ] ).append( " , set value to 0" ).toString() );
+                        map.put( key.toString(), 0 );
+                    }
+                }
+            }
+        }
+    }
+
+
+    @Override
+    public void setParameterValue( String blockTitle, String paramName, int value ) {
+        String param;
+        int index;
+
+        if(( index = m_paramList.indexOf( blockTitle )) != -1 ) {
+            ListIterator< String > listIterator = m_paramList.listIterator( index +1 );
+            while( !( param = listIterator.next() ).startsWith( LINE_RETURN ) && listIterator.hasNext() ) {
+                if( param.startsWith( paramName )) {
+                    int replaceIndex = listIterator.previousIndex();
+                    String[] set = param.split( REG_EXP );
+                    m_paramList.set(replaceIndex, new StringBuilder( set[0] ).append( "=" ).append( value ).append( LINE_RETURN ).toString() );
+                    break;
+                }
+            }
+        }
+    }
+
+
+    @ Override
+    public void setChecksum() throws IOException {
+        m_checksum = 0;
+        for( int i = 1; i < m_paramList.size(); i++ ) {
+            for( char ch : m_paramList.get( i ).toCharArray() ) {
+                m_checksum += ch;
+            }
+        }
+    }
+
+
+    @ Override
+    public int getChecksum() {
+        return m_checksum;
+    }
+
+
+    @Override
+    public ArrayList getParameterList() {
+        return m_paramList;
+    }
+
+
+    @Override
+    public int getParameterValue( String blockTitle, String paramName ) {
+        String param;
+        int index;
+        int value = -1;
+
+        if(( index = m_paramList.indexOf( blockTitle )) != -1) {
+            ListIterator< String > listIterator = m_paramList.listIterator( index +1 );
+            while( !( param = listIterator.next() ).startsWith( LINE_RETURN ) &&  listIterator.hasNext() ) {
+                if( param.startsWith( paramName )) {
+                    String[] set = param.split( REG_EXP );
+
+                    try {
+                        value = Integer.parseInt( set[ 1 ] );
+                    }
+                    catch( NumberFormatException | ArrayIndexOutOfBoundsException | NullPointerException e ) {
+                        m_operate.setStatus( Color.RED, new StringBuilder( "Exception in getValue: " ).append( e.getMessage() ).toString(), 
+                                                        new StringBuilder( "Returned -1" ).toString() );
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        return value;
+    }
+
+
+    @Override
+    public void replaceParameters( String blockTitle, Map< String, Integer > map ) {
+        String param;
+        int startIndex;
+
+        if(( startIndex = m_paramList.indexOf( blockTitle )) != -1 ) {
+            ListIterator< String > listIterator = m_paramList.listIterator( startIndex +1 );
+            while( !( param = listIterator.next() ).startsWith( LINE_RETURN ) && listIterator.hasNext() ) {
+                for( String key : map.keySet() ) {
+                    if( param.startsWith( key )) {
+                        int replaceIndex = listIterator.previousIndex();
+                        m_paramList.set( replaceIndex, new StringBuilder( key ).append( map.get( key ) ).append( LINE_RETURN ).toString() );
+                        break;
+                    }
                 }
             }
         }

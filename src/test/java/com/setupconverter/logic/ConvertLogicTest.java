@@ -37,7 +37,7 @@ public class ConvertLogicTest {
     private static final String MACHINE = "[Machine]\r\n";
     private static final String PARAMETER = "FrontPanelInstalled=";
     private static final String INVALID_PARAM = "SensorTHCInstalled=-1";
-    private String[] m_params = { "SensorPlasma1=", "ScaleRotator=", "SensorPlasma2=", "KeyLogging=" };
+    private final String[] m_params = { "SensorPlasma1=", "ScaleRotator=", "SensorPlasma2=", "KeyLogging=" };
     private OperateConverter m_operate;
     private ConvertLogic m_setup;
     private File m_file;
@@ -82,8 +82,8 @@ public class ConvertLogicTest {
             fail( new StringBuilder( "testRead; Failed to open file stream: " ).append( ex.getMessage() ).toString() );
         }
 
-        for( int i = 1; i < m_setup.getAllParameters().size(); i++ ) {
-            for( char ch : m_setup.getAllParameters().get( i ).toString().toCharArray() ) {
+        for( int i = 1; i < m_setup.getParameterList().size(); i++ ) {
+            for( char ch : m_setup.getParameterList().get( i ).toString().toCharArray() ) {
                 checksum += ch;
             }
         }
@@ -92,8 +92,8 @@ public class ConvertLogicTest {
 
 
         assertEquals( "Checksums not equal:", checksum, Integer.parseInt( splitChecksum[ 1 ] ) );
-        assertEquals( "File save date not equal:", m_setup.getAllParameters().get( 17 ), tmpList.get( 17 ) );
-        assertEquals( "File size not equal:", m_setup.getAllParameters().size(), tmpList.size() );
+        assertEquals( "File save date not equal:", m_setup.getParameterList().get( 17 ), tmpList.get( 17 ) );
+        assertEquals( "File size not equal:", m_setup.getParameterList().size(), tmpList.size() );
     }
 
 
@@ -187,10 +187,10 @@ public class ConvertLogicTest {
         }
 
         for( int i = 0; i < block.size(); i++ ) {
-            m_setup.setValue( block.get( i ), key.get( i ), value[ i ] );
+            m_setup.setParameterValue( block.get( i ), key.get( i ), value[ i ] );
 
-            if(( index = m_setup.getAllParameters().indexOf( block.get( i ) )) != -1 ) {
-                ListIterator< String > listIterator = m_setup.getAllParameters().listIterator( index +1 );
+            if(( index = m_setup.getParameterList().indexOf( block.get( i ) )) != -1 ) {
+                ListIterator< String > listIterator = m_setup.getParameterList().listIterator( index +1 );
 
                 while( !( param = listIterator.next() ).startsWith( LINE_RETURN ) && listIterator.hasNext() ) {
                     if( param.startsWith( key.get( i ) )) {
@@ -235,7 +235,7 @@ public class ConvertLogicTest {
             fail( new StringBuilder( "ConvertLogic object failed to open file stream: " ).append( e.getMessage() ).toString() );
         }
 
-        String[] checksumLine = m_setup.getAllParameters().get( 0 ).toString().split( REGEX );
+        String[] checksumLine = m_setup.getParameterList().get( 0 ).toString().split( REGEX );
         
         try {
             assertEquals( "Checksum are not equal:", m_setup.getChecksum(), Integer.parseInt( checksumLine[ 1 ] ));
@@ -266,10 +266,10 @@ public class ConvertLogicTest {
             fail( new StringBuilder( "ConvertLogic object failed to open file stream: ").append( e.getMessage() ).toString() );
         }
 
-        result = m_setup.getValue( MACHINE, PARAMETER );
+        result = m_setup.getParameterValue( MACHINE, PARAMETER );
 
-        if(( index = m_setup.getAllParameters().indexOf( MACHINE ) ) != -1 ) {
-                ListIterator< String > listIterator = m_setup.getAllParameters().listIterator( index +1 );
+        if(( index = m_setup.getParameterList().indexOf( MACHINE ) ) != -1 ) {
+                ListIterator< String > listIterator = m_setup.getParameterList().listIterator( index +1 );
 
                 while( !( param = listIterator.next() ).startsWith( LINE_RETURN ) && listIterator.hasNext() ) {
                     if( param.startsWith( PARAMETER ) ) {
@@ -294,7 +294,7 @@ public class ConvertLogicTest {
 
 
         boolean isInvalid = false;
-        result = m_setup.getValue( MACHINE, INVALID_PARAM );
+        result = m_setup.getParameterValue( MACHINE, INVALID_PARAM );
 
         if( result == -1 ) {
             isInvalid = true;
@@ -333,7 +333,7 @@ public class ConvertLogicTest {
 
         index = 0;
         for( String param : m_params ) {
-            if( m_setup.getValue( MACHINE, param ) != index++ ) {
+            if( m_setup.getParameterValue( MACHINE, param ) != index++ ) {
                 isNotEqual = true;
                 break;
             }
@@ -343,17 +343,25 @@ public class ConvertLogicTest {
         assertFalse( "Unable to replace parameters:", isNotEqual );
     }
 
+
     /**
      * Test of convert method, of class ConvertLogic.
      */
-    /*@Test
+    @Test
     public void testConvert() {
-        System.out.println("convert");
-        /*ConvertLogic instance = null;
-        instance.convert();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }*/
+
+
+        System.out.println("testConvert...");
+
+        try {
+            m_setup = new ConvertLogic( m_file, m_operate );
+        } catch ( IOException e ) {
+            Logger.getLogger( ConvertLogicTest.class.getName() ).log( Level.SEVERE, "testReplaceParamter; failed to open file stream: ", e );
+            fail( new StringBuilder( "ConvertLogic object failed to open file stream: ").append( e.getMessage() ).toString() );
+        }
+
+        
+    }
 
     /**
      * Test of setInput method, of class ConvertLogic.

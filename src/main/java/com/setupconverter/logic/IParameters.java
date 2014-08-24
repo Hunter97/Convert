@@ -1,18 +1,17 @@
 /**
- * IProcessParameters.java
+ * IParameters.java
  * Paul Wallace
  * June 2014
  * 
- * IParameters interface defines the methods used to manipulate a configuration
- * file.  The interface allows the client to load/save an entire configuration file,
- * set/get parameter values, add a block of parameters to a Map, set/get the checksum,
- * and replace an entire block of parameters.
+ * IParameters interface defines the methods used to manipulate the parameters
+ * within a configuration file.
  *  
  * Main attributes:
- *      * Set/Get the file checksum
- *      * Read/write the parameter file
+ *      * Load/save a configuration file
  *      * Set/Get parameter values
- *      * Replace a block of parameters
+ *      * Put parameters into a Map
+ *      * Replace a group of parameters
+ *      * Set/Get the file checksum
  * 
  */
 package com.setupconverter.logic;
@@ -24,16 +23,17 @@ import java.util.Map;
 
 
 /**
- * IParameters interface; provides a set of methods to manipulate a configuration
- * file.
+ * IParameters interface; provides a set of methods to manipulate the parameters
+ * of a configuration file.
  * @author prwallace
  */
 public interface IParameters {
 
 
     /**
-     * Reads a configuration file, line by line, and loads each line into an
-     * ArrayList.
+     * Loads the contents of a configuration file into a parameter list.  Opens
+     * an input stream and reads the contents of the configuration file, line by
+     * line, and loads each line into an ArrayList.
      * @param file          - File object of the configuration file
      * @throws IOException  - Thrown when BufferedReader fails to read in the file.
      */
@@ -41,10 +41,10 @@ public interface IParameters {
 
 
     /**
-     * Writes the contents of the parameter list to a configuration file.  Opens
-     * a output stream using a BufferedWriter wrapped with an OutputStreamWriter
-     * and saves each element of the parameter list into the file, one element
-     * as a time.  The end result is a new configuration file with a new checksum.
+     * Saves the contents of the parameter list to a configuration file.  Opens
+     * a output stream and saves each element of the parameter list into the file,
+     * one element at a time.  The end result is a new configuration file with a
+     * new checksum.
      * @param file          - File object of new configuration file
      * @throws IOException  - Thrown when BufferedWriter fails to write to file
      */
@@ -53,8 +53,8 @@ public interface IParameters {
 
     /**
      * Puts a block of parameters from the parameter list into a Map.  Iterates
-     * over a block of parameter list, starting after the block title, and puts
-     * each parameter into the argument Map.
+     * over a block of parameter, starting after the block title, and puts each
+     * parameter into the argument Map.
      * @param blockTitle    - Title of parameter block (i.e. [Machine]) to add into the Map
      * @param map           - Map to hold the block of parameters from the parameter list
      */
@@ -69,7 +69,7 @@ public interface IParameters {
      * @param paramName     - Parameter whose value is to be set
      * @param value         - Value set to parameter
      */
-    public void setValue( String blockTitle, String paramName, int value );
+    public void setParameterValue( String blockTitle, String paramName, int value );
 
 
     /**
@@ -83,13 +83,13 @@ public interface IParameters {
     /**
      * Get/return the value of the specified parameter from the parameter list.
      * Parses the parameter list, starting after the block title, for a match to
-     * the argument parameter.  Split the parameter and return its value.  Return
-     * a -1 if the parameter is not found or its value is invalid.
+     * the argument parameter and return its value.  Return -1 if parameter is
+     * not found.
      * @param blockTitle    - Title of parameter block (i.e. [Machine])
      * @param paramName     - Parameter whose value is to be returned
      * @return              - Value of the parameter if found or -1
      */
-    public int getValue( String blockTitle, String paramName );
+    public int getParameterValue( String blockTitle, String paramName );
 
 
     /**
@@ -102,16 +102,16 @@ public interface IParameters {
      * Get/return the parameter list.
      * @return - The list of parameters
      */
-    public ArrayList getAllParameters();
+    public ArrayList getParameterList();
 
 
     /**
-     * Replaces a block of parameters with the parameters from the argument Map.
+     * Replaces a group of parameters with the parameters from the argument Map.
      * Iterates over the parameter list, starting after the block title, for
-     * matches to the argument Map, and then replaces the parameters with those
+     * matches to the argument Map, and then replace the parameters with those
      * from the Map.
      * @param blockTitle    - Title of the parameter block (i.e. [Machine])
-     * @param map           - Map containing the block of parameters to replace
+     * @param map           - Map containing the group of parameters to replace
      */
     public void replaceParameters( String blockTitle, Map< String, Integer > map );
 }
