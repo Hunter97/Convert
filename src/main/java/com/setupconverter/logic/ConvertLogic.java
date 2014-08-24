@@ -58,7 +58,7 @@ import java.awt.Color;
  */
 public class ConvertLogic implements IParameters {
     private static final String REG_EXP = "[=\\s\\.]+";
-    private static final String EMPTY_LINE = "\r\n";
+    private static final String LINE_RETURN = "\r\n";
     private static final String INPUT = "Input";
     private static final String OUTPUT = "Output";
     private static final String TYPE = "Type=";
@@ -162,7 +162,7 @@ public class ConvertLogic implements IParameters {
         String line;
         BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( file ), StandardCharsets.UTF_8 ));
         while(( line = buffer.readLine() ) != null ) {
-            m_paramList.add( new StringBuilder( line ).append( EMPTY_LINE ).toString() );
+            m_paramList.add( new StringBuilder( line ).append( LINE_RETURN ).toString() );
         }
     }
 
@@ -174,8 +174,8 @@ public class ConvertLogic implements IParameters {
 
         if(( index = m_paramList.indexOf( blockTitle )) != -1 ) {
             ListIterator< String > listIterator = m_paramList.listIterator( index +1 );
-            while( !( param = listIterator.next() ).startsWith( EMPTY_LINE )  && listIterator.hasNext() ) {
-                if( !param.equals( EMPTY_LINE )) {
+            while( !( param = listIterator.next() ).startsWith( LINE_RETURN )  && listIterator.hasNext() ) {
+                if( !param.equals( LINE_RETURN )) {
                     String[] set = param.split( REG_EXP );
                     StringBuilder key = new StringBuilder( set[0] ).append( "=" );
 
@@ -200,11 +200,11 @@ public class ConvertLogic implements IParameters {
 
         if(( index = m_paramList.indexOf( blockTitle )) != -1 ) {
             ListIterator< String > listIterator = m_paramList.listIterator( index +1 );
-            while( !( param = listIterator.next() ).startsWith( EMPTY_LINE ) && listIterator.hasNext() ) {
+            while( !( param = listIterator.next() ).startsWith( LINE_RETURN ) && listIterator.hasNext() ) {
                 if( param.startsWith( paramName )) {
                     int replaceIndex = listIterator.previousIndex();
                     String[] set = param.split( REG_EXP );
-                    m_paramList.set(replaceIndex, new StringBuilder( set[0] ).append( "=" ).append( value ).append( EMPTY_LINE ).toString() );
+                    m_paramList.set(replaceIndex, new StringBuilder( set[0] ).append( "=" ).append( value ).append( LINE_RETURN ).toString() );
                     break;
                 }
             }
@@ -243,7 +243,7 @@ public class ConvertLogic implements IParameters {
 
         if(( index = m_paramList.indexOf( blockTitle )) != -1) {
             ListIterator< String > listIterator = m_paramList.listIterator( index +1 );
-            while( !( param = listIterator.next() ).startsWith( EMPTY_LINE ) &&  listIterator.hasNext() ) {
+            while( !( param = listIterator.next() ).startsWith( LINE_RETURN ) &&  listIterator.hasNext() ) {
                 if( param.startsWith( paramName )) {
                     String[] set = param.split( REG_EXP );
 
@@ -271,11 +271,11 @@ public class ConvertLogic implements IParameters {
 
         if(( startIndex = m_paramList.indexOf( blockTitle )) != -1 ) {
             ListIterator< String > listIterator = m_paramList.listIterator( startIndex +1 );
-            while( !( param = listIterator.next() ).startsWith( EMPTY_LINE ) && listIterator.hasNext() ) {
+            while( !( param = listIterator.next() ).startsWith( LINE_RETURN ) && listIterator.hasNext() ) {
                 for( String key : map.keySet() ) {
                     if( param.startsWith( key )) {
                         int replaceIndex = listIterator.previousIndex();
-                        m_paramList.set( replaceIndex, new StringBuilder( key ).append( map.get( key ) ).append( EMPTY_LINE ).toString() );
+                        m_paramList.set( replaceIndex, new StringBuilder( key ).append( map.get( key ) ).append( LINE_RETURN ).toString() );
                         break;
                     }
                 }
@@ -774,7 +774,7 @@ public class ConvertLogic implements IParameters {
     public void save( File file ) throws IOException {
         try (BufferedWriter buff_writer = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( file ), StandardCharsets.UTF_8 ))) {
             m_paramList.remove( 0 );
-            m_paramList.add( 0, new StringBuilder( "Checksum=" ).append( m_checksum ).append( EMPTY_LINE ).toString() );
+            m_paramList.add( 0, new StringBuilder( "Checksum=" ).append( m_checksum ).append( LINE_RETURN ).toString() );
 
             for( String str : m_paramList ) {
                 buff_writer.write( str );

@@ -106,9 +106,10 @@ public interface IParameters {
 
 
     /**
-     * Replaces a block of parameters within the parameter list.  Iterates over 
-     * the parameter list, starting after the block title, for matches to the
-     * argument Map, and then replaces the parameters with those from the Map.
+     * Replaces a block of parameters with the parameters from the argument Map.
+     * Iterates over the parameter list, starting after the block title, for
+     * matches to the argument Map, and then replaces the parameters with those
+     * from the Map.
      * @param blockTitle    - Title of the parameter block (i.e. [Machine])
      * @param map           - Map containing the block of parameters to replace
      */

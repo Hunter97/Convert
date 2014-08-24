@@ -19,6 +19,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +37,7 @@ public class ConvertLogicTest {
     private static final String MACHINE = "[Machine]\r\n";
     private static final String PARAMETER = "FrontPanelInstalled=";
     private static final String INVALID_PARAM = "SensorTHCInstalled=-1";
+    private String[] m_params = { "SensorPlasma1=", "ScaleRotator=", "SensorPlasma2=", "KeyLogging=" };
     private OperateConverter m_operate;
     private ConvertLogic m_setup;
     private File m_file;
@@ -302,14 +305,42 @@ public class ConvertLogicTest {
     }
 
     /**
-     * Test of replaceAllParams method, of class ConvertLogic.
+     * Test the replaceAllParams method of class ConvertLogic.  Uses a Map of
+     * fixed parameters with known values and replaces these parameters within
+     * the parameter list.  Verifies the parameters and their values were replaced
+     * properly.
      */
     @Test
     public void testReplaceParameters() {
-
+        Map< String, Integer > map = new LinkedHashMap<>();
+        int index = 0;
+        boolean isNotEqual = false;
 
         System.out.println("testReplaceParameters...");
-        
+
+        try {
+            m_setup = new ConvertLogic( m_file, m_operate );
+        } catch ( IOException e ) {
+            Logger.getLogger( ConvertLogicTest.class.getName() ).log( Level.SEVERE, "testReplaceParamter; failed to open file stream: ", e );
+            fail( new StringBuilder( "ConvertLogic object failed to open file stream: ").append( e.getMessage() ).toString() );
+        }
+
+        for( String param : m_params ) {
+           map.put( param, index++ ); 
+        }
+
+        m_setup.replaceParameters( MACHINE, map );
+
+        index = 0;
+        for( String param : m_params ) {
+            if( m_setup.getValue( MACHINE, param ) != index++ ) {
+                isNotEqual = true;
+                break;
+            }
+        }
+
+
+        assertFalse( "Unable to replace parameters:", isNotEqual );
     }
 
     /**
