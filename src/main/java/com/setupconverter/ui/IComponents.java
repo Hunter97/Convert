@@ -68,8 +68,8 @@ public interface IComponents {
     /**
      * Enumeration constants representing the available drive system types
      */
-    public enum SYSTEM {
-        BENCH( "6 Axis Yaskawa" ), HYPATH( "Hypath" );
+    public enum DriveType {
+        YASKAWA( "6 Axis Yaskawa" ), DIAG_BRDS( "Diagnostic Boards" );
 
         private final String m_system;
 
@@ -77,7 +77,7 @@ public interface IComponents {
          * Constructor for enum SYSTEM
          * @param system - String value of this SYSTEM type
          */
-        private SYSTEM( String system ) {
+        private DriveType( String system ) {
             m_system = system;
         }
 
@@ -94,10 +94,10 @@ public interface IComponents {
          * @param name  - String representation of this SYSTEM type
          * @return      - This enum type     
          */
-        public static SYSTEM getType( String name ) {
-            SYSTEM temp = null;
+        public static DriveType getType( String name ) {
+            DriveType temp = null;
 
-            for( SYSTEM sys : SYSTEM.values() ) {
+            for( DriveType sys : DriveType.values() ) {
                 if( sys.m_system.equals( name ) ){
                     temp = sys;
                     break;
