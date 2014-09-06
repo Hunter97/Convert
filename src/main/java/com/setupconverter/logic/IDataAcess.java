@@ -529,4 +529,18 @@ public interface IDataAcess {
      * @return  - The Axes parameter Map
      */
     public Map< String, Integer > getAxesParams();
+
+
+    /**
+     * Get/return the input location of the first cut sense input
+     * @return  - The location of cut sense 1 or cut/mark sense
+     */
+    public int getCutSenseLoc();
+
+
+    /**
+     * Get/return the output location of the first cut control output
+     * @return  - The location of the cut control 1 or cut control output
+     */
+    public int getCutControlLoc();
 }

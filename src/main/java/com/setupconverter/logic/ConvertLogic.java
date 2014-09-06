@@ -453,42 +453,42 @@ public class ConvertLogic implements IParameters {
 
         // Re-assign Cut Sense inputs beginning at input 40
         if( getParameterValue( Block.IO.getName(), Input.CUT_MARK_SENSE.getName() ) > 0 ) {
-            setInput( 40, Input.CUT_MARK_SENSE.getValue() );
+            setInput( m_dataAccess.getCutSenseLoc(), Input.CUT_MARK_SENSE.getValue() );
         }
         else if( getParameterValue( Block.IO.getName(), Input.CUT_SENSE_1.getName() ) > 0 ) {
-            setInput( 40, Input.CUT_SENSE_1.getValue() );
+            setInput( m_dataAccess.getCutSenseLoc(), Input.CUT_SENSE_1.getValue() );
 
             if( getParameterValue( Block.IO.getName(), Input.CUT_SENSE_2.getName() ) > 0 ) {
-                setInput( 41, Input.CUT_SENSE_2.getValue() );
+                setInput( m_dataAccess.getCutSenseLoc() + 1, Input.CUT_SENSE_2.getValue() );
             }
 
             if( getParameterValue( Block.IO.getName(), Input.CUT_SENSE_3.getName() ) > 0 ) {
-                setInput( 42, Input.CUT_SENSE_3.getValue() );
+                setInput( m_dataAccess.getCutSenseLoc() + 2, Input.CUT_SENSE_3.getValue() );
             }
 
             if( getParameterValue( Block.IO.getName(), Input.CUT_SENSE_4.getName() ) > 0 ) {
-                setInput( 43, Input.CUT_SENSE_4.getValue() );
+                setInput( m_dataAccess.getCutSenseLoc() + 3, Input.CUT_SENSE_4.getValue() );
             }
         }
 
 
         // Re-assign Cut Control outputs beginning at output 40
         if( getParameterValue( Block.IO.getName(), Output.CUT_CONTROL.getName() ) > 0 ) {
-            setOutput( 40, Output.CUT_CONTROL.getValue() );
+            setOutput( m_dataAccess.getCutControlLoc(), Output.CUT_CONTROL.getValue() );
         }
         else if( getParameterValue( Block.IO.getName(), Output.CUT_CONTROL_1.getName() ) > 0 ) {
-                setOutput( 40, Output.CUT_CONTROL_1.getValue() );
+                setOutput( m_dataAccess.getCutControlLoc(), Output.CUT_CONTROL_1.getValue() );
 
             if( getParameterValue( Block.IO.getName(), Output.CUT_CONTROL_2.getName() ) > 0 ) {
-                setOutput( 41, Output.CUT_CONTROL_2.getValue() );
+                setOutput( m_dataAccess.getCutControlLoc() + 1, Output.CUT_CONTROL_2.getValue() );
             }
 
             if( getParameterValue( Block.IO.getName(), Output.CUT_CONTROL_3.getName() ) > 0 ) {
-                setOutput( 42, Output.CUT_CONTROL_3.getValue() );
+                setOutput( m_dataAccess.getCutControlLoc() + 2, Output.CUT_CONTROL_3.getValue() );
             }
 
             if( getParameterValue( Block.IO.getName(), Output.CUT_CONTROL_4.getName() ) > 0 ) {
-                setOutput( 43, Output.CUT_CONTROL_4.getValue() );
+                setOutput( m_dataAccess.getCutControlLoc() + 3, Output.CUT_CONTROL_4.getValue() );
             }
         }
 

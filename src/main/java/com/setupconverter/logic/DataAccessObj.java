@@ -11,7 +11,7 @@
  */
 package com.setupconverter.logic;
 
-import com.setupconverter.ui.IComponents.SYSTEM;
+import com.setupconverter.ui.IComponents.DriveType;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,6 +26,9 @@ public class DataAccessObj implements IDataAcess {
     private final Map< String, Integer > m_thcMachineParamMap;
     private final Map< String, Integer > m_thcAnalogParamMap;
     private Map< String, Integer > m_axesParamMap;
+
+    private int m_cutSenseLoc;
+    private int m_cutControlLoc;
 
 
     /**
@@ -71,11 +74,15 @@ public class DataAccessObj implements IDataAcess {
 
     @Override
     public final void addAxesDefaults( String type ) {      
-        if( SYSTEM.BENCH.getName().equals( type )) {
-             m_axesParamMap = Bench.toMap();
+        if( DriveType.YASKAWA.getName().equals( type )) {
+            m_axesParamMap = Bench.toMap();
+            m_cutSenseLoc = 13;
+            m_cutControlLoc = 18;
         }
-        else if( SYSTEM.HYPATH.getName().equals( type )) {
+        else if( DriveType.DIAG_BRDS.getName().equals( type )) {
             m_axesParamMap = Hypath.toMap();
+            m_cutSenseLoc = 40;
+            m_cutControlLoc = 40;
         }   
     }
 
@@ -102,5 +109,15 @@ public class DataAccessObj implements IDataAcess {
     @Override
     public Map<String, Integer> getAxesParams() {
         return m_axesParamMap;
+    }
+
+    @Override
+    public int getCutSenseLoc() {
+        return m_cutSenseLoc;
+    }
+
+    @Override
+    public int getCutControlLoc() {
+        return m_cutControlLoc;
     }
 }

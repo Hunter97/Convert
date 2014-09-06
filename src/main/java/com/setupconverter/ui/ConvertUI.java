@@ -25,7 +25,7 @@
 package com.setupconverter.ui;
 
 import com.setupconverter.logic.ConvertLogic;
-import com.setupconverter.ui.IComponents.SYSTEM;
+import com.setupconverter.ui.IComponents.DriveType;
 import static com.setupconverter.ui.IComponents.UI.*;
 
 import javax.swing.Box;
@@ -128,7 +128,7 @@ public class ConvertUI extends JFrame {
      */
     public ConvertUI() {
         super( "SetupConvert" );
-        m_systems = new String[] { SYSTEM.BENCH.getName(), SYSTEM.HYPATH.getName() };
+        m_systems = new String[] { DriveType.YASKAWA.getName(), DriveType.DIAG_BRDS.getName() };
         m_operate = new OperateConverter();
 
         // Set frame properties
@@ -246,7 +246,7 @@ public class ConvertUI extends JFrame {
     private void createComboBox() {
         m_comboBoxLabel = new JLabel( "Convertion Type:" );
         m_selectionPanel.add( m_comboBoxLabel, addConstraints( 0, 0, 1, 1, 0, 0.5, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets( 1, 1, 1, 25 )));
-        m_comboBox = new JComboBox( m_systems );
+        m_comboBox = new JComboBox<>( m_systems );
         m_comboBox.setSelectedIndex( m_systems.length -1 );
         m_comboBox.setToolTipText( "Select conversion type" );
         m_selectionPanel.add( m_comboBox, addConstraints( 0, 1, 1, 1, 0, 0.5, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets( 1, 1, 80, 1 )));
