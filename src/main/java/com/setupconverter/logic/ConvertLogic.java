@@ -773,8 +773,7 @@ public class ConvertLogic implements IParameters {
     @ Override
     public void save( File file ) throws IOException {
         try (BufferedWriter buff_writer = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( file ), StandardCharsets.UTF_8 ))) {
-            m_paramList.remove( 0 );
-            m_paramList.add( 0, new StringBuilder( "Checksum=" ).append( m_checksum ).append( LINE_RETURN ).toString() );
+            m_paramList.set( 0, new StringBuilder( "Checksum=" ).append( m_checksum ).append( LINE_RETURN ).toString() );
 
             for( String str : m_paramList ) {
                 buff_writer.write( str );

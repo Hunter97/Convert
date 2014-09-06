@@ -31,7 +31,8 @@ import static org.junit.Assert.*;
  * @author Hunter97
  */
 public class ConvertLogicTest {
-    private static final String m_testFile = "./Convert/testFiles/PhoenixPass.ini";
+    private static final String LOAD_FILEPATH = "./Convert/testFiles/PhoenixPass.ini";
+    private static final String SAVE_FILEPATH = "./Convert/testFiles/PhoenixSave.ini";
     private static final String LINE_RETURN = "\r\n";
     private static final String REGEX = "[=\\r\\n]";
     private static final String MACHINE = "[Machine]\r\n";
@@ -40,12 +41,14 @@ public class ConvertLogicTest {
     private final String[] m_params = { "SensorPlasma1=", "ScaleRotator=", "SensorPlasma2=", "KeyLogging=" };
     private OperateConverter m_operate;
     private ConvertLogic m_setup;
-    private File m_file;
+    private File m_loadFile;
+    private File m_saveFile;
+   
 
     
     @Before
     public void setUp() {
-        m_file = new File( m_testFile );
+        m_loadFile = new File( LOAD_FILEPATH );
     }
 
 
@@ -68,18 +71,18 @@ public class ConvertLogicTest {
         System.out.println( "testLoad..." );
 
         try {
-            m_setup = new ConvertLogic( m_file, m_operate );
+            m_setup = new ConvertLogic( m_loadFile, m_operate );
         } catch (IOException e) {
             fail( new StringBuilder( "Instantiating ConvertLogic object: ").append( e.getMessage() ).toString() );
         }
 
-        try ( BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( m_testFile ), StandardCharsets.UTF_8 ))) {
+        try ( BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( LOAD_FILEPATH ), StandardCharsets.UTF_8 ))) {
             while(( line = buffer.readLine() ) != null ) {
                 tmpList.add( new StringBuilder( line ).append( LINE_RETURN ).toString() );
             }
         }
         catch( IOException ex ) {
-            fail( new StringBuilder( "testRead; Failed to open file stream: " ).append( ex.getMessage() ).toString() );
+            fail( new StringBuilder( "testLoad: " ).append( ex.getMessage() ).toString() );
         }
 
         for( int i = 1; i < m_setup.getParameterList().size(); i++ ) {
@@ -115,14 +118,14 @@ public class ConvertLogicTest {
         System.out.println( "testPutParameters..." );
 
         try {
-            m_setup = new ConvertLogic( m_file, m_operate );
+            m_setup = new ConvertLogic( m_loadFile, m_operate );
         } catch ( IOException e ) {
             fail( new StringBuilder( "ConvertLogic object; failed to open file stream: " ).append( e.getMessage() ).toString() );
         }
 
         m_setup.putParameters( MACHINE, map );
 
-        try ( BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( m_testFile ), StandardCharsets.UTF_8 ) )) {
+        try ( BufferedReader buffer = new BufferedReader( new InputStreamReader( new FileInputStream( LOAD_FILEPATH ), StandardCharsets.UTF_8 ) )) {
             while(( line = buffer.readLine() ) != null ) {
                 if( line.equalsIgnoreCase( "[Machine]" ) ) {
                     while( !( line = buffer.readLine() ).equalsIgnoreCase( "" ) ) {
@@ -140,7 +143,7 @@ public class ConvertLogicTest {
             }
         }
         catch( IOException ex ) {
-            fail( new StringBuilder( "testPutParameter; failed to open file stream: " ).append( ex.getMessage() ).toString());
+            fail( new StringBuilder( "testPutParameter: " ).append( ex.getMessage() ).toString());
         }
 
         if( map.size() != analogParams.size() ) {
@@ -169,7 +172,7 @@ public class ConvertLogicTest {
      * changed.
      */
     @Test
-    public void testSetValue() {
+    public void testSetParameterValue() {
         List< String > block = Arrays.asList( "[Machine]\r\n", "[I/O]\r\n", "[Consumables]\r\n" );
         List< String > key = Arrays.asList( "FrontPanelInstalled=", "MaxOxyPressure(english)="  , "PlasmaElectrode8Installed=" );
         String param;
@@ -178,10 +181,10 @@ public class ConvertLogicTest {
         int[] value = {10, 20, 40};
         int index;
 
-        System.out.println("testSetValue...");
+        System.out.println("testSetParameterValue...");
 
         try {
-            m_setup = new ConvertLogic( m_file, m_operate );
+            m_setup = new ConvertLogic( m_loadFile, m_operate );
         } catch ( IOException e ) {
             fail( new StringBuilder( "ConvertLogic object failed to open file stream: " ).append( e.getMessage() ).toString() );
         }
@@ -210,7 +213,7 @@ public class ConvertLogicTest {
                 }
             }
             catch( NumberFormatException | ArrayIndexOutOfBoundsException | NullPointerException e ) {
-                fail( new StringBuilder( "testSetValue; failure converting to an integer: " ).append( e.getMessage() ).toString());
+                fail( new StringBuilder( "testSetParameterValue: " ).append( e.getMessage() ).toString());
             }
         }
 
@@ -226,10 +229,10 @@ public class ConvertLogicTest {
      */
     @Test
     public void testChecksum() {
-        System.out.println("testSetChecksum...");
+        System.out.println("testChecksum...");
 
         try {
-            m_setup = new ConvertLogic( m_file, m_operate );
+            m_setup = new ConvertLogic( m_loadFile, m_operate );
             m_setup.setChecksum();
         } catch ( IOException e ) {
             fail( new StringBuilder( "ConvertLogic object failed to open file stream: " ).append( e.getMessage() ).toString() );
@@ -241,7 +244,7 @@ public class ConvertLogicTest {
             assertEquals( "Checksum are not equal:", m_setup.getChecksum(), Integer.parseInt( checksumLine[ 1 ] ));
         }
         catch( NumberFormatException | ArrayIndexOutOfBoundsException | NullPointerException e ) {
-                fail( new StringBuilder( "testSetChecksum; failure converting to an integer: " ).append( e.getMessage() ).toString());
+                fail( new StringBuilder( "testChecksum: " ).append( e.getMessage() ).toString());
         }
     }
 
@@ -251,17 +254,17 @@ public class ConvertLogicTest {
      * to getValue with a known value and tests the return value. 
      */
     @Test
-    public void testGetValue() {
+    public void testGetParameterValue() {
         String[] set = null;
         String param;
         int result;
         int index;
         int value = -1;
 
-        System.out.println("testGetValue...");
+        System.out.println("testGetParameterValue...");
 
         try {
-            m_setup = new ConvertLogic( m_file, m_operate );
+            m_setup = new ConvertLogic( m_loadFile, m_operate );
         } catch (IOException e) {
             fail( new StringBuilder( "ConvertLogic object failed to open file stream: ").append( e.getMessage() ).toString() );
         }
@@ -279,14 +282,14 @@ public class ConvertLogicTest {
                 }
         }
         else {
-            fail( new StringBuilder( "testGetValue; unable to find ").append( PARAMETER ).append( " in parameter list" ).toString() );
+            fail( new StringBuilder( "testGetParameterValue; unable to find ").append( PARAMETER ).append( " in parameter list" ).toString() );
         }
 
         try {
             value = Integer.parseInt( set[ 1 ] );
         }
         catch( NumberFormatException | ArrayIndexOutOfBoundsException | NullPointerException e ) {
-                fail( new StringBuilder( "testGetValue; failure converting to an integer: " ).append( e.getMessage() ).toString());
+                fail( new StringBuilder( "testGetParameterValue: " ).append( e.getMessage() ).toString());
         }
 
 
@@ -319,7 +322,7 @@ public class ConvertLogicTest {
         System.out.println("testReplaceParameters...");
 
         try {
-            m_setup = new ConvertLogic( m_file, m_operate );
+            m_setup = new ConvertLogic( m_loadFile, m_operate );
         } catch ( IOException e ) {
             Logger.getLogger( ConvertLogicTest.class.getName() ).log( Level.SEVERE, "testReplaceParamter; failed to open file stream: ", e );
             fail( new StringBuilder( "ConvertLogic object failed to open file stream: ").append( e.getMessage() ).toString() );
@@ -348,13 +351,13 @@ public class ConvertLogicTest {
      * Test of convert method, of class ConvertLogic.
      */
     @Test
-    public void testConvert() {
+    public void testSave() {
 
 
-        System.out.println("testConvert...");
+        System.out.println("testSave...");
 
         try {
-            m_setup = new ConvertLogic( m_file, m_operate );
+            m_setup = new ConvertLogic( m_loadFile, m_operate );
         } catch ( IOException e ) {
             Logger.getLogger( ConvertLogicTest.class.getName() ).log( Level.SEVERE, "testReplaceParamter; failed to open file stream: ", e );
             fail( new StringBuilder( "ConvertLogic object failed to open file stream: ").append( e.getMessage() ).toString() );
