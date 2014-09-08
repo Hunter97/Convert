@@ -53,7 +53,7 @@ public interface IParameters {
 
     /**
      * Puts a block of parameters from the parameter list into a Map.  Iterates
-     * over a block of parameter, starting after the block title, and puts each
+     * over a block of parameters, starting after the block title, and puts each
      * parameter into the argument Map.
      * @param blockTitle    - Title of parameter block (i.e. [Machine]) to add into the Map
      * @param map           - Map to hold the block of parameters from the parameter list

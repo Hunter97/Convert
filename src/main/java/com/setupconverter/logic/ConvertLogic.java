@@ -238,18 +238,18 @@ public class ConvertLogic implements IParameters {
             replaceParameters( Block.AIC.getName(), m_dataAccess.getTHCAnalogParams() );
             replaceParameters( Block.MACHINE.getName(), m_dataAccess.getTHCMachineParams() );
 
-            setInput( row1NextIndex++, Input.NCS_1.getValue() );
+            addInput( row1NextIndex++, Input.NCS_1.getValue() );
 
             if( sthcTotal >= 2 ) {
-                setInput( row1NextIndex++, Input.NCS_2.getValue() );
+                addInput( row1NextIndex++, Input.NCS_2.getValue() );
                 row2NextIndex++;
 
                 if( sthcTotal >= 3 ) {
-                    setInput( row1NextIndex++, Input.NCS_3.getValue() );
+                    addInput( row1NextIndex++, Input.NCS_3.getValue() );
                     row2NextIndex++;
 
                     if( sthcTotal >= 4 ) {  // Only supporting 4 STHC's at this time.
-                        setInput( row1NextIndex++, Input.NCS_4.getValue() );
+                        addInput( row1NextIndex++, Input.NCS_4.getValue() );
                         row2NextIndex++;
                     }
                 }
@@ -257,16 +257,16 @@ public class ConvertLogic implements IParameters {
         }
         else if(( agTHCTotal = getParameterValue( Block.MACHINE.getName(), Parameter.ARC_GLIDE.getName() )) > 0 ) {
             m_arcGlideInstalled = true;
-            setInput( row1NextIndex++, Input.RDY_TO_FIRE_1.getValue() );
+            addInput( row1NextIndex++, Input.RDY_TO_FIRE_1.getValue() );
 
             if( agTHCTotal >= 2 ) {
-                setInput( row1NextIndex++, Input.RDY_TO_FIRE_2.getValue() );
+                addInput( row1NextIndex++, Input.RDY_TO_FIRE_2.getValue() );
 
                 if( agTHCTotal >= 3 ) {
-                    setInput( row1NextIndex++, Input.RDY_TO_FIRE_3.getValue() );
+                    addInput( row1NextIndex++, Input.RDY_TO_FIRE_3.getValue() );
 
                     if( agTHCTotal == 4 ) {
-                        setInput( row1NextIndex++, Input.RDY_TO_FIRE_4.getValue() );
+                        addInput( row1NextIndex++, Input.RDY_TO_FIRE_4.getValue() );
                     }
                 }
             }
@@ -284,7 +284,7 @@ public class ConvertLogic implements IParameters {
 
 
         // Add Drive Disabled to Input 9
-        setInput( 9, Input.DRIVE_DISABLED.getValue() );
+        addInput( 9, Input.DRIVE_DISABLED.getValue() );
 
 
         // Convert X & Y Axes parameters
@@ -310,18 +310,18 @@ public class ConvertLogic implements IParameters {
 
         // Set homing of X/Y axes, either to OT's or Home switches.
         if( m_xOnRail ) {
-            setInput( row1NextIndex++, Input.X_HOME_NEG_OT.getValue() );
-            setInput( row1NextIndex++, Input.Y_HOME_NEG_OT.getValue() );
+            addInput( row1NextIndex++, Input.X_HOME_NEG_OT.getValue() );
+            addInput( row1NextIndex++, Input.Y_HOME_NEG_OT.getValue() );
 
-            setInput( row2NextIndex++, Input.X_POS_OT.getValue() );
-            setInput( row2NextIndex++, Input.Y_POS_OT.getValue() );
+            addInput( row2NextIndex++, Input.X_POS_OT.getValue() );
+            addInput( row2NextIndex++, Input.Y_POS_OT.getValue() );
         }
         else {
-            setInput( row1NextIndex++, Input.Y_HOME_NEG_OT.getValue() );
-            setInput( row1NextIndex++, Input.X_HOME_NEG_OT.getValue() );
+            addInput( row1NextIndex++, Input.Y_HOME_NEG_OT.getValue() );
+            addInput( row1NextIndex++, Input.X_HOME_NEG_OT.getValue() );
             
-            setInput( row2NextIndex++, Input.Y_POS_OT.getValue() );
-            setInput( row2NextIndex++, Input.X_POS_OT.getValue() );
+            addInput( row2NextIndex++, Input.Y_POS_OT.getValue() );
+            addInput( row2NextIndex++, Input.X_POS_OT.getValue() );
         }
 
 
@@ -332,7 +332,7 @@ public class ConvertLogic implements IParameters {
             setParameterValue( Block.CBH.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
             setParameterValue( Block.CBH.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
             setParameterValue( Block.CBH.getName(), Parameter.HOME_DIRECTION.getName(), 0 );
-            setInput( row1NextIndex++, Input.CBH_HOME.getValue() );
+            addInput( row1NextIndex++, Input.CBH_HOME.getValue() );
         }
 
 
@@ -345,29 +345,29 @@ public class ConvertLogic implements IParameters {
                 setParameterValue( Block.AXIS_7.getName(),  Parameter.SERVO_ERROR_EN.getName(), Bevel.SERVO_ERROR.getValue() );
                 setParameterValue( Block.AXIS_7.getName(), Parameter.ENCODER_CNTS_EN.getName(), Bevel.ENCODER_CNTS.getValue() );
                 setParameterValue( Block.AXIS_7.getName(), Parameter.ENCODER_CNTS_M.getName(), Bevel.ENCODER_CNTS.getValue() );
-                setInput( row1NextIndex++, Input.ROT_2_HOME.getValue() );
-                setInput( row2NextIndex++, Input.DUAL_HEAD_COLLISION.getValue() );
+                addInput( row1NextIndex++, Input.ROT_2_HOME.getValue() );
+                addInput( row2NextIndex++, Input.DUAL_HEAD_COLLISION.getValue() );
             }
             else {             
                 if( m_xOnRail ) {
-                    setInput( row1NextIndex++, Input.Y_POS_OT.getValue() );
+                    addInput( row1NextIndex++, Input.Y_POS_OT.getValue() );
                 }
                 else {
-                    setInput( row1NextIndex++, Input.X_POS_OT.getValue() );
+                    addInput( row1NextIndex++, Input.X_POS_OT.getValue() );
                 }
 
-                setInput( row2NextIndex - 1, Input.DUAL_HEAD_COLLISION.getValue() );
+                addInput( row2NextIndex - 1, Input.DUAL_HEAD_COLLISION.getValue() );
                 torchCollisionLoc = row2NextIndex++;
             }
 
             if( row1NextIndex < 8 ) {
                 
-                setInput( row1NextIndex++, Input.PARK_HEAD_1.getValue() );
-                setInput( row2NextIndex++, Input.PARK_HEAD_2.getValue() );
+                addInput( row1NextIndex++, Input.PARK_HEAD_1.getValue() );
+                addInput( row2NextIndex++, Input.PARK_HEAD_2.getValue() );
             }
             else {
-                setInput( row3_NextIndex++, Input.PARK_HEAD_1.getValue() );
-                setInput( row3_NextIndex++, Input.PARK_HEAD_2.getValue() );
+                addInput( row3_NextIndex++, Input.PARK_HEAD_1.getValue() );
+                addInput( row3_NextIndex++, Input.PARK_HEAD_2.getValue() );
             }
         }
 
@@ -386,26 +386,26 @@ public class ConvertLogic implements IParameters {
 
             if( m_dualTiltInstalled ) {
                 if( row1NextIndex < 8 ) {
-                    setInput( row1NextIndex++, Input.TILT_POS_OT.getValue() );
-                    setInput( row2NextIndex++, Input.TILT_NEG_OT.getValue() );
-                    setInput( row1NextIndex++, Input.TILT2_POS_OT.getValue() );
-                    setInput( row2NextIndex++, Input.TILT2_NEG_OT.getValue() );
+                    addInput( row1NextIndex++, Input.TILT_POS_OT.getValue() );
+                    addInput( row2NextIndex++, Input.TILT_NEG_OT.getValue() );
+                    addInput( row1NextIndex++, Input.TILT2_POS_OT.getValue() );
+                    addInput( row2NextIndex++, Input.TILT2_NEG_OT.getValue() );
                 }
                 else {
-                    setInput( row3_NextIndex++, Input.TILT_POS_OT.getValue() );
-                    setInput( row3_NextIndex++, Input.TILT2_POS_OT.getValue() ); 
+                    addInput( row3_NextIndex++, Input.TILT_POS_OT.getValue() );
+                    addInput( row3_NextIndex++, Input.TILT2_POS_OT.getValue() ); 
                 }
             }
             else {
                 if( row1NextIndex < 8 ) {
-                    setInput( row1NextIndex++, Input.TILT_POS_OT.getValue() );
-                    setInput( row2NextIndex++, Input.TILT_NEG_OT.getValue() );
-                    setInput( row1NextIndex++, Input.ROTATE_HOME.getValue() );
+                    addInput( row1NextIndex++, Input.TILT_POS_OT.getValue() );
+                    addInput( row2NextIndex++, Input.TILT_NEG_OT.getValue() );
+                    addInput( row1NextIndex++, Input.ROTATE_HOME.getValue() );
                     torchCollisionLoc = row2NextIndex++;
                 }
                 else {
-                    setInput( row3_NextIndex++, Input.TILT_POS_OT.getValue() );
-                    setInput( row3_NextIndex++, Input.ROTATE_HOME.getValue() );
+                    addInput( row3_NextIndex++, Input.TILT_POS_OT.getValue() );
+                    addInput( row3_NextIndex++, Input.ROTATE_HOME.getValue() );
                 }
             }
 
@@ -416,14 +416,14 @@ public class ConvertLogic implements IParameters {
                     setParameterValue( Block.DUAL_TILT.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
 
                     if( row1NextIndex < 8 ) {
-                        setInput( row1NextIndex++, Input.TILT3_POS_OT.getValue() );
-                        setInput( row2NextIndex++, Input.TILT3_NEG_OT.getValue() );
-                        setInput( row1NextIndex++, Input.TILT4_POS_OT.getValue() );
-                        setInput( row2NextIndex++, Input.TILT4_NEG_OT.getValue() );
+                        addInput( row1NextIndex++, Input.TILT3_POS_OT.getValue() );
+                        addInput( row2NextIndex++, Input.TILT3_NEG_OT.getValue() );
+                        addInput( row1NextIndex++, Input.TILT4_POS_OT.getValue() );
+                        addInput( row2NextIndex++, Input.TILT4_NEG_OT.getValue() );
                     }
                     else {
-                        setInput( row3_NextIndex++, Input.TILT3_POS_OT.getValue() );
-                        setInput( row3_NextIndex++, Input.TILT4_POS_OT.getValue() );
+                        addInput( row3_NextIndex++, Input.TILT3_POS_OT.getValue() );
+                        addInput( row3_NextIndex++, Input.TILT4_POS_OT.getValue() );
                     }
                 }
                 else {
@@ -432,9 +432,9 @@ public class ConvertLogic implements IParameters {
                     setParameterValue( Block.DUAL_ROTATE.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
 
                     if( row1NextIndex < 8 ) {
-                        setInput( row1NextIndex++, Input.TILT3_POS_OT.getValue() );
-                        setInput( row2NextIndex++, Input.TILT3_NEG_OT.getValue() );
-                        setInput( row1NextIndex++, Input.ROT_2_HOME.getValue() );
+                        addInput( row1NextIndex++, Input.TILT3_POS_OT.getValue() );
+                        addInput( row2NextIndex++, Input.TILT3_NEG_OT.getValue() );
+                        addInput( row1NextIndex++, Input.ROT_2_HOME.getValue() );
                         torchCollisionLoc = row2NextIndex++;
                     }
                 }
@@ -444,57 +444,57 @@ public class ConvertLogic implements IParameters {
 
         // Add Torch Collision input
         if( torchCollisionLoc < 17 ) {
-            setInput( torchCollisionLoc, Input.TORCH_COLLISION.getValue() );
+            addInput( torchCollisionLoc, Input.TORCH_COLLISION.getValue() );
         }
         else if( row3_NextIndex < 25 ) {
-            setInput( row3_NextIndex, Input.TORCH_COLLISION.getValue() );
+            addInput( row3_NextIndex, Input.TORCH_COLLISION.getValue() );
         }
 
 
         // Re-assign Cut Sense inputs beginning at input 40
         if( getParameterValue( Block.IO.getName(), Input.CUT_MARK_SENSE.getName() ) > 0 ) {
-            setInput( m_dataAccess.getCutSenseLoc(), Input.CUT_MARK_SENSE.getValue() );
+            addInput( m_dataAccess.getCutSenseLoc(), Input.CUT_MARK_SENSE.getValue() );
         }
         else if( getParameterValue( Block.IO.getName(), Input.CUT_SENSE_1.getName() ) > 0 ) {
-            setInput( m_dataAccess.getCutSenseLoc(), Input.CUT_SENSE_1.getValue() );
+            addInput( m_dataAccess.getCutSenseLoc(), Input.CUT_SENSE_1.getValue() );
 
             if( getParameterValue( Block.IO.getName(), Input.CUT_SENSE_2.getName() ) > 0 ) {
-                setInput( m_dataAccess.getCutSenseLoc() + 1, Input.CUT_SENSE_2.getValue() );
+                addInput( m_dataAccess.getCutSenseLoc() + 1, Input.CUT_SENSE_2.getValue() );
             }
 
             if( getParameterValue( Block.IO.getName(), Input.CUT_SENSE_3.getName() ) > 0 ) {
-                setInput( m_dataAccess.getCutSenseLoc() + 2, Input.CUT_SENSE_3.getValue() );
+                addInput( m_dataAccess.getCutSenseLoc() + 2, Input.CUT_SENSE_3.getValue() );
             }
 
             if( getParameterValue( Block.IO.getName(), Input.CUT_SENSE_4.getName() ) > 0 ) {
-                setInput( m_dataAccess.getCutSenseLoc() + 3, Input.CUT_SENSE_4.getValue() );
+                addInput( m_dataAccess.getCutSenseLoc() + 3, Input.CUT_SENSE_4.getValue() );
             }
         }
 
 
         // Re-assign Cut Control outputs beginning at output 40
         if( getParameterValue( Block.IO.getName(), Output.CUT_CONTROL.getName() ) > 0 ) {
-            setOutput( m_dataAccess.getCutControlLoc(), Output.CUT_CONTROL.getValue() );
+            addOutput( m_dataAccess.getCutControlLoc(), Output.CUT_CONTROL.getValue() );
         }
         else if( getParameterValue( Block.IO.getName(), Output.CUT_CONTROL_1.getName() ) > 0 ) {
-                setOutput( m_dataAccess.getCutControlLoc(), Output.CUT_CONTROL_1.getValue() );
+                addOutput( m_dataAccess.getCutControlLoc(), Output.CUT_CONTROL_1.getValue() );
 
             if( getParameterValue( Block.IO.getName(), Output.CUT_CONTROL_2.getName() ) > 0 ) {
-                setOutput( m_dataAccess.getCutControlLoc() + 1, Output.CUT_CONTROL_2.getValue() );
+                addOutput( m_dataAccess.getCutControlLoc() + 1, Output.CUT_CONTROL_2.getValue() );
             }
 
             if( getParameterValue( Block.IO.getName(), Output.CUT_CONTROL_3.getName() ) > 0 ) {
-                setOutput( m_dataAccess.getCutControlLoc() + 2, Output.CUT_CONTROL_3.getValue() );
+                addOutput( m_dataAccess.getCutControlLoc() + 2, Output.CUT_CONTROL_3.getValue() );
             }
 
             if( getParameterValue( Block.IO.getName(), Output.CUT_CONTROL_4.getName() ) > 0 ) {
-                setOutput( m_dataAccess.getCutControlLoc() + 3, Output.CUT_CONTROL_4.getValue() );
+                addOutput( m_dataAccess.getCutControlLoc() + 3, Output.CUT_CONTROL_4.getValue() );
             }
         }
 
 
         // Re-assign Drive Enable output
-        setOutput( 24, Output.DRIVE_ENABLE.getValue() );
+        addOutput( 24, Output.DRIVE_ENABLE.getValue() );
 
 
         // Merge in IO settings into parameter file
@@ -511,35 +511,47 @@ public class ConvertLogic implements IParameters {
 
 
     /**
-     * Sets an input type and input number to the InputType Map and the InputNumber
-     * Map.
-     * @param typeIndex - The physical input to be assigned to an input device
-     * @param numIndex  - The input device to be assign to an input location
+     * Adds an input type and input number to the InputType Map and the InputNumber
+     * Map.  Test for like input type assignments and remove from map if found.
+     * @param typeIndex - The input location assigned to the input device
+     * @param numberIndex  - The input device assigned to the input location
      */
-    public void setInput( int typeIndex, int numIndex ) {
-        m_inputTypeMap.put( new StringBuilder( INPUT ).append( typeIndex ).append( TYPE ).toString(), numIndex );
-        m_inputNumberMap.put( new StringBuilder( INPUT ).append( numIndex ).append( NUMBER   ).toString(), typeIndex );
+    public void addInput( int typeIndex, int numberIndex ) {
+        Integer prevValue = m_inputTypeMap.put( new StringBuilder( INPUT ).append( typeIndex ).append( TYPE ).toString(), numberIndex );
+
+        if( prevValue != null ) {
+            m_inputNumberMap.remove( new StringBuilder( INPUT ).append( prevValue ).append( NUMBER   ).toString() );
+        }
+
+        m_inputNumberMap.put( new StringBuilder( INPUT ).append( numberIndex ).append( NUMBER   ).toString(), typeIndex );
     }
 
 
     /**
-     * Sets an output type and output number to the OutputType Map and the OutputNumber
-     * Map.
-     * @param typeIndex - The physical output to be assigned to a device
-     * @param numIndex  - The output device to be assigned to an output location
+     * Adds an output type and output number to the OutputType Map and the OutputNumber
+     * Map.  Test for like output type assignments and remove from map if found.
+     * @param typeIndex - The output location assigned to the output device
+     * @param numIndex  - The output device assigned to the output location
      */
-    public void setOutput( int typeIndex, int numIndex ) {
-        m_outputTypeMap.put( new StringBuilder( OUTPUT ).append( typeIndex ).append( TYPE ).toString(), numIndex );
+    public void addOutput( int typeIndex, int numIndex ) {
+        Integer prevValue = m_outputTypeMap.put( new StringBuilder( OUTPUT ).append( typeIndex ).append( TYPE ).toString(), numIndex );
+
+        if( prevValue != null ) {
+            m_outputNumberMap.remove(new StringBuilder( OUTPUT ).append( prevValue ).append( NUMBER ).toString() );
+        }
+
         m_outputNumberMap.put( new StringBuilder( OUTPUT ).append( numIndex ).append( NUMBER ).toString() , typeIndex );
     }
 
 
     /**
-     * Merge I/O from the data access class into the IO Parameter Map that contains
-     * all I/O assignments from the parameter file.  Test for like type assignments 
-     * (same I/O position) and relocate to I/O 49 and higher.  Test for like number
-     * assignments (same device) and set original type assignment to 0 (replaced 
-     * by this output assignment).
+     * Re-arranges the I/O parameters within the IO Parameter Map to facilitate
+     * homing and simulating of a cut.  Merges the Input and Output maps into the
+     * I/O Parameter Map.  Sets the input and output logic to normally open.  Test
+     * for like type assignments (same I/O location) and relocates to I/O 49 and
+     * higher.  Test for like number assignments (same device) and set original
+     * type assignment to 0 (replaced by this assignment).  The final map of I/O
+     * parameters represents the new I/O assignment for this configuration.
      */
     private void shuffleIO() {
         Iterator< Entry< String, Integer >> iterator = m_IOParamMap.entrySet().iterator();

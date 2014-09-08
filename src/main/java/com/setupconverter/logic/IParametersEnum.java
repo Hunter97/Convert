@@ -11,12 +11,14 @@
  */
 package com.setupconverter.logic;
 
+import java.util.Map;
+
 
 /**
  * IRetrieveParameters:  Defines basic methods for the enum's in SetupConverter.
  * @author prwallace
  */
-public interface IRetrieveParameters {
+public interface IParametersEnum {
 
     /**
      * Get/return the integer value of this enum

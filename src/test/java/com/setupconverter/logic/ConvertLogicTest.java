@@ -352,58 +352,47 @@ public class ConvertLogicTest {
      */
     @Test
     public void testSave() {
-
-
         System.out.println("testSave...");
 
         try {
             m_setup = new ConvertLogic( m_loadFile, m_operate );
         } catch ( IOException e ) {
-            Logger.getLogger( ConvertLogicTest.class.getName() ).log( Level.SEVERE, "testReplaceParamter; failed to open file stream: ", e );
             fail( new StringBuilder( "ConvertLogic object failed to open file stream: ").append( e.getMessage() ).toString() );
         }
 
         
     }
 
+
     /**
      * Test of setInput method, of class ConvertLogic.
      */
-    /*@Test
-    public void testSetInput() {
-        System.out.println("setInput");
-        int typeIndex = 0;
-        int numIndex = 0;
-        ConvertLogic instance = null;
-        instance.setInput(typeIndex, numIndex);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    @Test
+    public void testAddInput() {
+        Map< String, Integer > map = new LinkedHashMap<>();
+        int typeIndex = 10;
+        int numberIndex = 10;
+
+        System.out.println( "testAddInput..." );
+
+        try {
+            m_setup = new ConvertLogic( m_loadFile, m_operate );
+        } 
+        catch( IOException e ) {
+            fail( new StringBuilder( "ConvertLogic object failed to open file stream: ").append( e.getMessage() ).toString() );
+        }
+
+        for( int i = 1; i <= typeIndex; i++ ) {
+            m_setup.addInput( i, numberIndex );
+            m_setup.addOutput( i, numberIndex-- );
+        }
+
+        for( int j = 1; j <= typeIndex; j++ ) {
+            //if( m_setup.)
+        }
+
+        System.out.println("test");
+        
+        
     }
-
-    /**
-     * Test of setOutput method, of class ConvertLogic.
-     */
-    /*@Test
-    public void testSetOutput() {
-        System.out.println("setOutput");
-        /*int typeIndex = 0;
-        int numIndex = 0;
-        ConvertLogic instance = null;
-        instance.setOutput(typeIndex, numIndex);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }*/
-
-    /**
-     * Test of write method, of class ConvertLogic.
-     */
-    /*@Test
-    public void testWrite() throws Exception {
-        System.out.println("write");
-        /*File file = null;
-        ConvertLogic instance = null;
-        instance.write(file);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }*/
 }

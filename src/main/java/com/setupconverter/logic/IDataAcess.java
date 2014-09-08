@@ -66,7 +66,7 @@ public interface IDataAcess {
      * is the integer value of the input device.
      * i.e. Input47Number=1, where device 47 is assigned to Input 1
      */
-    public enum Input implements IRetrieveParameters {
+    public enum Input implements IParametersEnum {
         CUT_MARK_SENSE( "Input4Number=", 4 ), DRIVE_DISABLED( "Input10Number=", 10 ), X_HOME_NEG_OT( "Input11Number=", 11 ), X_POS_OT( "Input12Number=", 12 ),
         Y_HOME_NEG_OT( "Input13Number=", 13 ), Y_POS_OT( "Input14Number=", 14 ), CBH_HOME( "Input17Number=", 17 ), X_NEG_OT( "Input19Number=", 19 ), Y_NEG_OT( "Input20Number=", 20 ),
         TILT_POS_OT( "Input35Number=", 35 ), TILT_NEG_OT( "Input36Number=", 36 ), ROTATE_HOME( "Input37Number=", 37 ), THC_AUTO_1( "Input46Number=", 46 ), NCS_1( "Input47Number=", 47 ),
@@ -118,7 +118,7 @@ public interface IDataAcess {
          * @return  - enum constants as a Map
          */
         public static Map<String, Integer> toMap() {
-            for( Speed param : Speed.values() ) {
+            for( Input param : Input.values() ) {
                 map.put( param.getName(), param.getValue() );
             }
 
@@ -135,7 +135,7 @@ public interface IDataAcess {
      * is the integer value of the output device.
      * i.e. Output8Number=1, where device #8 is assigned to Output 1
      */
-    public enum Output implements IRetrieveParameters {
+    public enum Output implements IParametersEnum {
         THD( "Output4Number=", 4 ), CUT_CONTROL( "Output8Number=", 8 ), DRIVE_ENABLE( "Output55Number=", 55 ), NCE_1( "Output57Number=", 57 ), HOLD_IGN1( "Output58Number=", 58 ),
         CUT_CONTROL_1( "Output197Number=", 197 ), CUT_CONTROL_2( "Output198Number=", 198 ), CUT_CONTROL_3( "Output198Number=", 198 ), CUT_CONTROL_4( "Output198Number=", 198 ),
         STATION_ENABLE_LED_1( "Output217Number=", 217 ), STATION_ENABLE_LED_2( "Output218Number=", 218 ), VENT_1( "Output472Number=", 472 ), VENT_2( "Output473Number=", 473 ),
@@ -171,7 +171,7 @@ public interface IDataAcess {
          * @return  - enum constants as a Map
          */
         public Map<String, Integer> toMap() {
-            for( Speed param : Speed.values() ) {
+            for( Output param : Output.values() ) {
                 map.put( param.getName(), param.getValue() );
             }
 
@@ -183,7 +183,7 @@ public interface IDataAcess {
     /**
      * Contains default Speed settings for all drive types
      */
-    public enum Speed implements IRetrieveParameters {
+    public enum Speed implements IParametersEnum {
         MAX_SPEED_EN( "MaxSpeed(english)=", 1000 ), MAX_SPEED_M( "MaxSpeed(metric)=", 25400 ), SPEED_RANGE_1_EN( "GainSpeed1(english)=", 100 ),
         SPEED_RANGE_1_M( "GainSpeed1(metric)=", 2540 ), SPEED_RANGE_2_EN( "GainSpeed2(english)=", 300 ), SPEED_RANGE_2_M( "GainSpeed2(metric)=", 7620 ),
         SPEED_RANGE_3_EN( "GainSpeed3(english)=", 500 ), SPEED_RANGE_3_M( "GainSpeed3(metric)=", 12700 ), SPEED_RANGE_4_EN( "GainSpeed4(english)=", 1000 ),
@@ -265,7 +265,7 @@ public interface IDataAcess {
     /**
      * Default Axes settings for a CNC using the Hypath diagnostic boards
      */
-    public enum Hypath implements IRetrieveParameters {
+    public enum Hypath implements IParametersEnum {
         PGAIN( "PGain=", 2000 ), IGAIN( "IGain=", 0 ), DGAIN( "DGain=", 0 ), FGAIN( "FGain=", 0 ), VGAIN( "VGain=", 0 ), PGAIN_2( "PGain2=", 2000 ), IGAIN_2( "IGain2=", 0 ),
         DGAIN_2( "DGain2=", 0 ), FGAIN_2( "FGain2=", 0 ), VGAIN_2( "VGain2=", 0 ), PGAIN_3( "PGain3=", 2000 ), IGAIN_3( "IGain3=", 0 ), DGAIN_3( "DGain3=", 0 ),
         FGAIN_3( "FGain3=", 0 ), VGAIN_3( "VGain3=", 0 ), PGAIN_4( "PGain4=", 2000 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 0 ), FGAIN_4( "FGain4=", 0 ),
@@ -317,7 +317,7 @@ public interface IDataAcess {
     /**
      * Default Axes settings for a CNC using the Picopath diagnostic boards.
      */
-    public enum Bench implements IRetrieveParameters {
+    public enum Bench implements IParametersEnum {
         PGAIN( "PGain=", 20 ), IGAIN( "IGain=", 0 ), DGAIN( "DGain=", 20 ), FGAIN( "FGain=", 100 ), VGAIN( "VGain=", 0 ), PGAIN_2( "PGain2=", 20 ), IGAIN_2( "IGain2=", 0 ),
         DGAIN_2( "DGain2=", 20 ), FGAIN_2( "FGain2=", 100 ), VGAIN_2( "VGain2=", 0 ), PGAIN_3( "PGain3=", 20 ), IGAIN_3( "IGain3=", 0 ), DGAIN_3( "DGain3=", 20 ),
         FGAIN_3( "FGain3=", 100 ), VGAIN_3( "VGain3=", 0 ), PGAIN_4( "PGain4=", 20 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 20 ), FGAIN_4( "FGain4=", 100 ),
@@ -369,7 +369,7 @@ public interface IDataAcess {
     /**
      * Default settings for a CNC containing one or more SensorTHC's.
      */
-    public enum THC implements IRetrieveParameters {
+    public enum THC implements IParametersEnum {
         SLIDE_EN( "SlideLength(english)=", 10 ), SLIDE_M( "SlideLength(metric)=", 254 ), HARD_STOP( "UseHardStop=", 0 ), HOME_SWITCH( "UseHomeSwitch=", 1 ),
         ANALOG_1( "THCAnalog1=", 0 ), ANALOG_2( "THCAnalog2=", 2 ), SPEEDPOT_1_INSTALLED( "SpeedPotInstalled=", 1 ), SPEEDPOT_1_ANALOG_1( "SpeedPotAnalog1=", 1 ),
         SPEEDPOT_1_ANALOG_2( "SpeedPotAnalog2=", 1 );
@@ -416,7 +416,7 @@ public interface IDataAcess {
     /**
      * Default settings for a CNC containing a Dual Gantry Axis.
      */
-    public enum DualGantry implements IRetrieveParameters {
+    public enum DualGantry implements IParametersEnum {
         SKEW_ERROR_EN( "SkewErrTolerance(english)=", 1 ), SKEW_ERROR_M( "SkewErrTolerance(metric)=", 25 );
 
         private final int m_value;
@@ -460,7 +460,7 @@ public interface IDataAcess {
     /**
      * Default settings for a CNC containing one or more Bevel axis
      */
-    public enum Bevel implements IRetrieveParameters {
+    public enum Bevel implements IParametersEnum {
         SERVO_ERROR( "ServoErrTolerance(degrees)=", 90 ), ENCODER_CNTS( "EncoderCounts(revs)=", 6000 ), AUTO_HOME( "AutoHome=", 1 );
 
         private final int m_value;
