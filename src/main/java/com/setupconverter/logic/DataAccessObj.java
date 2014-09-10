@@ -22,7 +22,7 @@ import java.util.Map;
  * @author prwallace
  */
 public class DataAccessObj implements IDataAcess {
-    private final Map< String, Integer > m_thcParamMap;
+    private final Map< String, Integer > m_thcAxesParamMap;
     private final Map< String, Integer > m_thcMachineParamMap;
     private final Map< String, Integer > m_thcAnalogParamMap;
     private Map< String, Integer > m_axesParamMap;
@@ -36,7 +36,7 @@ public class DataAccessObj implements IDataAcess {
      */
     public DataAccessObj() {
         this.m_thcMachineParamMap = new LinkedHashMap<>();
-        this.m_thcParamMap = new LinkedHashMap<>();
+        this.m_thcAxesParamMap = new LinkedHashMap<>();
         this.m_thcAnalogParamMap = new LinkedHashMap<>();
         this.m_axesParamMap = new LinkedHashMap<>();
     }
@@ -49,7 +49,7 @@ public class DataAccessObj implements IDataAcess {
      */
     public DataAccessObj( String type ) {
         this.m_thcMachineParamMap = new LinkedHashMap<>();
-        this.m_thcParamMap = new LinkedHashMap<>();
+        this.m_thcAxesParamMap = new LinkedHashMap<>();
         this.m_thcAnalogParamMap = new LinkedHashMap<>();
         this.m_axesParamMap = new LinkedHashMap<>();
         addAxesDefaults( type );
@@ -61,10 +61,10 @@ public class DataAccessObj implements IDataAcess {
         m_thcMachineParamMap.put( THC.ANALOG_1.getName(), THC.ANALOG_1.getValue() );
         m_thcMachineParamMap.put( THC.ANALOG_2.getName(), THC.ANALOG_2.getValue() );
 
-        m_thcParamMap.put( THC.HARD_STOP.getName(), THC.HARD_STOP.getValue() );
-        m_thcParamMap.put( THC.HOME_SWITCH.getName(), THC.HOME_SWITCH.getValue() );
-        m_thcParamMap.put( THC.SLIDE_EN.getName(), THC.SLIDE_EN.getValue() );
-        m_thcParamMap.put( THC.SLIDE_M.getName(), THC.SLIDE_M.getValue() );
+        m_thcAxesParamMap.put( THC.HARD_STOP.getName(), THC.HARD_STOP.getValue() );
+        m_thcAxesParamMap.put( THC.HOME_SWITCH.getName(), THC.HOME_SWITCH.getValue() );
+        m_thcAxesParamMap.put( THC.SLIDE_EN.getName(), THC.SLIDE_EN.getValue() );
+        m_thcAxesParamMap.put( THC.SLIDE_M.getName(), THC.SLIDE_M.getValue() );
 
         m_thcAnalogParamMap.put( THC.SPEEDPOT_1_INSTALLED.getName(), THC.SPEEDPOT_1_INSTALLED.getValue() );
         m_thcAnalogParamMap.put( THC.SPEEDPOT_1_ANALOG_1.getName(), THC.SPEEDPOT_1_ANALOG_1.getValue() );
@@ -80,7 +80,7 @@ public class DataAccessObj implements IDataAcess {
             m_cutControlLoc = 18;
         }
         else if( DriveType.DIAG_BRDS.getName().equals( type )) {
-            m_axesParamMap = Hypath.toMap();
+            m_axesParamMap = DiagBrds.toMap();
             m_cutSenseLoc = 40;
             m_cutControlLoc = 40;
         }   
@@ -89,7 +89,7 @@ public class DataAccessObj implements IDataAcess {
 
     @Override
     public Map< String, Integer > getTHCAxisParams() {
-        return m_thcParamMap;
+        return m_thcAxesParamMap;
     }
 
 

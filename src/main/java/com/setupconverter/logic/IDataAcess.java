@@ -265,7 +265,7 @@ public interface IDataAcess {
     /**
      * Default Axes settings for a CNC using the Hypath diagnostic boards
      */
-    public enum Hypath implements IParametersEnum {
+    public enum DiagBrds implements IParametersEnum {
         PGAIN( "PGain=", 2000 ), IGAIN( "IGain=", 0 ), DGAIN( "DGain=", 0 ), FGAIN( "FGain=", 0 ), VGAIN( "VGain=", 0 ), PGAIN_2( "PGain2=", 2000 ), IGAIN_2( "IGain2=", 0 ),
         DGAIN_2( "DGain2=", 0 ), FGAIN_2( "FGain2=", 0 ), VGAIN_2( "VGain2=", 0 ), PGAIN_3( "PGain3=", 2000 ), IGAIN_3( "IGain3=", 0 ), DGAIN_3( "DGain3=", 0 ),
         FGAIN_3( "FGain3=", 0 ), VGAIN_3( "VGain3=", 0 ), PGAIN_4( "PGain4=", 2000 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 0 ), FGAIN_4( "FGain4=", 0 ),
@@ -284,7 +284,7 @@ public interface IDataAcess {
          * @param name  - String value assigned to this enum type
          * @param value - Ordinal value assigned to this enum type
          */
-        private Hypath( String name, int value ) {
+        private DiagBrds( String name, int value ) {
             this.m_value = value;
             this.m_name = name;
         }
@@ -305,7 +305,7 @@ public interface IDataAcess {
          * @return  - enum constants as a Map
          */
         public static Map< String, Integer > toMap() {
-            for( Hypath param : Hypath.values() ) {
+            for( DiagBrds param : DiagBrds.values() ) {
                 map.put( param.getName(), param.getValue() );
             }
 
@@ -323,7 +323,7 @@ public interface IDataAcess {
         FGAIN_3( "FGain3=", 100 ), VGAIN_3( "VGain3=", 0 ), PGAIN_4( "PGain4=", 20 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 20 ), FGAIN_4( "FGain4=", 100 ),
         VGAIN_4( "VGain4=", 0 ), PGAIN_5( "PGain5=", 20 ), IGAIN_5( "IGain5=", 0 ), DGAIN_5( "DGain5=", 20 ), FGAIN_5( "FGain5=", 100 ), VGAIN_5( "VGain5=", 0 ),
         SERVO_ERROR_EN( "ServoErrTolerance(english)=", 1 ), SERVO_ERROR_M( "ServoErrTolerance(metric)=", 25 ), ENCODER_CNTS_EN( "EncoderCounts(english)=", 8192 ),
-        ENCODER_CNTS_M( "EncoderCounts(metric)=", 323 ), DRIVE_TYPE( "DriveType=", 0 ), DAC( "DACPolarity=", 0 ), ENCODER_POLARITY( "EncoderPolarity=", 1 ),
+        ENCODER_CNTS_M( "EncoderCounts(metric)=", 39 ), DRIVE_TYPE( "DriveType=", 0 ), DAC( "DACPolarity=", 0 ), ENCODER_POLARITY( "EncoderPolarity=", 1 ),
         ENCODER_MODE( "EncoderMode=", 2 ), USE_HW_OT( "UseHWOvertravelSwitches=", 1 ), HOME_SW( "UseHomeSwitch=", 1 ), HOME_OT( "HomeToOvertravel=", 1 ),
         MARKER_PULSE( "UseMarker=", 0 );
 

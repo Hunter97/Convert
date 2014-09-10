@@ -31,8 +31,8 @@ import static org.junit.Assert.*;
  * @author Hunter97
  */
 public class ConvertLogicTest {
-    private static final String LOAD_FILEPATH = "./Convert/testFiles/PhoenixPass.ini";
-    private static final String SAVE_FILEPATH = "./Convert/testFiles/PhoenixSave.ini";
+    private static final String LOAD_FILEPATH = "./testFiles/PhoenixPass.ini";
+    private static final String SAVE_FILEPATH = "./testFiles/PhoenixSave.ini";
     private static final String LINE_RETURN = "\r\n";
     private static final String REGEX = "[=\\r\\n]";
     private static final String MACHINE = "[Machine]\r\n";
@@ -350,7 +350,7 @@ public class ConvertLogicTest {
     /**
      * Test of convert method, of class ConvertLogic.
      */
-    @Test
+    /*@Test
     public void testSave() {
         System.out.println("testSave...");
 
@@ -361,13 +361,13 @@ public class ConvertLogicTest {
         }
 
         
-    }
+    }*/
 
 
     /**
      * Test of setInput method, of class ConvertLogic.
      */
-    @Test
+    /*@Test
     public void testAddInput() {
         Map< String, Integer > map = new LinkedHashMap<>();
         int typeIndex = 10;
@@ -394,5 +394,5 @@ public class ConvertLogicTest {
         System.out.println("test");
         
         
-    }
+    }*/
 }
