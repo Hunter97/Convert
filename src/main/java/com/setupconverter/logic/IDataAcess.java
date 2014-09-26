@@ -32,7 +32,7 @@ public interface IDataAcess {
      * Enumeration constants containing titles to several blocks within the parameter file.
      * Each constant represents a string in the form of "[Title]\r\n".
      */
-    public enum Block {
+    public enum BlockTitle {
         MACHINE( "[Machine]\r\n" ), SPEEDS( "[Speeds]\r\n" ), AIC( "[AnalogInputCard]\r\n" ), LINK( "[Link]\r\n" ), IO( "[I/O]\r\n" ), ROTATE( "[Rotate]\r\n" ),
         TILT( "[Tilt]\r\n" ), DUAL_ROTATE( "[DualRotate]\r\n" ), DUAL_TILT( "[DualTilt]\r\n" ), DUAL_GANTRY( "[DualGantry]\r\n" ), THC_1( "[THC1]\r\n" ),
         THC_2( "[THC2]\r\n" ), THC_3( "[THC3]\r\n" ), THC_4( "[THC4]\r\n" ), AXIS_1( "[Axis0]\r\n" ), AXIS_2( "[Axis1]\r\n" ), AXIS_7( "[Axis6]\r\n" ),
@@ -44,7 +44,7 @@ public interface IDataAcess {
          * Constructor for enum BLOCK
          * @param name  - String value assigned to this enum type
          */
-        private Block( String name ) {
+        private BlockTitle( String name ) {
             this.m_name = name;
         }
 
@@ -139,7 +139,7 @@ public interface IDataAcess {
         THD( "Output4Number=", 4 ), CUT_CONTROL( "Output8Number=", 8 ), DRIVE_ENABLE( "Output55Number=", 55 ), NCE_1( "Output57Number=", 57 ), HOLD_IGN1( "Output58Number=", 58 ),
         CUT_CONTROL_1( "Output197Number=", 197 ), CUT_CONTROL_2( "Output198Number=", 198 ), CUT_CONTROL_3( "Output198Number=", 198 ), CUT_CONTROL_4( "Output198Number=", 198 ),
         STATION_ENABLE_LED_1( "Output217Number=", 217 ), STATION_ENABLE_LED_2( "Output218Number=", 218 ), VENT_1( "Output472Number=", 472 ), VENT_2( "Output473Number=", 473 ),
-        VENT_3( "Output474Number=", 474 ), VENT_4( "Output475Number=", 475 ), VENT_5( "Output476Number=", 476 );
+        VENT_3( "Output474Number=", 474 ), VENT_4( "Output475Number=", 475 ), VENT_5( "Output476Number=", 476 ), THC_TorqueLimit( "Output523Number=", 523 );
 
         private final int m_value;
         private final String m_name;
@@ -543,4 +543,11 @@ public interface IDataAcess {
      * @return  - The location of the cut control 1 or cut control output
      */
     public int getCutControlLoc();
+
+
+    /**
+     * Get/return the output location of the THC Torque Limit output
+     * @return  - The location of the THC Torque Limit output
+     */
+    public int getTHCTorqueLimitLoc();
 }

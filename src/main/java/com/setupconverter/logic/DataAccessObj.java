@@ -29,6 +29,7 @@ public class DataAccessObj implements IDataAcess {
 
     private int m_cutSenseLoc;
     private int m_cutControlLoc;
+    private int m_thcTorqueLimitLoc = 19;
 
 
     /**
@@ -119,5 +120,10 @@ public class DataAccessObj implements IDataAcess {
     @Override
     public int getCutControlLoc() {
         return m_cutControlLoc;
+    }
+
+    @Override
+    public int getTHCTorqueLimitLoc() {
+        return m_thcTorqueLimitLoc;
     }
 }

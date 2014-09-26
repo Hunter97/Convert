@@ -90,7 +90,7 @@ public class ConvertUI extends JFrame {
     private final Dimension screenSize = toolKit.getScreenSize();
 
     private final Image m_titleIcon;
-    private final String m_icon = "./image/convert-icon.png";
+    private final String m_icon = "./image/convert-icon.ico";
 
     private File m_currentDir = null;
     private File m_loadedFile = null;
