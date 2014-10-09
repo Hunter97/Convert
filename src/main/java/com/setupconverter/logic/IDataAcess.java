@@ -231,8 +231,9 @@ public interface IDataAcess {
 
 
     /**
-     * Group of specific machine parameters that signify the type of application the setup file
-     * is configured to be.
+     * Group of specific machine parameters. Can be used to determine the application 
+     * (i.e. Bevel on Pipe) as well as the available features (i.e. Homes to over-
+     * travels) of the cutting machine.
      */
     public enum Parameter {
         DUAL_GANTRY( "DualGantryInstalled=" ), FP( "FrontPanelInstalled=" ), SERCOS( "SercosSensorUtility=" ), ARC_GLIDE( "ArcGlideTHCInstalled=" ),
