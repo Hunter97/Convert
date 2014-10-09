@@ -174,7 +174,7 @@ public class ConvertLogic implements IParameters {
         int torchCollisionLoc = 16;
 
 
-        // Determine specific tools, bevel heads, pipe axes, THC's that are installed in Machine screen
+        // Determine the specific tools installed; bevel heads, pipe axes, THC's, etc
         if( getParameterValue( BlockTitle.MACHINE.getName(), Parameter.FP.getName() ) > 0 ) {
             m_frontPanelInstalled = true;
         }
