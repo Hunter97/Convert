@@ -1,7 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ *  ConvertLogicTest.java
+ *  Paul Wallace
+ *  June 2014
+ * 
+ *  ConvertLogicTest tests the methods in interface IParameters as implemented 
+ *  in class ConvertLogic.
+ * 
  */
 
 package com.setupconverter.logic;
@@ -21,18 +25,18 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.junit.After;
+//import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
  *
- * @author Hunter97
+ * @author prwallace
  */
 public class ConvertLogicTest {
     private static final String LOAD_FILEPATH = "./testFiles/PhoenixPass.ini";
-    private static final String SAVE_FILEPATH = "./testFiles/PhoenixSave.ini";
+    //private static final String SAVE_FILEPATH = "./testFiles/PhoenixSave.ini";
     private static final String LINE_RETURN = "\r\n";
     private static final String REGEX = "[=\\r\\n]";
     private static final String MACHINE = "[Machine]\r\n";
@@ -42,18 +46,16 @@ public class ConvertLogicTest {
     private OperateConverter m_operate;
     private ConvertLogic m_setup;
     private File m_loadFile;
-    private File m_saveFile;
+    //private File m_saveFile;
    
 
     
+    /**
+     * Instantiates objects that are essential to all tests.
+     */
     @Before
     public void setUp() {
         m_loadFile = new File( LOAD_FILEPATH );
-    }
-
-
-    @After
-    public void tearDown() {
     }
 
 
@@ -307,6 +309,7 @@ public class ConvertLogicTest {
         assertTrue( "Value was not -1:", isInvalid );
     }
 
+
     /**
      * Test the replaceAllParams method of class ConvertLogic.  Uses a Map of
      * fixed parameters with known values and replaces these parameters within
@@ -345,54 +348,4 @@ public class ConvertLogicTest {
 
         assertFalse( "Unable to replace parameters:", isNotEqual );
     }
-
-
-    /**
-     * Test of convert method, of class ConvertLogic.
-     */
-    /*@Test
-    public void testSave() {
-        System.out.println("testSave...");
-
-        try {
-            m_setup = new ConvertLogic( m_loadFile, m_operate );
-        } catch ( IOException e ) {
-            fail( new StringBuilder( "ConvertLogic object failed to open file stream: ").append( e.getMessage() ).toString() );
-        }
-
-        
-    }*/
-
-
-    /**
-     * Test of setInput method, of class ConvertLogic.
-     */
-    /*@Test
-    public void testAddInput() {
-        Map< String, Integer > map = new LinkedHashMap<>();
-        int typeIndex = 10;
-        int numberIndex = 10;
-
-        System.out.println( "testAddInput..." );
-
-        try {
-            m_setup = new ConvertLogic( m_loadFile, m_operate );
-        } 
-        catch( IOException e ) {
-            fail( new StringBuilder( "ConvertLogic object failed to open file stream: ").append( e.getMessage() ).toString() );
-        }
-
-        for( int i = 1; i <= typeIndex; i++ ) {
-            m_setup.addInput( i, numberIndex );
-            m_setup.addOutput( i, numberIndex-- );
-        }
-
-        for( int j = 1; j <= typeIndex; j++ ) {
-            //if( m_setup.)
-        }
-
-        System.out.println("test");
-        
-        
-    }*/
 }

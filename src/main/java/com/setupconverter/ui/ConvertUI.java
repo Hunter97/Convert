@@ -90,7 +90,7 @@ public class ConvertUI extends JFrame {
     private final Dimension screenSize = toolKit.getScreenSize();
 
     private final Image m_titleIcon;
-    private final String m_icon = "./image/convert-icon.ico";
+    private final String m_icon = "./image/convert-icon.png";
 
     private File m_currentDir = null;
     private File m_loadedFile = null;
@@ -224,7 +224,7 @@ public class ConvertUI extends JFrame {
 
         m_convertRadioBtn = new JRadioButton( CONVERT.getName() );
         m_convertRadioBtn.setActionCommand( CONVERT.getName() );
-        m_convertRadioBtn.setToolTipText( "Converts settings & recalulates checksum"  );
+        m_convertRadioBtn.setToolTipText( "Converts settings & recalulates checksum" );
 
         ButtonGroup radioGroup = new ButtonGroup();
         radioGroup.add( m_cksumRadioBtn );
