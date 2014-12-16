@@ -128,7 +128,7 @@ public class ConvertUI extends JFrame {
      */
     public ConvertUI() {
         super( "SetupConvert" );
-        m_systems = new String[] { DriveType.YASKAWA.getName(), DriveType.DIAG_BRDS.getName() };
+        m_systems = new String[] { DriveType.YASKAWA.getName(), DriveType.DIAG_BRDS.getName(), DriveType.EDGETI.getName() };
         m_operate = new OperateConverter();
 
         // Set frame properties

@@ -84,7 +84,11 @@ public class DataAccessObj implements IDataAcess {
             m_axesParamMap = DiagBrds.toMap();
             m_cutSenseLoc = 40;
             m_cutControlLoc = 40;
-        }   
+        }
+        else if( DriveType.EDGETI.getName().equals( type )) {
+            m_axesParamMap = EdgeProTi.toMap();
+            m_cutSenseLoc = 1;
+        }
     }
 
 

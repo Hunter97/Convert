@@ -69,7 +69,7 @@ public interface IComponents {
      * Enumeration constants representing the available drive system types
      */
     public enum DriveType {
-        YASKAWA( "6 Axis Yaskawa" ), DIAG_BRDS( "Diagnostic Boards" );
+        YASKAWA( "6 Axis Yaskawa" ), DIAG_BRDS( "Diagnostic Boards" ), EDGETI( "Edge Pro Ti Stand" );
 
         private final String m_system;
 

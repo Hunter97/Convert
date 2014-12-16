@@ -174,6 +174,11 @@ public class ConvertLogic implements IParameters {
         int torchCollisionLoc = 16;
 
 
+        // Adjust row 1 index if cut sense is assigned to input 1
+        if( m_dataAccess.getCutSenseLoc() == 1 ) {
+            row1NextIndex++;
+        }
+
         // Determine the specific tools installed; bevel heads, pipe axes, THC's, etc
         if( getParameterValue( BlockTitle.MACHINE.getName(), Parameter.FP.getName() ) > 0 ) {
             m_frontPanelInstalled = true;
