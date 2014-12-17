@@ -25,7 +25,7 @@ import java.util.Map;
  * Interface IDataAccess; Container for the SetupConverter Application. 
  * @author prwallace
  */
-public interface IDataAcess {
+public interface IBaseSetupData {
 
 
     /**

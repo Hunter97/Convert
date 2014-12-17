@@ -21,7 +21,7 @@ import java.util.Map;
  * form of Map's.
  * @author prwallace
  */
-public class DataAccessObj implements IDataAcess {
+public class DataAccessObj implements IBaseSetupData {
     private final Map< String, Integer > m_thcAxesParamMap;
     private final Map< String, Integer > m_thcMachineParamMap;
     private final Map< String, Integer > m_thcAnalogParamMap;

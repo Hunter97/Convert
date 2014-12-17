@@ -42,7 +42,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.setupconverter.logic.IDataAcess.*;
+import com.setupconverter.logic.IBaseSetupData.*;
 import com.setupconverter.ui.ConvertUI.OperateConverter;
 
 import java.nio.charset.StandardCharsets;
