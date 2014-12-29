@@ -1,18 +1,15 @@
 /**
- * IDataAccess.java
+ * IMachineParams.java
  * Paul Wallace
  * June 2014
  * 
- * IDataAccess is a container object for the SetupConverter application.
- * The interface includes several enum's that contain the default parameters
- * for the selectable drive types (i.e. Hypath, Pico-path).
+ * IMachineParams provides the behavior for accessing and setting Machine parameters.
+ * Parameters for Machine, Speeds, and I/O blocks within a setup file.  
  *  
  * Main attributes:
- *      * Provides the Gain, Speed, Machine, Port, and I/O settings to be applied
- *          to the selected drive type.
- *      * Selectable drive types are:
- *          * Hypath Diagnostic kits
- *          * Pico-path (analog) 6 axis test stand
+ *      * enum's for several Machine parameters 
+ *      * Methods to be used to gain access to or set Machine parameters
+ *  
  */
 
 package com.setupconverter.logic;
@@ -22,15 +19,14 @@ import java.util.Map;
 
 
 /**
- * Interface IDataAccess; Container for the SetupConverter Application. 
+ * Interface IMachineParams; Interface for machine setup parameters. 
  * @author prwallace
  */
-public interface IBaseSetupData {
+public interface IMachineParams {
 
 
     /**
-     * Enumeration constants containing titles to several blocks within the parameter file.
-     * Each constant represents a string in the form of "[Title]\r\n".
+     * Enumeration constants containing titles to several blocks within a setup file.
      */
     public enum BlockTitle {
         MACHINE( "[Machine]\r\n" ), SPEEDS( "[Speeds]\r\n" ), AIC( "[AnalogInputCard]\r\n" ), LINK( "[Link]\r\n" ), IO( "[I/O]\r\n" ), ROTATE( "[Rotate]\r\n" ),
@@ -59,14 +55,12 @@ public interface IBaseSetupData {
 
 
     /**
-     * Input device assignment enum; represents available input devices as an
-     * integer value. The value represents the device and the String is how the
-     * parameter is represented within the parameter file.  
-     * In the parameter file: Input#Number is equal to a physical input, where #
-     * is the integer value of the input device.
-     * i.e. Input47Number=1, where device 47 is assigned to Input 1
+     * Enumeration constant containing several input assignments.  In a setup file;
+     * Input#Number refers to a specific input device and is equal to its input
+     * location.
+     * i.e. Input47Number=1 => input device 47 is assigned to Input 1
      */
-    public enum Input implements IParametersEnum {
+    public enum Input {
         CUT_MARK_SENSE( "Input4Number=", 4 ), DRIVE_DISABLED( "Input10Number=", 10 ), X_HOME_NEG_OT( "Input11Number=", 11 ), X_POS_OT( "Input12Number=", 12 ),
         Y_HOME_NEG_OT( "Input13Number=", 13 ), Y_POS_OT( "Input14Number=", 14 ), CBH_HOME( "Input17Number=", 17 ), X_NEG_OT( "Input19Number=", 19 ), Y_NEG_OT( "Input20Number=", 20 ),
         TILT_POS_OT( "Input35Number=", 35 ), TILT_NEG_OT( "Input36Number=", 36 ), ROTATE_HOME( "Input37Number=", 37 ), THC_AUTO_1( "Input46Number=", 46 ), NCS_1( "Input47Number=", 47 ),
@@ -93,7 +87,7 @@ public interface IBaseSetupData {
         private static final Map< String, Integer > map = new LinkedHashMap<>();
 
         /**
-         * Constructor for enum INPUT_NUM
+         * Constructor for enum Input
          * @param name  - String value assigned to this enum type
          * @param value - Ordinal value assigned to this enum type
          */
@@ -102,13 +96,18 @@ public interface IBaseSetupData {
             this.m_name = name;
         }
 
-
-        @Override
+        /**
+         * Get/return the integer value of this enum
+         * @return  - The ordinal value of this enum type
+         */
         public int getValue() {
             return m_value;
         }
 
-        @Override
+        /**
+         * Get/return the String for this enum type
+         * @return  - String value assigned to this enum type
+         */
         public String getName() {
             return m_name;
         }
@@ -121,21 +120,18 @@ public interface IBaseSetupData {
             for( Input param : Input.values() ) {
                 map.put( param.getName(), param.getValue() );
             }
-
             return map;
         }
     }
 
 
     /**
-     * Output device assignment enum; represents available output devices as an
-     * integer value. The value represents the device and the String is how the
-     * parameter is represented within the parameter file.  
-     * In the parameter file: Output#Number is equal to a physical output, where #
-     * is the integer value of the output device.
-     * i.e. Output8Number=1, where device #8 is assigned to Output 1
+     * Enumeration constant containing several output assignments.  In a setup file;
+     * Output#Number refers to a specific output device and is equal to its output
+     * location.
+     * i.e. Output47Number=1 => output device 47 is assigned to Output 1
      */
-    public enum Output implements IParametersEnum {
+    public enum Output {
         THD( "Output4Number=", 4 ), CUT_CONTROL( "Output8Number=", 8 ), DRIVE_ENABLE( "Output55Number=", 55 ), NCE_1( "Output57Number=", 57 ), HOLD_IGN1( "Output58Number=", 58 ),
         CUT_CONTROL_1( "Output197Number=", 197 ), CUT_CONTROL_2( "Output198Number=", 198 ), CUT_CONTROL_3( "Output198Number=", 198 ), CUT_CONTROL_4( "Output198Number=", 198 ),
         STATION_ENABLE_LED_1( "Output217Number=", 217 ), STATION_ENABLE_LED_2( "Output218Number=", 218 ), VENT_1( "Output472Number=", 472 ), VENT_2( "Output473Number=", 473 ),
@@ -155,13 +151,18 @@ public interface IBaseSetupData {
             this.m_name = name;
         }
 
-
-        @Override
+        /**
+         * Get/return the integer value of this enum
+         * @return  - The ordinal value of this enum type
+         */
         public int getValue() {
             return m_value;
         }
 
-        @Override
+        /**
+         * Get/return the String for this enum type
+         * @return - String value assigned to this enum type
+         */
         public String getName() {
             return m_name;
         }
@@ -181,9 +182,9 @@ public interface IBaseSetupData {
 
 
     /**
-     * Contains default Speed settings for all drive types
+     * Enumeration constants containing default Speed settings for all drive types
      */
-    public enum Speed implements IParametersEnum {
+    public enum Speed {
         MAX_SPEED_EN( "MaxSpeed(english)=", 1000 ), MAX_SPEED_M( "MaxSpeed(metric)=", 25400 ), SPEED_RANGE_1_EN( "GainSpeed1(english)=", 100 ),
         SPEED_RANGE_1_M( "GainSpeed1(metric)=", 2540 ), SPEED_RANGE_2_EN( "GainSpeed2(english)=", 300 ), SPEED_RANGE_2_M( "GainSpeed2(metric)=", 7620 ),
         SPEED_RANGE_3_EN( "GainSpeed3(english)=", 500 ), SPEED_RANGE_3_M( "GainSpeed3(metric)=", 12700 ), SPEED_RANGE_4_EN( "GainSpeed4(english)=", 1000 ),
@@ -206,12 +207,12 @@ public interface IBaseSetupData {
         }
 
 
-        @Override
+
         public int getValue() {
             return m_value;
         }
 
-        @Override
+
         public String getName() {
             return m_name;
         }
@@ -231,11 +232,11 @@ public interface IBaseSetupData {
 
 
     /**
-     * Group of specific machine parameters. Can be used to determine the application 
-     * (i.e. Bevel on Pipe) as well as the available features (i.e. Homes to over-
-     * travels) of the cutting machine.
+     * Enumeration constant containing default Machine parameters.  Can be used to
+     * determine the application type(i.e. Bevel on Pipe) as well as available
+     * features (i.e. Homes to over-travels) of the cutting machine.
      */
-    public enum Parameter {
+    public enum Machine {
         DUAL_GANTRY( "DualGantryInstalled=" ), FP( "FrontPanelInstalled=" ), SERCOS( "SercosSensorUtility=" ), ARC_GLIDE( "ArcGlideTHCInstalled=" ),
         PSCOMM_HYPERNET( "PSCommOverHypNetEn" ), STHC( "SensorTHCInstalled=" ), BEVEL_AXES( "SkewRotatorInstalled=" ), DUAL_BEVEL( "DualSkewRotatorInstalled=" ),
         AUTO_HOME( "AutoHome=" ), DUAL_TRANS( "DualTransverseInstalled=" ), NO_ROTATE_TILT( "NoRotateTilt=" ), ONE_ROTATE_TILT( "OneRotateTilt=" ),
@@ -249,7 +250,7 @@ public interface IBaseSetupData {
          * Constructor for enum PARAMETER
          * @param name  - String value assigned to this enum type
          */
-        private Parameter( String name ) {
+        private Machine( String name ) {
             this.m_name = name;
         }
 
@@ -264,163 +265,45 @@ public interface IBaseSetupData {
 
 
     /**
-     * Default Axes settings for a CNC using the Hypath diagnostic boards
+     * Enumeration constant containing Axes parameters
      */
-    public enum DiagBrds implements IParametersEnum {
-        PGAIN( "PGain=", 2000 ), IGAIN( "IGain=", 0 ), DGAIN( "DGain=", 0 ), FGAIN( "FGain=", 0 ), VGAIN( "VGain=", 0 ), PGAIN_2( "PGain2=", 2000 ), IGAIN_2( "IGain2=", 0 ),
-        DGAIN_2( "DGain2=", 0 ), FGAIN_2( "FGain2=", 0 ), VGAIN_2( "VGain2=", 0 ), PGAIN_3( "PGain3=", 2000 ), IGAIN_3( "IGain3=", 0 ), DGAIN_3( "DGain3=", 0 ),
-        FGAIN_3( "FGain3=", 0 ), VGAIN_3( "VGain3=", 0 ), PGAIN_4( "PGain4=", 2000 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 0 ), FGAIN_4( "FGain4=", 0 ),
-        VGAIN_4( "VGain4=", 0 ), PGAIN_5( "PGain5=", 2000 ), IGAIN_5( "IGain5=", 0 ), DGAIN_5( "DGain5=", 0 ), FGAIN_5( "FGain5=", 0 ), VGAIN_5( "VGain5=", 0 ),
-        SERVO_ERROR_EN( "ServoErrTolerance(english)=", 1 ), SERVO_ERROR_M( "ServoErrTolerance(metric)=", 25 ), ENCODER_CNTS_EN( "EncoderCounts(english)=", 1000 ),
-        ENCODER_CNTS_M( "EncoderCounts(metric)=", 39 ), DRIVE_TYPE( "DriveType=", 0 ), DAC( "DACPolarity=", 0 ), ENCODER_POLARITY( "EncoderPolarity=", 0 ),
-        ENCODER_MODE( "EncoderMode=", 2 ), USE_HW_OT( "UseHWOvertravelSwitches=", 1 ), HOME_SW( "UseHomeSwitch=", 1 ), HOME_OT( "HomeToOvertravel=", 1 ),
-        MARKER_PULSE( "UseMarker=", 0 );
+    public enum Axes implements IParametersEnum {
+        PGAIN( "PGain=" ), IGAIN( "IGain=" ), DGAIN( "DGain=" ), FGAIN( "FGain=" ), VGAIN( "VGain=" ), PGAIN_2( "PGain2=" ), IGAIN_2( "IGain2=" ),
+        DGAIN_2( "DGain2=" ), FGAIN_2( "FGain2=" ), VGAIN_2( "VGain2=" ), PGAIN_3( "PGain3=" ), IGAIN_3( "IGain3=" ), DGAIN_3( "DGain3=" ),
+        FGAIN_3( "FGain3=" ), VGAIN_3( "VGain3=" ), PGAIN_4( "PGain4=" ), IGAIN_4( "IGain4=" ), DGAIN_4( "DGain4=" ), FGAIN_4( "FGain4=" ),
+        VGAIN_4( "VGain4=" ), PGAIN_5( "PGain5=" ), IGAIN_5( "IGain5=" ), DGAIN_5( "DGain5=" ), FGAIN_5( "FGain5=" ), VGAIN_5( "VGain5=" ),
+        SERVO_ERROR_EN( "ServoErrTolerance(english)=" ), SERVO_ERROR_M( "ServoErrTolerance(metric)=" ), ENCODER_CNTS_EN( "EncoderCounts(english)=" ),
+        ENCODER_CNTS_M( "EncoderCounts(metric)=" ), DRIVE_TYPE( "DriveType=" ), DAC( "DACPolarity=" ), ENCODER_POLARITY( "EncoderPolarity=" ),
+        ENCODER_MODE( "EncoderMode=" ), USE_HW_OT( "UseHWOvertravelSwitches=" ), HOME_SW( "UseHomeSwitch=" ), HOME_OT( "HomeToOvertravel=" ),
+        MARKER_PULSE( "UseMarker=" );
 
-        private final int m_value;
         private final String m_name;
         private static final Map< String, Integer > map = new LinkedHashMap<>();
 
         /**
          * Constructor for enum HYPATH
          * @param name  - String value assigned to this enum type
-         * @param value - Ordinal value assigned to this enum type
          */
-        private DiagBrds( String name, int value ) {
-            this.m_value = value;
+        private Axes( String name ) {
             this.m_name = name;
         }
 
 
         @Override
         public int getValue() {
-            return m_value;
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
         public String getName() {
             return m_name;
         }
-
-        /**
-         * Add all enum constants to a Map< String, Integer > and return the Map.
-         * @return  - enum constants as a Map
-         */
-        public static Map< String, Integer > toMap() {
-            for( DiagBrds param : DiagBrds.values() ) {
-                map.put( param.getName(), param.getValue() );
-            }
-
-            return map;
-       }
     }
 
 
     /**
-     * Default Axes settings for a CNC using the Picopath diagnostic boards.
-     */
-    public enum Bench implements IParametersEnum {
-        PGAIN( "PGain=", 20 ), IGAIN( "IGain=", 0 ), DGAIN( "DGain=", 20 ), FGAIN( "FGain=", 100 ), VGAIN( "VGain=", 0 ), PGAIN_2( "PGain2=", 20 ), IGAIN_2( "IGain2=", 0 ),
-        DGAIN_2( "DGain2=", 20 ), FGAIN_2( "FGain2=", 100 ), VGAIN_2( "VGain2=", 0 ), PGAIN_3( "PGain3=", 20 ), IGAIN_3( "IGain3=", 0 ), DGAIN_3( "DGain3=", 20 ),
-        FGAIN_3( "FGain3=", 100 ), VGAIN_3( "VGain3=", 0 ), PGAIN_4( "PGain4=", 20 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 20 ), FGAIN_4( "FGain4=", 100 ),
-        VGAIN_4( "VGain4=", 0 ), PGAIN_5( "PGain5=", 20 ), IGAIN_5( "IGain5=", 0 ), DGAIN_5( "DGain5=", 20 ), FGAIN_5( "FGain5=", 100 ), VGAIN_5( "VGain5=", 0 ),
-        SERVO_ERROR_EN( "ServoErrTolerance(english)=", 1 ), SERVO_ERROR_M( "ServoErrTolerance(metric)=", 25 ), ENCODER_CNTS_EN( "EncoderCounts(english)=", 8192 ),
-        ENCODER_CNTS_M( "EncoderCounts(metric)=", 322 ), DRIVE_TYPE( "DriveType=", 0 ), DAC( "DACPolarity=", 0 ), ENCODER_POLARITY( "EncoderPolarity=", 1 ),
-        ENCODER_MODE( "EncoderMode=", 2 ), USE_HW_OT( "UseHWOvertravelSwitches=", 1 ), HOME_SW( "UseHomeSwitch=", 1 ), HOME_OT( "HomeToOvertravel=", 1 ),
-        MARKER_PULSE( "UseMarker=", 0 );
-
-        private final int m_value;
-        private final String m_name;
-        private static final Map< String, Integer > map = new LinkedHashMap<>();
-
-        /**
-         * Constructor for enum PICO_PATH
-         * @param name  - String value of this enum type
-         * @param value - Ordinal value of this enum type
-         */
-        private Bench( String name, int value ) {
-            this.m_value = value;
-            this.m_name = name;
-        }
-
-
-        @Override
-        public int getValue() {
-            return m_value;
-        }
-
-        @Override
-        public String getName() {
-            return m_name;
-        }
-
-        /**
-         * Add all enum constants to a Map< String, Integer > and return the Map.
-         * @return  - enum constants as a Map
-         */
-        public static Map< String, Integer > toMap() {
-            for( Bench param : Bench.values() ) {
-                map.put( param.getName(), param.getValue() );
-            }
-            
-            return map;
-        }
-    }
-
-
-    /**
-     * Default Axes settings for a EdgePro Ti on a test stand.
-     */
-    public enum EdgeProTi implements IParametersEnum {
-        PGAIN( "PGain=", 100 ), IGAIN( "IGain=", 0 ), DGAIN( "DGain=", 150 ), FGAIN( "FGain=", 100 ), VGAIN( "VGain=", 300 ), PGAIN_2( "PGain2=", 100 ), IGAIN_2( "IGain2=", 0 ),
-        DGAIN_2( "DGain2=", 150 ), FGAIN_2( "FGain2=", 100 ), VGAIN_2( "VGain2=", 100 ), PGAIN_3( "PGain3=", 100 ), IGAIN_3( "IGain3=", 0 ), DGAIN_3( "DGain3=", 150 ),
-        FGAIN_3( "FGain3=", 100 ), VGAIN_3( "VGain3=", 300 ), PGAIN_4( "PGain4=", 100 ), IGAIN_4( "IGain4=", 0 ), DGAIN_4( "DGain4=", 150 ), FGAIN_4( "FGain4=", 100 ),
-        VGAIN_4( "VGain4=", 300 ), PGAIN_5( "PGain5=", 100 ), IGAIN_5( "IGain5=", 0 ), DGAIN_5( "DGain5=", 150 ), FGAIN_5( "FGain5=", 100 ), VGAIN_5( "VGain5=", 300 ),
-        SERVO_ERROR_EN( "ServoErrTolerance(english)=", 1 ), SERVO_ERROR_M( "ServoErrTolerance(metric)=", 25 ), ENCODER_CNTS_EN( "EncoderCounts(english)=", 8000 ),
-        ENCODER_CNTS_M( "EncoderCounts(metric)=", 315 ), DRIVE_TYPE( "DriveType=", 1 ), DAC( "DACPolarity=", 0 ), ENCODER_POLARITY( "EncoderPolarity=", 1 ),
-        ENCODER_MODE( "EncoderMode=", 2 ), USE_HW_OT( "UseHWOvertravelSwitches=", 1 ), HOME_SW( "UseHomeSwitch=", 1 ), HOME_OT( "HomeToOvertravel=", 1 ),
-        MARKER_PULSE( "UseMarker=", 0 );
-
-        private final int m_value;
-        private final String m_name;
-        private static final Map< String, Integer > map = new LinkedHashMap<>();
-
-        /**
-         * Constructor for enum PICO_PATH
-         * @param name  - String value of this enum type
-         * @param value - Ordinal value of this enum type
-         */
-        private EdgeProTi( String name, int value ) {
-            this.m_value = value;
-            this.m_name = name;
-        }
-
-
-        @Override
-        public int getValue() {
-            return m_value;
-        }
-
-        @Override
-        public String getName() {
-            return m_name;
-        }
-
-        /**
-         * Add all enum constants to a Map< String, Integer > and return the Map.
-         * @return  - enum constants as a Map
-         */
-        public static Map< String, Integer > toMap() {
-            for( EdgeProTi param : EdgeProTi.values() ) {
-                map.put( param.getName(), param.getValue() );
-            }
-            
-            return map;
-        }
-    }
-
-
-    /**
-     * Default settings for a CNC containing one or more SensorTHC's.
+     * Enumeration constant containing default settings for a CNC containing one
+     * or more SensorTHC's.
      */
     public enum THC implements IParametersEnum {
         SLIDE_EN( "SlideLength(english)=", 10 ), SLIDE_M( "SlideLength(metric)=", 254 ), HARD_STOP( "UseHardStop=", 0 ), HOME_SWITCH( "UseHomeSwitch=", 1 ),
@@ -467,7 +350,8 @@ public interface IBaseSetupData {
 
 
     /**
-     * Default settings for a CNC containing a Dual Gantry Axis.
+     * Enumeration constant containing default settings for a CNC containing a 
+     * Dual Gantry Axis.
      */
     public enum DualGantry implements IParametersEnum {
         SKEW_ERROR_EN( "SkewErrTolerance(english)=", 1 ), SKEW_ERROR_M( "SkewErrTolerance(metric)=", 25 );
@@ -511,7 +395,7 @@ public interface IBaseSetupData {
 
 
     /**
-     * Default settings for a CNC containing one or more Bevel axis
+     * Enumeration constant containing default settings for a Bevel axis
      */
     public enum Bevel implements IParametersEnum {
         SERVO_ERROR( "ServoErrTolerance(degrees)=", 90 ), ENCODER_CNTS( "EncoderCounts(revs)=", 6000 ), AUTO_HOME( "AutoHome=", 1 );

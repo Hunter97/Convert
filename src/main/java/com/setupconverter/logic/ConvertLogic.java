@@ -42,7 +42,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.setupconverter.logic.IBaseSetupData.*;
+import com.setupconverter.logic.IMachineParams.*;
 import com.setupconverter.ui.ConvertUI.OperateConverter;
 
 import java.nio.charset.StandardCharsets;
@@ -180,48 +180,48 @@ public class ConvertLogic implements IParameters {
         }
 
         // Determine the specific tools installed; bevel heads, pipe axes, THC's, etc
-        if( getParameterValue( BlockTitle.MACHINE.getName(), Parameter.FP.getName() ) > 0 ) {
+        if( getParameterValue( BlockTitle.MACHINE.getName(), Machine.FP.getName() ) > 0 ) {
             m_frontPanelInstalled = true;
         }
        
-        if( getParameterValue( BlockTitle.MACHINE.getName(), Parameter.BEVEL_AXES.getName() ) > 0 ) {
+        if( getParameterValue( BlockTitle.MACHINE.getName(), Machine.BEVEL_AXES.getName() ) > 0 ) {
             m_bevelInstalled = true;
         }
 
-        if( getParameterValue( BlockTitle.MACHINE.getName(), Parameter.DUAL_BEVEL.getName() ) > 0 ) {
+        if( getParameterValue( BlockTitle.MACHINE.getName(), Machine.DUAL_BEVEL.getName() ) > 0 ) {
             m_dualBevelInstalled = true;
         }
 
-        if( getParameterValue( BlockTitle.MACHINE.getName(), Parameter.DUAL_TRANS.getName() ) > 0 && 
-                getParameterValue( BlockTitle.MACHINE.getName(), Parameter.DUAL_BEVEL.getName() ) > 0 ) {
+        if( getParameterValue( BlockTitle.MACHINE.getName(), Machine.DUAL_TRANS.getName() ) > 0 && 
+                getParameterValue( BlockTitle.MACHINE.getName(), Machine.DUAL_BEVEL.getName() ) > 0 ) {
             m_dualTransInstalled = true;
         }
 
-        if( getParameterValue( BlockTitle.MACHINE.getName(), Parameter.NO_ROTATE_TILT.getName() ) > 0 ) {
+        if( getParameterValue( BlockTitle.MACHINE.getName(), Machine.NO_ROTATE_TILT.getName() ) > 0 ) {
             m_noRotateTilt = true;
         }
 
-        if( getParameterValue( BlockTitle.MACHINE.getName(), Parameter.ONE_ROTATE_TILT.getName() ) > 0 ) {
+        if( getParameterValue( BlockTitle.MACHINE.getName(), Machine.ONE_ROTATE_TILT.getName() ) > 0 ) {
             m_oneRotateTilt = true;
         }
 
-        if( getParameterValue( BlockTitle.MACHINE.getName(), Parameter.DUAL_GANTRY.getName() ) > 0 ) {
+        if( getParameterValue( BlockTitle.MACHINE.getName(), Machine.DUAL_GANTRY.getName() ) > 0 ) {
             m_dualGantryInstalled = true;
         }
 
-        if( getParameterValue( BlockTitle.AXIS_7.getName(), Parameter.ROTATING_TRANS.getName() ) > 0 ) {
+        if( getParameterValue( BlockTitle.AXIS_7.getName(), Machine.ROTATING_TRANS.getName() ) > 0 ) {
             m_isRotatingTrans = true;
         }
 
-        if( getParameterValue( BlockTitle.MACHINE.getName(), Parameter.X_AXIS_ORIENTATION.getName() ) > 0 ) {
+        if( getParameterValue( BlockTitle.MACHINE.getName(), Machine.X_AXIS_ORIENTATION.getName() ) > 0 ) {
             m_xOnRail = true;
         }
 
-        if( getParameterValue( BlockTitle.MACHINE.getName(), Parameter.DUAL_TILTING.getName() ) > 0 ) {
+        if( getParameterValue( BlockTitle.MACHINE.getName(), Machine.DUAL_TILTING.getName() ) > 0 ) {
             m_dualTiltInstalled = true;
         }
 
-        if( getParameterValue( BlockTitle.MACHINE.getName(), Parameter.CBH.getName() ) > 0 ) {
+        if( getParameterValue( BlockTitle.MACHINE.getName(), Machine.CBH.getName() ) > 0 ) {
             m_cbhInstalled = true;
         }
 
@@ -231,7 +231,7 @@ public class ConvertLogic implements IParameters {
 
 
         // Convert THC parameters
-        if(( sthcTotal = getParameterValue( BlockTitle.MACHINE.getName(), Parameter.STHC.getName() )) > 0 ) {
+        if(( sthcTotal = getParameterValue( BlockTitle.MACHINE.getName(), Machine.STHC.getName() )) > 0 ) {
             m_sthcInstalled = true;
             m_dataAccess.addTHCDefaults();
 
@@ -261,7 +261,7 @@ public class ConvertLogic implements IParameters {
                 }
             }
         }
-        else if(( agTHCTotal = getParameterValue( BlockTitle.MACHINE.getName(), Parameter.ARC_GLIDE.getName() )) > 0 ) {
+        else if(( agTHCTotal = getParameterValue( BlockTitle.MACHINE.getName(), Machine.ARC_GLIDE.getName() )) > 0 ) {
             m_arcGlideInstalled = true;
             addInput( row1NextIndex++, Input.RDY_TO_FIRE_1.getValue() );
 
@@ -337,7 +337,7 @@ public class ConvertLogic implements IParameters {
             replaceParameters( BlockTitle.CBH.getName(), m_dataAccess.getAxesParams() );
             setParameterValue( BlockTitle.CBH.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
             setParameterValue( BlockTitle.CBH.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
-            setParameterValue( BlockTitle.CBH.getName(), Parameter.HOME_DIRECTION.getName(), 0 );
+            setParameterValue( BlockTitle.CBH.getName(), Machine.HOME_DIRECTION.getName(), 0 );
             addInput( row1NextIndex++, Input.CBH_HOME.getValue() );
         }
 
@@ -348,9 +348,9 @@ public class ConvertLogic implements IParameters {
 
             if( m_isRotatingTrans ) {
                 setParameterValue( BlockTitle.MACHINE.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
-                setParameterValue( BlockTitle.AXIS_7.getName(),  Parameter.SERVO_ERROR_EN.getName(), Bevel.SERVO_ERROR.getValue() );
-                setParameterValue( BlockTitle.AXIS_7.getName(), Parameter.ENCODER_CNTS_EN.getName(), Bevel.ENCODER_CNTS.getValue() );
-                setParameterValue( BlockTitle.AXIS_7.getName(), Parameter.ENCODER_CNTS_M.getName(), Bevel.ENCODER_CNTS.getValue() );
+                setParameterValue( BlockTitle.AXIS_7.getName(),  Machine.SERVO_ERROR_EN.getName(), Bevel.SERVO_ERROR.getValue() );
+                setParameterValue( BlockTitle.AXIS_7.getName(), Machine.ENCODER_CNTS_EN.getName(), Bevel.ENCODER_CNTS.getValue() );
+                setParameterValue( BlockTitle.AXIS_7.getName(), Machine.ENCODER_CNTS_M.getName(), Bevel.ENCODER_CNTS.getValue() );
                 addInput( row1NextIndex++, Input.ROT_2_HOME.getValue() );
                 addInput( row2NextIndex++, Input.DUAL_HEAD_COLLISION.getValue() );
             }

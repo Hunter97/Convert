@@ -11,7 +11,6 @@
  */
 package com.setupconverter.logic;
 
-import java.util.Map;
 
 
 /**

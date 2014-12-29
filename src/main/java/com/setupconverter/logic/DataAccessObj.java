@@ -21,7 +21,7 @@ import java.util.Map;
  * form of Map's.
  * @author prwallace
  */
-public class DataAccessObj implements IBaseSetupData {
+public class DataAccessObj implements IMachineParams {
     private final Map< String, Integer > m_thcAxesParamMap;
     private final Map< String, Integer > m_thcMachineParamMap;
     private final Map< String, Integer > m_thcAnalogParamMap;
@@ -76,17 +76,17 @@ public class DataAccessObj implements IBaseSetupData {
     @Override
     public final void addAxesDefaults( String type ) {      
         if( DriveType.YASKAWA.getName().equals( type )) {
-            m_axesParamMap = Bench.toMap();
+            m_axesParamMap = IMachineType.Bench.toMap();
             m_cutSenseLoc = 13;
             m_cutControlLoc = 18;
         }
         else if( DriveType.DIAG_BRDS.getName().equals( type )) {
-            m_axesParamMap = DiagBrds.toMap();
+            m_axesParamMap = IMachineType.DiagBrds1.toMap();
             m_cutSenseLoc = 40;
             m_cutControlLoc = 40;
         }
         else if( DriveType.EDGETI.getName().equals( type )) {
-            m_axesParamMap = EdgeProTi.toMap();
+            m_axesParamMap = IMachineType.EdgeProTi.toMap();
             m_cutSenseLoc = 1;
         }
     }
