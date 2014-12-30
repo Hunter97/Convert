@@ -3,9 +3,10 @@
  * 
  *  Data access object for the SetupConverter application
  * 
- *  The class provides access to data contained in the IDataAccess interface:
- *      *   Adds/Initializes Maps for each container type present in IDataAcess
- *      *   Provides access to the Map variables
+ *  The class provides data access to that data contained in IMachineType and
+ *  IMachineParams interfaces:
+ *      *   Initializes Maps of specific parameters based on the machine type
+ *      *   Provides access to the individual Maps
  * 
  *  Implements:  IDataAccess
  */
@@ -22,14 +23,16 @@ import java.util.Map;
  * @author prwallace
  */
 public class DataAccessObj implements IMachineParams {
-    private final Map< String, Integer > m_thcAxesParamMap;
+    private Map< String, Integer > m_axesParamMap;
+    private Map< String, Integer > m_thcAxesParamMap;
     private final Map< String, Integer > m_thcMachineParamMap;
     private final Map< String, Integer > m_thcAnalogParamMap;
-    private Map< String, Integer > m_axesParamMap;
 
     private int m_cutSenseLoc;
     private int m_cutControlLoc;
     private int m_thcTorqueLimitLoc = 19;
+
+    private boolean m_isEDGETi = false;
 
 
     /**
@@ -62,10 +65,12 @@ public class DataAccessObj implements IMachineParams {
         m_thcMachineParamMap.put( THC.ANALOG_1.getName(), THC.ANALOG_1.getValue() );
         m_thcMachineParamMap.put( THC.ANALOG_2.getName(), THC.ANALOG_2.getValue() );
 
-        m_thcAxesParamMap.put( THC.HARD_STOP.getName(), THC.HARD_STOP.getValue() );
-        m_thcAxesParamMap.put( THC.HOME_SWITCH.getName(), THC.HOME_SWITCH.getValue() );
-        m_thcAxesParamMap.put( THC.SLIDE_EN.getName(), THC.SLIDE_EN.getValue() );
-        m_thcAxesParamMap.put( THC.SLIDE_M.getName(), THC.SLIDE_M.getValue() );
+        if( !m_isEDGETi ) {
+            m_thcAxesParamMap.put( THC.HARD_STOP.getName(), THC.HARD_STOP.getValue() );
+            m_thcAxesParamMap.put( THC.HOME_SWITCH.getName(), THC.HOME_SWITCH.getValue() );
+            m_thcAxesParamMap.put( THC.SLIDE_EN.getName(), THC.SLIDE_EN.getValue() );
+            m_thcAxesParamMap.put( THC.SLIDE_M.getName(), THC.SLIDE_M.getValue() );
+        }
 
         m_thcAnalogParamMap.put( THC.SPEEDPOT_1_INSTALLED.getName(), THC.SPEEDPOT_1_INSTALLED.getValue() );
         m_thcAnalogParamMap.put( THC.SPEEDPOT_1_ANALOG_1.getName(), THC.SPEEDPOT_1_ANALOG_1.getValue() );
@@ -76,18 +81,20 @@ public class DataAccessObj implements IMachineParams {
     @Override
     public final void addAxesDefaults( String type ) {      
         if( DriveType.YASKAWA.getName().equals( type )) {
-            m_axesParamMap = IMachineType.Bench.toMap();
+            m_axesParamMap = m_thcAxesParamMap = IMachineType.Bench.toMap();
             m_cutSenseLoc = 13;
             m_cutControlLoc = 18;
         }
         else if( DriveType.DIAG_BRDS.getName().equals( type )) {
-            m_axesParamMap = IMachineType.DiagBrds1.toMap();
+            m_axesParamMap = m_thcAxesParamMap = IMachineType.DiagBrds1.toMap();
             m_cutSenseLoc = 40;
             m_cutControlLoc = 40;
         }
         else if( DriveType.EDGETI.getName().equals( type )) {
             m_axesParamMap = IMachineType.EdgeProTi.toMap();
+            m_thcAxesParamMap = IMachineType.Ti_Lifter.toMap();
             m_cutSenseLoc = 1;
+            m_isEDGETi = true;
         }
     }
 
@@ -116,6 +123,10 @@ public class DataAccessObj implements IMachineParams {
         return m_axesParamMap;
     }
 
+    public Map<String, Integer> getDualGantryParams() {
+        return IMachineParams.DualGantry.toMap();
+    }
+
     @Override
     public int getCutSenseLoc() {
         return m_cutSenseLoc;
@@ -129,5 +140,9 @@ public class DataAccessObj implements IMachineParams {
     @Override
     public int getTHCTorqueLimitLoc() {
         return m_thcTorqueLimitLoc;
+    }
+
+    public boolean isEDGETi() {
+        return m_isEDGETi;
     }
 }

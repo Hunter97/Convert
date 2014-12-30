@@ -5,6 +5,7 @@
  * 
  *  ConvertUI provides the user interface for the SetupConverter application.
  * 
+ * 
  *  Main attributes:
  *      *   Allows user to load a setup file from the Windows file system.
  *      *   Allows user to re-calculate checksum of loaded setup file and then

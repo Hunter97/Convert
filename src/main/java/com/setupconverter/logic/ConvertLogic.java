@@ -237,26 +237,27 @@ public class ConvertLogic implements IParameters {
 
             for( int i = 0; i < sthcTotal; i++ ) {
                 replaceParameters( new StringBuilder( "[THC" ).append( i + 1 ).append( "]\r\n" ).toString(), m_dataAccess.getTHCAxisParams() );
-                replaceParameters( new StringBuilder( "[THC" ).append( i + 1 ).append( "]\r\n" ).toString(), m_dataAccess.getAxesParams() );
             }
 
             replaceParameters( BlockTitle.AIC.getName(), m_dataAccess.getTHCAnalogParams() );
             replaceParameters( BlockTitle.MACHINE.getName(), m_dataAccess.getTHCMachineParams() );
 
-            addInput( row1NextIndex++, Input.NCS_1.getValue() );
-            addOutput( m_dataAccess.getTHCTorqueLimitLoc(), Output.THC_TorqueLimit.getValue() );
+            if( !m_dataAccess.isEDGETi() ) {
+                addInput( row1NextIndex++, Input.NCS_1.getValue() );
+                addOutput( m_dataAccess.getTHCTorqueLimitLoc(), Output.THC_TorqueLimit.getValue() );
 
-            if( sthcTotal >= 2 ) {
-                addInput( row1NextIndex++, Input.NCS_2.getValue() );
-                row2NextIndex++;
-
-                if( sthcTotal >= 3 ) {
-                    addInput( row1NextIndex++, Input.NCS_3.getValue() );
+                if( sthcTotal >= 2 ) {
+                    addInput( row1NextIndex++, Input.NCS_2.getValue() );
                     row2NextIndex++;
 
-                    if( sthcTotal >= 4 ) {  // Only supporting 4 STHC's at this time.
-                        addInput( row1NextIndex++, Input.NCS_4.getValue() );
+                    if( sthcTotal >= 3 ) {
+                        addInput( row1NextIndex++, Input.NCS_3.getValue() );
                         row2NextIndex++;
+
+                        if( sthcTotal >= 4 ) {  // Only supporting 4 STHC's at this time.
+                            addInput( row1NextIndex++, Input.NCS_4.getValue() );
+                            row2NextIndex++;
+                        }
                     }
                 }
             }
@@ -285,7 +286,7 @@ public class ConvertLogic implements IParameters {
         // Convert Dual Gantry Axis parameters
         if( m_dualGantryInstalled ) {
             replaceParameters( BlockTitle.DUAL_GANTRY.getName(), m_dataAccess.getAxesParams() );
-            replaceParameters( BlockTitle.DUAL_GANTRY.getName(), DualGantry.toMap() );
+            replaceParameters( BlockTitle.DUAL_GANTRY.getName(), m_dataAccess.getDualGantryParams() );
         }
 
 
@@ -298,9 +299,10 @@ public class ConvertLogic implements IParameters {
         replaceParameters( BlockTitle.AXIS_2.getName(), m_dataAccess.getAxesParams() );
 
 
-        // X/Y Negative OT's can be assigned as home switch or OT, resulting is
-        // 2 possible Input#Number assignments.  For simplicity, set 2nd possible
-        // assignment to 0(Input19Number=0, Input20Number=0)
+        /* X/Y Negative OT's can be assigned as a home switch or as an OT.  This    *
+         * results in 2 possible Input#Number assignments for a single device.  For *
+         * simplicity, set 2nd possible assignment to 0(Input19Number=0,            *
+         * Input20Number=0)                                                         */
         int homeValue = getParameterValue( BlockTitle.IO.getName(), Input.X_NEG_OT.getName() );
         if( homeValue > 0 ) {
             setParameterValue( BlockTitle.IO.getName(), Input.X_NEG_OT.getName(), 0 );
@@ -325,57 +327,57 @@ public class ConvertLogic implements IParameters {
         else {
             addInput( row1NextIndex++, Input.Y_HOME_NEG_OT.getValue() );
             addInput( row1NextIndex++, Input.X_HOME_NEG_OT.getValue() );
-            
+
             addInput( row2NextIndex++, Input.Y_POS_OT.getValue() );
             addInput( row2NextIndex++, Input.X_POS_OT.getValue() );
         }
 
 
-        // Convert CBH parameters
-        if( m_cbhInstalled ) {
-            setParameterValue( BlockTitle.CBH.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
-            replaceParameters( BlockTitle.CBH.getName(), m_dataAccess.getAxesParams() );
-            setParameterValue( BlockTitle.CBH.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
-            setParameterValue( BlockTitle.CBH.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
-            setParameterValue( BlockTitle.CBH.getName(), Machine.HOME_DIRECTION.getName(), 0 );
-            addInput( row1NextIndex++, Input.CBH_HOME.getValue() );
+    // Convert CBH parameters
+    if( m_cbhInstalled ) {
+        setParameterValue( BlockTitle.CBH.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
+        replaceParameters( BlockTitle.CBH.getName(), m_dataAccess.getAxesParams() );
+        setParameterValue( BlockTitle.CBH.getName(), Bevel.SERVO_ERROR.getName(), Bevel.SERVO_ERROR.getValue() );
+        setParameterValue( BlockTitle.CBH.getName(), Bevel.ENCODER_CNTS.getName(), Bevel.ENCODER_CNTS.getValue() );
+        setParameterValue( BlockTitle.CBH.getName(), Machine.HOME_DIRECTION.getName(), 0 );
+        addInput( row1NextIndex++, Input.CBH_HOME.getValue() );
+    }
+
+
+    // Convert Dual Transverse parameters and add its inputs
+    if( m_dualTransInstalled ) {
+        replaceParameters( BlockTitle.AXIS_7.getName(), m_dataAccess.getAxesParams() );
+
+        if( m_isRotatingTrans ) {
+            setParameterValue( BlockTitle.MACHINE.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
+            setParameterValue( BlockTitle.AXIS_7.getName(),  Machine.SERVO_ERROR_EN.getName(), Bevel.SERVO_ERROR.getValue() );
+            setParameterValue( BlockTitle.AXIS_7.getName(), Machine.ENCODER_CNTS_EN.getName(), Bevel.ENCODER_CNTS.getValue() );
+            setParameterValue( BlockTitle.AXIS_7.getName(), Machine.ENCODER_CNTS_M.getName(), Bevel.ENCODER_CNTS.getValue() );
+            addInput( row1NextIndex++, Input.ROT_2_HOME.getValue() );
+            addInput( row2NextIndex++, Input.DUAL_HEAD_COLLISION.getValue() );
         }
-
-
-        // Convert Dual Transverse parameters and add its inputs
-        if( m_dualTransInstalled ) {
-            replaceParameters( BlockTitle.AXIS_7.getName(), m_dataAccess.getAxesParams() );
-
-            if( m_isRotatingTrans ) {
-                setParameterValue( BlockTitle.MACHINE.getName(), Bevel.AUTO_HOME.getName(), Bevel.AUTO_HOME.getValue() );
-                setParameterValue( BlockTitle.AXIS_7.getName(),  Machine.SERVO_ERROR_EN.getName(), Bevel.SERVO_ERROR.getValue() );
-                setParameterValue( BlockTitle.AXIS_7.getName(), Machine.ENCODER_CNTS_EN.getName(), Bevel.ENCODER_CNTS.getValue() );
-                setParameterValue( BlockTitle.AXIS_7.getName(), Machine.ENCODER_CNTS_M.getName(), Bevel.ENCODER_CNTS.getValue() );
-                addInput( row1NextIndex++, Input.ROT_2_HOME.getValue() );
-                addInput( row2NextIndex++, Input.DUAL_HEAD_COLLISION.getValue() );
-            }
-            else {             
-                if( m_xOnRail ) {
-                    addInput( row1NextIndex++, Input.Y_POS_OT.getValue() );
-                }
-                else {
-                    addInput( row1NextIndex++, Input.X_POS_OT.getValue() );
-                }
-
-                addInput( row2NextIndex - 1, Input.DUAL_HEAD_COLLISION.getValue() );
-                torchCollisionLoc = row2NextIndex++;
-            }
-
-            if( row1NextIndex < 8 ) {
-                
-                addInput( row1NextIndex++, Input.PARK_HEAD_1.getValue() );
-                addInput( row2NextIndex++, Input.PARK_HEAD_2.getValue() );
+        else {             
+            if( m_xOnRail ) {
+                addInput( row1NextIndex++, Input.Y_POS_OT.getValue() );
             }
             else {
-                addInput( row3_NextIndex++, Input.PARK_HEAD_1.getValue() );
-                addInput( row3_NextIndex++, Input.PARK_HEAD_2.getValue() );
+                addInput( row1NextIndex++, Input.X_POS_OT.getValue() );
             }
+
+            addInput( row2NextIndex - 1, Input.DUAL_HEAD_COLLISION.getValue() );
+            torchCollisionLoc = row2NextIndex++;
         }
+
+        if( row1NextIndex < 8 ) {
+
+            addInput( row1NextIndex++, Input.PARK_HEAD_1.getValue() );
+            addInput( row2NextIndex++, Input.PARK_HEAD_2.getValue() );
+        }
+        else {
+            addInput( row3_NextIndex++, Input.PARK_HEAD_1.getValue() );
+            addInput( row3_NextIndex++, Input.PARK_HEAD_2.getValue() );
+        }
+    }
 
 
         // Convert Bevel Axes parameters and add homing inputs
