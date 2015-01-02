@@ -37,16 +37,16 @@ public interface IMachineParams {
         private final String m_name;
 
         /**
-         * Constructor for enum BLOCK
-         * @param name  - String value assigned to this enum type
+         * Get/return the int value of the enum constant
+         * @return  - int value of the enum constant
          */
         private BlockTitle( String name ) {
             this.m_name = name;
         }
 
         /**
-         * Get/return the String for this enum type
-         * @return  - String value assigned to this enum type
+         * Get/return the String value of the enum constant
+         * @return  - String value of the enum constant
          */
         public String getName() {
             return m_name;
@@ -97,16 +97,16 @@ public interface IMachineParams {
         }
 
         /**
-         * Get/return the integer value of this enum
-         * @return  - The ordinal value of this enum type
+         * Get/return the int value of the enum constant
+         * @return  - int value of the enum constant
          */
         public int getValue() {
             return m_value;
         }
 
         /**
-         * Get/return the String for this enum type
-         * @return  - String value assigned to this enum type
+         * Get/return the String value of the enum constant
+         * @return  - String value of the enum constant
          */
         public String getName() {
             return m_name;
@@ -152,16 +152,16 @@ public interface IMachineParams {
         }
 
         /**
-         * Get/return the integer value of this enum
-         * @return  - The ordinal value of this enum type
+         * Get/return the int value of the enum constant
+         * @return  - int value of the enum constant
          */
         public int getValue() {
             return m_value;
         }
 
         /**
-         * Get/return the String for this enum type
-         * @return - String value assigned to this enum type
+         * Get/return the String value of the enum constant
+         * @return  - String value of the enum constant
          */
         public String getName() {
             return m_name;
@@ -206,13 +206,18 @@ public interface IMachineParams {
             this.m_name = name;
         }
 
-
-
+        /**
+         * Get/return the int value of the enum constant
+         * @return  - int value of the enum constant
+         */
         public int getValue() {
             return m_value;
         }
 
-
+        /**
+         * Get/return the String value of the enum constant
+         * @return  - String value of the enum constant
+         */
         public String getName() {
             return m_name;
         }
@@ -267,7 +272,7 @@ public interface IMachineParams {
     /**
      * Enumeration constant containing Axes parameters
      */
-    public enum Axes implements IParametersEnum {
+    public enum Axes {
         PGAIN( "PGain=" ), IGAIN( "IGain=" ), DGAIN( "DGain=" ), FGAIN( "FGain=" ), VGAIN( "VGain=" ), PGAIN_2( "PGain2=" ), IGAIN_2( "IGain2=" ),
         DGAIN_2( "DGain2=" ), FGAIN_2( "FGain2=" ), VGAIN_2( "VGain2=" ), PGAIN_3( "PGain3=" ), IGAIN_3( "IGain3=" ), DGAIN_3( "DGain3=" ),
         FGAIN_3( "FGain3=" ), VGAIN_3( "VGain3=" ), PGAIN_4( "PGain4=" ), IGAIN_4( "IGain4=" ), DGAIN_4( "DGain4=" ), FGAIN_4( "FGain4=" ),
@@ -288,13 +293,18 @@ public interface IMachineParams {
             this.m_name = name;
         }
 
-
-        @Override
+        /**
+         * Get/return the int value of the enum constant
+         * @return  - int value of the enum constant
+         */
         public int getValue() {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        @Override
+        /**
+         * Get/return the String value of the enum constant
+         * @return  - String value of the enum constant
+         */
         public String getName() {
             return m_name;
         }
@@ -305,7 +315,7 @@ public interface IMachineParams {
      * Enumeration constant containing default settings for a CNC containing one
      * or more SensorTHC's.
      */
-    public enum THC implements IParametersEnum {
+    public enum THC {
         SLIDE_EN( "SlideLength(english)=", 10 ), SLIDE_M( "SlideLength(metric)=", 254 ), HARD_STOP( "UseHardStop=", 0 ), HOME_SWITCH( "UseHomeSwitch=", 1 ),
         ANALOG_1( "THCAnalog1=", 0 ), ANALOG_2( "THCAnalog2=", 2 ), SPEEDPOT_1_INSTALLED( "SpeedPotInstalled=", 1 ), SPEEDPOT_1_ANALOG_1( "SpeedPotAnalog1=", 1 ),
         SPEEDPOT_1_ANALOG_2( "SpeedPotAnalog2=", 1 );
@@ -324,13 +334,18 @@ public interface IMachineParams {
             this.m_name = name;
         }
 
-
-        @Override
+        /**
+         * Get/return the int value of the enum constant
+         * @return  - int value of the enum constant
+         */
         public int getValue() {
             return m_value;
         }
 
-        @Override
+        /**
+         * Get/return the String value of the enum constant
+         * @return  - String value of the enum constant
+         */
         public String getName() {
             return m_name;
         }
@@ -353,7 +368,7 @@ public interface IMachineParams {
      * Enumeration constant containing default settings for a CNC containing a 
      * Dual Gantry Axis.
      */
-    public enum DualGantry implements IParametersEnum {
+    public enum DualGantry {
         SKEW_ERROR_EN( "SkewErrTolerance(english)=", 1 ), SKEW_ERROR_M( "SkewErrTolerance(metric)=", 25 );
 
         private final int m_value;
@@ -370,12 +385,18 @@ public interface IMachineParams {
             this.m_name = name;
         }
 
-        @Override
+        /**
+         * Get/return the int value of the enum constant
+         * @return  - int value of the enum constant
+         */
         public int getValue() {
             return m_value;
         }
 
-        @Override
+        /**
+         * Get/return the String value of the enum constant
+         * @return  - String value of the enum constant
+         */
         public String getName() {
             return m_name;
         }
@@ -397,7 +418,7 @@ public interface IMachineParams {
     /**
      * Enumeration constant containing default settings for a Bevel axis
      */
-    public enum Bevel implements IParametersEnum {
+    public enum Bevel {
         SERVO_ERROR( "ServoErrTolerance(degrees)=", 90 ), ENCODER_CNTS( "EncoderCounts(revs)=", 6000 ), AUTO_HOME( "AutoHome=", 1 );
 
         private final int m_value;
@@ -413,13 +434,18 @@ public interface IMachineParams {
             this.m_name = name;
         }
 
-
-        @Override
+        /**
+         * Get/return the int value of the enum constant
+         * @return  - int value of the enum constant
+         */
         public int getValue() {
             return m_value;
         }
 
-        @Override
+        /**
+         * Get/return the String value of the enum constant
+         * @return  - String value of the enum constant
+         */
         public String getName() {
             return m_name;
         }
@@ -489,4 +515,11 @@ public interface IMachineParams {
      * @return  - The location of the THC Torque Limit output
      */
     public int getTHCTorqueLimitLoc();
+
+
+    /**
+     * Get/return a flag indicating the machine type is or is not an EDGE Pro Ti
+     * @return  - State of EDGE Pro Ti flag
+     */
+    public boolean isEDGETi();
 }

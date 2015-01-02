@@ -25,7 +25,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-//import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -36,7 +35,6 @@ import static org.junit.Assert.*;
  */
 public class ConvertLogicTest {
     private static final String LOAD_FILEPATH = "./testFiles/PhoenixPass.ini";
-    //private static final String SAVE_FILEPATH = "./testFiles/PhoenixSave.ini";
     private static final String LINE_RETURN = "\r\n";
     private static final String REGEX = "[=\\r\\n]";
     private static final String MACHINE = "[Machine]\r\n";
@@ -46,7 +44,6 @@ public class ConvertLogicTest {
     private OperateConverter m_operate;
     private ConvertLogic m_setup;
     private File m_loadFile;
-    //private File m_saveFile;
    
 
     

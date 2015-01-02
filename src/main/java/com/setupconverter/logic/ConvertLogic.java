@@ -2,21 +2,22 @@
  * ConvertLogic
  * Paul Wallace
  * June 2014
- * Rev 1.01
+ * Rev 1.11
  * 
  * ConvertLogic is the logic class for the SetupConverter application.  The 
- * class converts the Gain parameters based on a selected drive type and configures
- * the I/O to simplify homing and to simulate cutting.  The I/O configuration is
- * based on the application of the configuration file.  The class creates a new
- * configuration file, with an updated checksum.
- * Assumes CNC can activate the first 16 inputs and has a I/O loop back connector
- * installed to the back of CNC.
+ * class converts the Gain parameters based on the selected drive type (Machine
+ * Type) and configures the I/O to simplify homing and to simulate cutting.  The
+ * I/O configuration is based on the application of the configuration file.  The
+ * class creates a new configuration file, with an updated checksum.
+ * The class assumes the actual test stand can activate the first 16 inputs and
+ * has an I/O loop back connector installed to the back of CNC on I/O 37- 44.
  *     
  * Main attributes:
- *      *   Accesses data stored within the data access interface or through the
- *              data access class.
+ *      *   Instantiates a DAO which organizes the data contained in IMachineType
+ *              based on the user selected machine type
+ *      *   Accesses data through the DAO or IMachineType directly
  *      *   Get/set/replace Axes, Machine, and Speed parameters within the loaded
- *              parameter file with data stored in the data access class.
+ *              parameter file
  *      *   Determines the application type and re-configures I/O appropriately so
  *              user can satisfy homing and simulate cutting.
  *      *   Recalculates the checksum and saves the converted file to the file system.
@@ -50,9 +51,9 @@ import java.awt.Color;
 
 
 /**
- * ConvertLogic retrieves/manipulates the data from IDataAccess interface and
- * converts parameters within a configuration file based on drive system and
- * application type.
+ * ConvertLogic manipulates the data contained in IMachineType to convert
+ * parameters within the loaded configuration file based on the selected 
+ * machine type from the UI.
  * 
  * @author prwallace
  */

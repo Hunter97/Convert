@@ -142,6 +142,7 @@ public class DataAccessObj implements IMachineParams {
         return m_thcTorqueLimitLoc;
     }
 
+    @Override
     public boolean isEDGETi() {
         return m_isEDGETi;
     }
